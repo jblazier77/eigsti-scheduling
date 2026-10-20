@@ -1,0 +1,14 @@
+{
+  "name": "eigsti-scheduling",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Eigsti scheduling foundation, initial job/access backend modules and synthetic phone prototype",
+  "engines": { "node": ">=24" },
+  "scripts": {
+    "seed": "node scripts/generate-demo.mjs",
+    "test": "node --test tests/*.test.mjs",
+    "check:prototype": "node scripts/check-prototype.mjs",
+    "preview": "node scripts/preview.mjs"
+  }
+}

@@ -1,0 +1,1372 @@
+{
+  "synthetic": true,
+  "schemaVersion": 1,
+  "anchorDate": "2026-10-20",
+  "timezone": "America/Chicago",
+  "users": [
+    {
+      "id": "admin-01",
+      "name": "Demo Admin",
+      "roles": [
+        "admin"
+      ],
+      "active": true
+    },
+    {
+      "id": "pm-01",
+      "name": "Demo PM One",
+      "roles": [
+        "pm"
+      ],
+      "active": true
+    },
+    {
+      "id": "pm-02",
+      "name": "Demo PM Two",
+      "roles": [
+        "pm"
+      ],
+      "active": true
+    },
+    {
+      "id": "lead-01",
+      "name": "Demo Lead 1",
+      "roles": [
+        "lead"
+      ],
+      "active": true
+    },
+    {
+      "id": "lead-02",
+      "name": "Demo Lead 2",
+      "roles": [
+        "lead"
+      ],
+      "active": true
+    },
+    {
+      "id": "lead-03",
+      "name": "Demo Lead 3",
+      "roles": [
+        "lead"
+      ],
+      "active": true
+    },
+    {
+      "id": "lead-04",
+      "name": "Demo Lead 4",
+      "roles": [
+        "lead"
+      ],
+      "active": true
+    },
+    {
+      "id": "lead-05",
+      "name": "Demo Lead 5",
+      "roles": [
+        "lead"
+      ],
+      "active": true
+    },
+    {
+      "id": "lead-06",
+      "name": "Demo Lead 6",
+      "roles": [
+        "lead"
+      ],
+      "active": true
+    },
+    {
+      "id": "lead-07",
+      "name": "Demo Lead 7",
+      "roles": [
+        "lead"
+      ],
+      "active": true
+    },
+    {
+      "id": "lead-08",
+      "name": "Demo Lead 8",
+      "roles": [
+        "lead"
+      ],
+      "active": true
+    },
+    {
+      "id": "lead-09",
+      "name": "Demo Lead 9",
+      "roles": [
+        "lead"
+      ],
+      "active": true
+    },
+    {
+      "id": "lead-10",
+      "name": "Demo Lead 10",
+      "roles": [
+        "lead"
+      ],
+      "active": true
+    },
+    {
+      "id": "lead-11",
+      "name": "Demo Lead 11",
+      "roles": [
+        "lead"
+      ],
+      "active": true
+    },
+    {
+      "id": "lead-12",
+      "name": "Demo Lead 12",
+      "roles": [
+        "lead"
+      ],
+      "active": true
+    },
+    {
+      "id": "lead-13",
+      "name": "Demo Lead 13",
+      "roles": [
+        "lead"
+      ],
+      "active": true
+    },
+    {
+      "id": "lead-14",
+      "name": "Demo Lead 14",
+      "roles": [
+        "lead"
+      ],
+      "active": true
+    },
+    {
+      "id": "lead-15",
+      "name": "Demo Lead 15",
+      "roles": [
+        "lead"
+      ],
+      "active": true
+    },
+    {
+      "id": "lead-16",
+      "name": "Demo Lead 16",
+      "roles": [
+        "lead"
+      ],
+      "active": true
+    },
+    {
+      "id": "lead-17",
+      "name": "Demo Lead 17",
+      "roles": [
+        "lead"
+      ],
+      "active": true
+    },
+    {
+      "id": "lead-18",
+      "name": "Demo Lead 18",
+      "roles": [
+        "lead"
+      ],
+      "active": true
+    },
+    {
+      "id": "lead-19",
+      "name": "Demo Lead 19",
+      "roles": [
+        "lead"
+      ],
+      "active": true
+    },
+    {
+      "id": "lead-20",
+      "name": "Demo Lead 20",
+      "roles": [
+        "lead"
+      ],
+      "active": true
+    },
+    {
+      "id": "helper-01",
+      "name": "Demo Helper",
+      "roles": [
+        "helper"
+      ],
+      "active": true
+    },
+    {
+      "id": "former-01",
+      "name": "Demo Former Employee",
+      "roles": [
+        "lead"
+      ],
+      "active": false
+    }
+  ],
+  "jobs": [
+    {
+      "id": "job-01",
+      "customer": "SYNTHETIC Customer 1",
+      "phone": "202-555-0100",
+      "phoneAction": "+12025550100",
+      "address": "100 Fictional Demo Lane (synthetic; do not navigate)",
+      "title": "Window replacement 1",
+      "workType": "windows",
+      "responsiblePm": "pm-01",
+      "lifecycle": "open",
+      "scope": "Replace windows; confirm access before arrival.",
+      "preparation": "Synthetic fixture. Bring the listed job supplies."
+    },
+    {
+      "id": "job-02",
+      "customer": "SYNTHETIC Customer 2",
+      "phone": "202-555-0100",
+      "phoneAction": "+12025550100",
+      "address": "101 Fictional Demo Lane (synthetic; do not navigate)",
+      "title": "Window replacement 2",
+      "workType": "windows",
+      "responsiblePm": "pm-02",
+      "lifecycle": "open",
+      "scope": "Replace windows; confirm access before arrival.",
+      "preparation": "Synthetic fixture. Bring the listed job supplies."
+    },
+    {
+      "id": "job-03",
+      "customer": "SYNTHETIC Customer 3",
+      "phone": "202-555-0100",
+      "phoneAction": "+12025550100",
+      "address": "102 Fictional Demo Lane (synthetic; do not navigate)",
+      "title": "Window replacement 3",
+      "workType": "windows",
+      "responsiblePm": "pm-01",
+      "lifecycle": "open",
+      "scope": "Replace windows; confirm access before arrival.",
+      "preparation": "Synthetic fixture. Bring the listed job supplies."
+    },
+    {
+      "id": "job-04",
+      "customer": "SYNTHETIC Customer 4",
+      "phone": "202-555-0100",
+      "phoneAction": "+12025550100",
+      "address": "103 Fictional Demo Lane (synthetic; do not navigate)",
+      "title": "Window replacement 4",
+      "workType": "windows",
+      "responsiblePm": "pm-02",
+      "lifecycle": "open",
+      "scope": "Replace windows; confirm access before arrival.",
+      "preparation": "Synthetic fixture. Bring the listed job supplies."
+    },
+    {
+      "id": "job-05",
+      "customer": "SYNTHETIC Customer 5",
+      "phone": "202-555-0100",
+      "phoneAction": "+12025550100",
+      "address": "104 Fictional Demo Lane (synthetic; do not navigate)",
+      "title": "Window replacement 5",
+      "workType": "windows",
+      "responsiblePm": "pm-01",
+      "lifecycle": "open",
+      "scope": "Replace windows; confirm access before arrival.",
+      "preparation": "Synthetic fixture. Bring the listed job supplies."
+    },
+    {
+      "id": "job-06",
+      "customer": "SYNTHETIC Customer 6",
+      "phone": "202-555-0100",
+      "phoneAction": "+12025550100",
+      "address": "105 Fictional Demo Lane (synthetic; do not navigate)",
+      "title": "Window replacement 6",
+      "workType": "windows",
+      "responsiblePm": "pm-02",
+      "lifecycle": "open",
+      "scope": "Replace windows; confirm access before arrival.",
+      "preparation": "Synthetic fixture. Bring the listed job supplies."
+    },
+    {
+      "id": "job-07",
+      "customer": "SYNTHETIC Customer 7",
+      "phone": "202-555-0100",
+      "phoneAction": "+12025550100",
+      "address": "106 Fictional Demo Lane (synthetic; do not navigate)",
+      "title": "Window replacement 7",
+      "workType": "windows",
+      "responsiblePm": "pm-01",
+      "lifecycle": "open",
+      "scope": "Replace windows; confirm access before arrival.",
+      "preparation": "Synthetic fixture. Bring the listed job supplies."
+    },
+    {
+      "id": "job-08",
+      "customer": "SYNTHETIC Customer 8",
+      "phone": "202-555-0100",
+      "phoneAction": "+12025550100",
+      "address": "107 Fictional Demo Lane (synthetic; do not navigate)",
+      "title": "Window replacement 8",
+      "workType": "windows",
+      "responsiblePm": "pm-02",
+      "lifecycle": "open",
+      "scope": "Replace windows; confirm access before arrival.",
+      "preparation": "Synthetic fixture. Bring the listed job supplies."
+    },
+    {
+      "id": "job-09",
+      "customer": "SYNTHETIC Customer 9",
+      "phone": "202-555-0100",
+      "phoneAction": "+12025550100",
+      "address": "108 Fictional Demo Lane (synthetic; do not navigate)",
+      "title": "Window replacement 9",
+      "workType": "windows",
+      "responsiblePm": "pm-01",
+      "lifecycle": "open",
+      "scope": "Replace windows; confirm access before arrival.",
+      "preparation": "Synthetic fixture. Bring the listed job supplies."
+    },
+    {
+      "id": "job-10",
+      "customer": "SYNTHETIC Customer 10",
+      "phone": "202-555-0100",
+      "phoneAction": "+12025550100",
+      "address": "109 Fictional Demo Lane (synthetic; do not navigate)",
+      "title": "Window replacement 10",
+      "workType": "windows",
+      "responsiblePm": "pm-02",
+      "lifecycle": "open",
+      "scope": "Replace windows; confirm access before arrival.",
+      "preparation": "Synthetic fixture. Bring the listed job supplies."
+    },
+    {
+      "id": "job-11",
+      "customer": "SYNTHETIC Customer 11",
+      "phone": "202-555-0100",
+      "phoneAction": "+12025550100",
+      "address": "110 Fictional Demo Lane (synthetic; do not navigate)",
+      "title": "House project 1",
+      "workType": "house",
+      "responsiblePm": "pm-01",
+      "lifecycle": "open",
+      "scope": "Addition work; separate framing and finish portions.",
+      "preparation": "Synthetic fixture. Bring the listed job supplies."
+    },
+    {
+      "id": "job-12",
+      "customer": "SYNTHETIC Customer 12",
+      "phone": "202-555-0100",
+      "phoneAction": "+12025550100",
+      "address": "111 Fictional Demo Lane (synthetic; do not navigate)",
+      "title": "House project 2",
+      "workType": "house",
+      "responsiblePm": "pm-02",
+      "lifecycle": "open",
+      "scope": "Addition work; separate framing and finish portions.",
+      "preparation": "Synthetic fixture. Bring the listed job supplies."
+    },
+    {
+      "id": "job-13",
+      "customer": "SYNTHETIC Customer 13",
+      "phone": "202-555-0100",
+      "phoneAction": "+12025550100",
+      "address": "112 Fictional Demo Lane (synthetic; do not navigate)",
+      "title": "House project 3",
+      "workType": "house",
+      "responsiblePm": "pm-01",
+      "lifecycle": "open",
+      "scope": "Addition work; separate framing and finish portions.",
+      "preparation": "Synthetic fixture. Bring the listed job supplies."
+    },
+    {
+      "id": "job-14",
+      "customer": "SYNTHETIC Customer 14",
+      "phone": "202-555-0100",
+      "phoneAction": "+12025550100",
+      "address": "113 Fictional Demo Lane (synthetic; do not navigate)",
+      "title": "House project 4",
+      "workType": "house",
+      "responsiblePm": "pm-02",
+      "lifecycle": "open",
+      "scope": "Addition work; separate framing and finish portions.",
+      "preparation": "Synthetic fixture. Bring the listed job supplies."
+    },
+    {
+      "id": "job-15",
+      "customer": "SYNTHETIC Customer 15",
+      "phone": "202-555-0100",
+      "phoneAction": "+12025550100",
+      "address": "114 Fictional Demo Lane (synthetic; do not navigate)",
+      "title": "House project 5",
+      "workType": "house",
+      "responsiblePm": "pm-01",
+      "lifecycle": "open",
+      "scope": "Addition work; separate framing and finish portions.",
+      "preparation": "Synthetic fixture. Bring the listed job supplies."
+    },
+    {
+      "id": "job-16",
+      "customer": "SYNTHETIC Customer 16",
+      "phone": "202-555-0100",
+      "phoneAction": "+12025550100",
+      "address": "115 Fictional Demo Lane (synthetic; do not navigate)",
+      "title": "House project 6",
+      "workType": "house",
+      "responsiblePm": "pm-02",
+      "lifecycle": "open",
+      "scope": "Addition work; separate framing and finish portions.",
+      "preparation": "Synthetic fixture. Bring the listed job supplies."
+    },
+    {
+      "id": "job-17",
+      "customer": "SYNTHETIC Customer 17",
+      "phone": "202-555-0100",
+      "phoneAction": "+12025550100",
+      "address": "116 Fictional Demo Lane (synthetic; do not navigate)",
+      "title": "House project 7",
+      "workType": "house",
+      "responsiblePm": "pm-01",
+      "lifecycle": "open",
+      "scope": "Addition work; separate framing and finish portions.",
+      "preparation": "Synthetic fixture. Bring the listed job supplies."
+    },
+    {
+      "id": "job-18",
+      "customer": "SYNTHETIC Customer 18",
+      "phone": "202-555-0100",
+      "phoneAction": "+12025550100",
+      "address": "117 Fictional Demo Lane (synthetic; do not navigate)",
+      "title": "House project 8",
+      "workType": "house",
+      "responsiblePm": "pm-02",
+      "lifecycle": "open",
+      "scope": "Addition work; separate framing and finish portions.",
+      "preparation": "Synthetic fixture. Bring the listed job supplies."
+    },
+    {
+      "id": "job-19",
+      "customer": "SYNTHETIC Customer 19",
+      "phone": "202-555-0100",
+      "phoneAction": "+12025550100",
+      "address": "118 Fictional Demo Lane (synthetic; do not navigate)",
+      "title": "House project 9",
+      "workType": "house",
+      "responsiblePm": "pm-01",
+      "lifecycle": "open",
+      "scope": "Addition work; separate framing and finish portions.",
+      "preparation": "Synthetic fixture. Bring the listed job supplies."
+    },
+    {
+      "id": "job-20",
+      "customer": "SYNTHETIC Customer 20",
+      "phone": "202-555-0100",
+      "phoneAction": "+12025550100",
+      "address": "119 Fictional Demo Lane (synthetic; do not navigate)",
+      "title": "House project 10",
+      "workType": "house",
+      "responsiblePm": "pm-02",
+      "lifecycle": "open",
+      "scope": "Addition work; separate framing and finish portions.",
+      "preparation": "Synthetic fixture. Bring the listed job supplies."
+    },
+    {
+      "id": "job-21",
+      "customer": "SYNTHETIC Customer 21",
+      "phone": "202-555-0100",
+      "phoneAction": "+12025550100",
+      "address": "120 Fictional Demo Lane (synthetic; do not navigate)",
+      "title": "House project 11",
+      "workType": "house",
+      "responsiblePm": "pm-01",
+      "lifecycle": "open",
+      "scope": "Addition work; separate framing and finish portions.",
+      "preparation": "Synthetic fixture. Bring the listed job supplies."
+    },
+    {
+      "id": "job-22",
+      "customer": "SYNTHETIC Customer 22",
+      "phone": "202-555-0100",
+      "phoneAction": "+12025550100",
+      "address": "121 Fictional Demo Lane (synthetic; do not navigate)",
+      "title": "House project 12",
+      "workType": "house",
+      "responsiblePm": "pm-02",
+      "lifecycle": "open",
+      "scope": "Addition work; separate framing and finish portions.",
+      "preparation": "Synthetic fixture. Bring the listed job supplies."
+    },
+    {
+      "id": "job-23",
+      "customer": "SYNTHETIC Customer 23",
+      "phone": "202-555-0100",
+      "phoneAction": "+12025550100",
+      "address": "122 Fictional Demo Lane (synthetic; do not navigate)",
+      "title": "House project 13",
+      "workType": "house",
+      "responsiblePm": "pm-01",
+      "lifecycle": "open",
+      "scope": "Addition work; separate framing and finish portions.",
+      "preparation": "Synthetic fixture. Bring the listed job supplies."
+    },
+    {
+      "id": "job-24",
+      "customer": "SYNTHETIC Customer 24",
+      "phone": "202-555-0100",
+      "phoneAction": "+12025550100",
+      "address": "123 Fictional Demo Lane (synthetic; do not navigate)",
+      "title": "House project 14",
+      "workType": "house",
+      "responsiblePm": "pm-02",
+      "lifecycle": "open",
+      "scope": "Addition work; separate framing and finish portions.",
+      "preparation": "Synthetic fixture. Bring the listed job supplies."
+    },
+    {
+      "id": "job-25",
+      "customer": "SYNTHETIC Customer 25",
+      "phone": "202-555-0100",
+      "phoneAction": "+12025550100",
+      "address": "124 Fictional Demo Lane (synthetic; do not navigate)",
+      "title": "House project 15",
+      "workType": "house",
+      "responsiblePm": "pm-01",
+      "lifecycle": "open",
+      "scope": "Addition work; separate framing and finish portions.",
+      "preparation": "Synthetic fixture. Bring the listed job supplies."
+    },
+    {
+      "id": "job-26",
+      "customer": "SYNTHETIC Customer 26",
+      "phone": "202-555-0100",
+      "phoneAction": "+12025550100",
+      "address": "125 Fictional Demo Lane (synthetic; do not navigate)",
+      "title": "House project 16",
+      "workType": "house",
+      "responsiblePm": "pm-02",
+      "lifecycle": "open",
+      "scope": "Addition work; separate framing and finish portions.",
+      "preparation": "Synthetic fixture. Bring the listed job supplies."
+    },
+    {
+      "id": "job-27",
+      "customer": "SYNTHETIC Customer 27",
+      "phone": "202-555-0100",
+      "phoneAction": "+12025550100",
+      "address": "126 Fictional Demo Lane (synthetic; do not navigate)",
+      "title": "House project 17",
+      "workType": "house",
+      "responsiblePm": "pm-01",
+      "lifecycle": "open",
+      "scope": "Addition work; separate framing and finish portions.",
+      "preparation": "Synthetic fixture. Bring the listed job supplies."
+    },
+    {
+      "id": "job-28",
+      "customer": "SYNTHETIC Customer 28",
+      "phone": "202-555-0100",
+      "phoneAction": "+12025550100",
+      "address": "127 Fictional Demo Lane (synthetic; do not navigate)",
+      "title": "House project 18",
+      "workType": "house",
+      "responsiblePm": "pm-02",
+      "lifecycle": "open",
+      "scope": "Addition work; separate framing and finish portions.",
+      "preparation": "Synthetic fixture. Bring the listed job supplies."
+    },
+    {
+      "id": "job-29",
+      "customer": "SYNTHETIC Customer 29",
+      "phone": "202-555-0100",
+      "phoneAction": "+12025550100",
+      "address": "128 Fictional Demo Lane (synthetic; do not navigate)",
+      "title": "House project 19",
+      "workType": "house",
+      "responsiblePm": "pm-01",
+      "lifecycle": "open",
+      "scope": "Addition work; separate framing and finish portions.",
+      "preparation": "Synthetic fixture. Bring the listed job supplies."
+    },
+    {
+      "id": "job-30",
+      "customer": "SYNTHETIC Customer 30",
+      "phone": "202-555-0100",
+      "phoneAction": "+12025550100",
+      "address": "129 Fictional Demo Lane (synthetic; do not navigate)",
+      "title": "House project 20",
+      "workType": "house",
+      "responsiblePm": "pm-02",
+      "lifecycle": "open",
+      "scope": "Addition work; separate framing and finish portions.",
+      "preparation": "Synthetic fixture. Bring the listed job supplies."
+    },
+    {
+      "id": "job-31",
+      "customer": "SYNTHETIC Customer 31",
+      "phone": "202-555-0100",
+      "phoneAction": "+12025550100",
+      "address": "130 Fictional Demo Lane (synthetic; do not navigate)",
+      "title": "House project 21",
+      "workType": "house",
+      "responsiblePm": "pm-01",
+      "lifecycle": "open",
+      "scope": "Addition work; separate framing and finish portions.",
+      "preparation": "Synthetic fixture. Bring the listed job supplies."
+    },
+    {
+      "id": "job-32",
+      "customer": "SYNTHETIC Customer 32",
+      "phone": "202-555-0100",
+      "phoneAction": "+12025550100",
+      "address": "131 Fictional Demo Lane (synthetic; do not navigate)",
+      "title": "House project 22",
+      "workType": "house",
+      "responsiblePm": "pm-02",
+      "lifecycle": "open",
+      "scope": "Addition work; separate framing and finish portions.",
+      "preparation": "Synthetic fixture. Bring the listed job supplies."
+    },
+    {
+      "id": "job-33",
+      "customer": "SYNTHETIC Customer 33",
+      "phone": "202-555-0100",
+      "phoneAction": "+12025550100",
+      "address": "132 Fictional Demo Lane (synthetic; do not navigate)",
+      "title": "House project 23",
+      "workType": "house",
+      "responsiblePm": "pm-01",
+      "lifecycle": "open",
+      "scope": "Addition work; separate framing and finish portions.",
+      "preparation": "Synthetic fixture. Bring the listed job supplies."
+    },
+    {
+      "id": "job-34",
+      "customer": "SYNTHETIC Customer 34",
+      "phone": "202-555-0100",
+      "phoneAction": "+12025550100",
+      "address": "133 Fictional Demo Lane (synthetic; do not navigate)",
+      "title": "House project 24",
+      "workType": "house",
+      "responsiblePm": "pm-02",
+      "lifecycle": "open",
+      "scope": "Addition work; separate framing and finish portions.",
+      "preparation": "Synthetic fixture. Bring the listed job supplies."
+    },
+    {
+      "id": "job-35",
+      "customer": "SYNTHETIC Customer 35",
+      "phone": "202-555-0100",
+      "phoneAction": "+12025550100",
+      "address": "134 Fictional Demo Lane (synthetic; do not navigate)",
+      "title": "House project 25",
+      "workType": "house",
+      "responsiblePm": "pm-01",
+      "lifecycle": "open",
+      "scope": "Addition work; separate framing and finish portions.",
+      "preparation": "Synthetic fixture. Bring the listed job supplies."
+    },
+    {
+      "id": "job-36",
+      "customer": "SYNTHETIC Customer 36",
+      "phone": "202-555-0100",
+      "phoneAction": "+12025550100",
+      "address": "135 Fictional Demo Lane (synthetic; do not navigate)",
+      "title": "House project 26",
+      "workType": "house",
+      "responsiblePm": "pm-02",
+      "lifecycle": "open",
+      "scope": "Addition work; separate framing and finish portions.",
+      "preparation": "Synthetic fixture. Bring the listed job supplies."
+    },
+    {
+      "id": "job-37",
+      "customer": "SYNTHETIC Customer 37",
+      "phone": "202-555-0100",
+      "phoneAction": "+12025550100",
+      "address": "136 Fictional Demo Lane (synthetic; do not navigate)",
+      "title": "House project 27",
+      "workType": "house",
+      "responsiblePm": "pm-01",
+      "lifecycle": "open",
+      "scope": "Addition work; separate framing and finish portions.",
+      "preparation": "Synthetic fixture. Bring the listed job supplies."
+    },
+    {
+      "id": "job-38",
+      "customer": "SYNTHETIC Customer 38",
+      "phone": "202-555-0100",
+      "phoneAction": "+12025550100",
+      "address": "137 Fictional Demo Lane (synthetic; do not navigate)",
+      "title": "House project 28",
+      "workType": "house",
+      "responsiblePm": "pm-02",
+      "lifecycle": "open",
+      "scope": "Addition work; separate framing and finish portions.",
+      "preparation": "Synthetic fixture. Bring the listed job supplies."
+    },
+    {
+      "id": "job-39",
+      "customer": "SYNTHETIC Customer 39",
+      "phone": "202-555-0100",
+      "phoneAction": "+12025550100",
+      "address": "138 Fictional Demo Lane (synthetic; do not navigate)",
+      "title": "House project 29",
+      "workType": "house",
+      "responsiblePm": "pm-01",
+      "lifecycle": "open",
+      "scope": "Addition work; separate framing and finish portions.",
+      "preparation": "Synthetic fixture. Bring the listed job supplies."
+    },
+    {
+      "id": "job-40",
+      "customer": "SYNTHETIC Customer 40",
+      "phone": "202-555-0100",
+      "phoneAction": "+12025550100",
+      "address": "139 Fictional Demo Lane (synthetic; do not navigate)",
+      "title": "House project 30",
+      "workType": "house",
+      "responsiblePm": "pm-02",
+      "lifecycle": "open",
+      "scope": "Addition work; separate framing and finish portions.",
+      "preparation": "Synthetic fixture. Bring the listed job supplies."
+    }
+  ],
+  "work": [
+    {
+      "id": "work-01",
+      "jobId": "job-01",
+      "description": "Window replacement",
+      "leadId": "lead-01",
+      "readiness": "ready",
+      "waitDate": null,
+      "completion": "open",
+      "remainingNote": ""
+    },
+    {
+      "id": "work-02",
+      "jobId": "job-02",
+      "description": "Window replacement",
+      "leadId": "lead-01",
+      "readiness": "ready",
+      "waitDate": null,
+      "completion": "open",
+      "remainingNote": ""
+    },
+    {
+      "id": "work-03",
+      "jobId": "job-03",
+      "description": "Window replacement",
+      "leadId": "lead-01",
+      "readiness": "waiting_unknown",
+      "waitDate": null,
+      "completion": "open",
+      "remainingNote": ""
+    },
+    {
+      "id": "work-04",
+      "jobId": "job-04",
+      "description": "Window replacement",
+      "leadId": "lead-01",
+      "readiness": "waiting_date",
+      "waitDate": "2027-03-09",
+      "completion": "open",
+      "remainingNote": ""
+    },
+    {
+      "id": "work-05",
+      "jobId": "job-05",
+      "description": "Window replacement",
+      "leadId": "lead-01",
+      "readiness": "ready",
+      "waitDate": null,
+      "completion": "open",
+      "remainingNote": ""
+    },
+    {
+      "id": "work-06",
+      "jobId": "job-06",
+      "description": "Window replacement",
+      "leadId": "lead-01",
+      "readiness": "ready",
+      "waitDate": null,
+      "completion": "open",
+      "remainingNote": ""
+    },
+    {
+      "id": "work-07",
+      "jobId": "job-07",
+      "description": "Window replacement",
+      "leadId": "lead-01",
+      "readiness": "ready",
+      "waitDate": null,
+      "completion": "open",
+      "remainingNote": ""
+    },
+    {
+      "id": "work-08",
+      "jobId": "job-08",
+      "description": "Window replacement",
+      "leadId": "lead-01",
+      "readiness": "ready",
+      "waitDate": null,
+      "completion": "open",
+      "remainingNote": ""
+    },
+    {
+      "id": "work-09",
+      "jobId": "job-09",
+      "description": "Window replacement",
+      "leadId": "lead-01",
+      "readiness": "ready",
+      "waitDate": null,
+      "completion": "open",
+      "remainingNote": ""
+    },
+    {
+      "id": "work-10",
+      "jobId": "job-10",
+      "description": "Window replacement",
+      "leadId": "lead-01",
+      "readiness": "ready",
+      "waitDate": null,
+      "completion": "open",
+      "remainingNote": ""
+    },
+    {
+      "id": "work-11",
+      "jobId": "job-11",
+      "description": "Framing",
+      "leadId": "lead-01",
+      "readiness": "ready",
+      "waitDate": null,
+      "completion": "open",
+      "remainingNote": ""
+    },
+    {
+      "id": "work-12",
+      "jobId": "job-12",
+      "description": "Framing",
+      "leadId": "lead-02",
+      "readiness": "ready",
+      "waitDate": null,
+      "completion": "open",
+      "remainingNote": ""
+    },
+    {
+      "id": "work-13",
+      "jobId": "job-13",
+      "description": "Framing",
+      "leadId": "lead-03",
+      "readiness": "ready",
+      "waitDate": null,
+      "completion": "open",
+      "remainingNote": ""
+    },
+    {
+      "id": "work-14",
+      "jobId": "job-14",
+      "description": "Framing",
+      "leadId": "lead-04",
+      "readiness": "ready",
+      "waitDate": null,
+      "completion": "open",
+      "remainingNote": ""
+    },
+    {
+      "id": "work-15",
+      "jobId": "job-15",
+      "description": "Framing",
+      "leadId": "lead-05",
+      "readiness": "ready",
+      "waitDate": null,
+      "completion": "open",
+      "remainingNote": ""
+    },
+    {
+      "id": "work-16",
+      "jobId": "job-16",
+      "description": "Framing",
+      "leadId": "lead-06",
+      "readiness": "ready",
+      "waitDate": null,
+      "completion": "open",
+      "remainingNote": ""
+    },
+    {
+      "id": "work-17",
+      "jobId": "job-17",
+      "description": "Framing",
+      "leadId": "lead-07",
+      "readiness": "ready",
+      "waitDate": null,
+      "completion": "open",
+      "remainingNote": ""
+    },
+    {
+      "id": "work-18",
+      "jobId": "job-18",
+      "description": "Framing",
+      "leadId": "lead-08",
+      "readiness": "ready",
+      "waitDate": null,
+      "completion": "open",
+      "remainingNote": ""
+    },
+    {
+      "id": "work-19",
+      "jobId": "job-19",
+      "description": "Framing",
+      "leadId": "lead-09",
+      "readiness": "ready",
+      "waitDate": null,
+      "completion": "open",
+      "remainingNote": ""
+    },
+    {
+      "id": "work-20",
+      "jobId": "job-20",
+      "description": "Framing",
+      "leadId": "lead-10",
+      "readiness": "ready",
+      "waitDate": null,
+      "completion": "open",
+      "remainingNote": ""
+    },
+    {
+      "id": "work-21",
+      "jobId": "job-21",
+      "description": "Framing",
+      "leadId": "lead-11",
+      "readiness": "ready",
+      "waitDate": null,
+      "completion": "open",
+      "remainingNote": ""
+    },
+    {
+      "id": "work-22",
+      "jobId": "job-22",
+      "description": "Framing",
+      "leadId": "lead-12",
+      "readiness": "ready",
+      "waitDate": null,
+      "completion": "open",
+      "remainingNote": ""
+    },
+    {
+      "id": "work-23",
+      "jobId": "job-23",
+      "description": "Framing",
+      "leadId": "lead-13",
+      "readiness": "ready",
+      "waitDate": null,
+      "completion": "open",
+      "remainingNote": ""
+    },
+    {
+      "id": "work-24",
+      "jobId": "job-24",
+      "description": "Framing",
+      "leadId": "lead-14",
+      "readiness": "ready",
+      "waitDate": null,
+      "completion": "open",
+      "remainingNote": ""
+    },
+    {
+      "id": "work-25",
+      "jobId": "job-25",
+      "description": "Framing",
+      "leadId": "lead-15",
+      "readiness": "ready",
+      "waitDate": null,
+      "completion": "open",
+      "remainingNote": ""
+    },
+    {
+      "id": "work-26",
+      "jobId": "job-26",
+      "description": "Framing",
+      "leadId": "lead-16",
+      "readiness": "ready",
+      "waitDate": null,
+      "completion": "open",
+      "remainingNote": ""
+    },
+    {
+      "id": "work-27",
+      "jobId": "job-27",
+      "description": "Framing",
+      "leadId": "lead-17",
+      "readiness": "ready",
+      "waitDate": null,
+      "completion": "open",
+      "remainingNote": ""
+    },
+    {
+      "id": "work-28",
+      "jobId": "job-28",
+      "description": "Framing",
+      "leadId": "lead-18",
+      "readiness": "ready",
+      "waitDate": null,
+      "completion": "open",
+      "remainingNote": ""
+    },
+    {
+      "id": "work-29",
+      "jobId": "job-29",
+      "description": "Framing",
+      "leadId": "lead-19",
+      "readiness": "ready",
+      "waitDate": null,
+      "completion": "open",
+      "remainingNote": ""
+    },
+    {
+      "id": "work-30",
+      "jobId": "job-30",
+      "description": "Framing",
+      "leadId": "lead-20",
+      "readiness": "ready",
+      "waitDate": null,
+      "completion": "open",
+      "remainingNote": ""
+    },
+    {
+      "id": "work-31",
+      "jobId": "job-31",
+      "description": "Framing",
+      "leadId": "lead-01",
+      "readiness": "ready",
+      "waitDate": null,
+      "completion": "open",
+      "remainingNote": ""
+    },
+    {
+      "id": "work-32",
+      "jobId": "job-32",
+      "description": "Framing",
+      "leadId": "lead-02",
+      "readiness": "ready",
+      "waitDate": null,
+      "completion": "open",
+      "remainingNote": ""
+    },
+    {
+      "id": "work-33",
+      "jobId": "job-33",
+      "description": "Framing",
+      "leadId": "lead-03",
+      "readiness": "ready",
+      "waitDate": null,
+      "completion": "open",
+      "remainingNote": ""
+    },
+    {
+      "id": "work-34",
+      "jobId": "job-34",
+      "description": "Framing",
+      "leadId": "lead-04",
+      "readiness": "ready",
+      "waitDate": null,
+      "completion": "open",
+      "remainingNote": ""
+    },
+    {
+      "id": "work-35",
+      "jobId": "job-35",
+      "description": "Framing",
+      "leadId": "lead-05",
+      "readiness": "ready",
+      "waitDate": null,
+      "completion": "open",
+      "remainingNote": ""
+    },
+    {
+      "id": "work-36",
+      "jobId": "job-36",
+      "description": "Framing",
+      "leadId": "lead-06",
+      "readiness": "ready",
+      "waitDate": null,
+      "completion": "open",
+      "remainingNote": ""
+    },
+    {
+      "id": "work-37",
+      "jobId": "job-37",
+      "description": "Framing",
+      "leadId": "lead-07",
+      "readiness": "ready",
+      "waitDate": null,
+      "completion": "open",
+      "remainingNote": ""
+    },
+    {
+      "id": "work-38",
+      "jobId": "job-38",
+      "description": "Framing",
+      "leadId": "lead-08",
+      "readiness": "ready",
+      "waitDate": null,
+      "completion": "open",
+      "remainingNote": ""
+    },
+    {
+      "id": "work-39",
+      "jobId": "job-39",
+      "description": "Framing",
+      "leadId": "lead-09",
+      "readiness": "ready",
+      "waitDate": null,
+      "completion": "open",
+      "remainingNote": ""
+    },
+    {
+      "id": "work-40",
+      "jobId": "job-40",
+      "description": "Framing",
+      "leadId": "lead-10",
+      "readiness": "ready",
+      "waitDate": null,
+      "completion": "open",
+      "remainingNote": ""
+    },
+    {
+      "id": "work-finish",
+      "jobId": "job-11",
+      "description": "Cabinet installation",
+      "leadId": "lead-02",
+      "readiness": "waiting_date",
+      "waitDate": "2027-03-09",
+      "completion": "open",
+      "remainingNote": "Cabinets expected in about 20 weeks; not confirmed delivered."
+    }
+  ],
+  "visits": [
+    {
+      "id": "visit-01",
+      "workId": "work-01",
+      "startDate": "2026-10-20",
+      "endDate": "2026-10-20",
+      "slot": "all_day",
+      "status": "planned",
+      "certainty": "confirmed",
+      "requiredHelpers": 1,
+      "participants": [
+        {
+          "userId": "lead-01",
+          "role": "leading"
+        },
+        {
+          "userId": "helper-01",
+          "role": "helping"
+        }
+      ]
+    },
+    {
+      "id": "visit-02",
+      "workId": "work-02",
+      "startDate": "2026-10-21",
+      "endDate": "2026-10-21",
+      "slot": "morning",
+      "status": "planned",
+      "certainty": "tentative",
+      "requiredHelpers": 1,
+      "participants": [
+        {
+          "userId": "lead-01",
+          "role": "leading"
+        }
+      ]
+    },
+    {
+      "id": "visit-03",
+      "workId": "work-11",
+      "startDate": "2026-10-22",
+      "endDate": "2026-10-22",
+      "slot": "all_day",
+      "status": "planned",
+      "certainty": "confirmed",
+      "requiredHelpers": 1,
+      "participants": [
+        {
+          "userId": "lead-01",
+          "role": "leading"
+        },
+        {
+          "userId": "lead-02",
+          "role": "helping"
+        }
+      ]
+    },
+    {
+      "id": "visit-04",
+      "workId": "work-finish",
+      "startDate": "2027-03-10",
+      "endDate": "2027-03-10",
+      "slot": "all_day",
+      "status": "planned",
+      "certainty": "tentative",
+      "requiredHelpers": 0,
+      "participants": [
+        {
+          "userId": "lead-02",
+          "role": "leading"
+        }
+      ]
+    }
+  ],
+  "commitments": [
+    {
+      "id": "sub-01",
+      "jobId": "job-11",
+      "trade": "Demo Electrician",
+      "startDate": "2026-10-23",
+      "endDate": "2026-10-23",
+      "time": null,
+      "certainty": "confirmed",
+      "needsAttendance": false,
+      "note": "Time not set; does not reserve internal staff."
+    }
+  ],
+  "queues": [
+    {
+      "leadId": "lead-01",
+      "workIds": [
+        "work-01",
+        "work-02",
+        "work-03",
+        "work-04",
+        "work-05",
+        "work-06",
+        "work-07",
+        "work-08",
+        "work-09",
+        "work-10",
+        "work-11",
+        "work-31"
+      ]
+    },
+    {
+      "leadId": "lead-02",
+      "workIds": [
+        "work-12",
+        "work-32",
+        "work-finish"
+      ]
+    },
+    {
+      "leadId": "lead-03",
+      "workIds": [
+        "work-13",
+        "work-33"
+      ]
+    },
+    {
+      "leadId": "lead-04",
+      "workIds": [
+        "work-14",
+        "work-34"
+      ]
+    },
+    {
+      "leadId": "lead-05",
+      "workIds": [
+        "work-15",
+        "work-35"
+      ]
+    },
+    {
+      "leadId": "lead-06",
+      "workIds": [
+        "work-16",
+        "work-36"
+      ]
+    },
+    {
+      "leadId": "lead-07",
+      "workIds": [
+        "work-17",
+        "work-37"
+      ]
+    },
+    {
+      "leadId": "lead-08",
+      "workIds": [
+        "work-18",
+        "work-38"
+      ]
+    },
+    {
+      "leadId": "lead-09",
+      "workIds": [
+        "work-19",
+        "work-39"
+      ]
+    },
+    {
+      "leadId": "lead-10",
+      "workIds": [
+        "work-20",
+        "work-40"
+      ]
+    },
+    {
+      "leadId": "lead-11",
+      "workIds": [
+        "work-21"
+      ]
+    },
+    {
+      "leadId": "lead-12",
+      "workIds": [
+        "work-22"
+      ]
+    },
+    {
+      "leadId": "lead-13",
+      "workIds": [
+        "work-23"
+      ]
+    },
+    {
+      "leadId": "lead-14",
+      "workIds": [
+        "work-24"
+      ]
+    },
+    {
+      "leadId": "lead-15",
+      "workIds": [
+        "work-25"
+      ]
+    },
+    {
+      "leadId": "lead-16",
+      "workIds": [
+        "work-26"
+      ]
+    },
+    {
+      "leadId": "lead-17",
+      "workIds": [
+        "work-27"
+      ]
+    },
+    {
+      "leadId": "lead-18",
+      "workIds": [
+        "work-28"
+      ]
+    },
+    {
+      "leadId": "lead-19",
+      "workIds": [
+        "work-29"
+      ]
+    },
+    {
+      "leadId": "lead-20",
+      "workIds": [
+        "work-30"
+      ]
+    }
+  ]
+}

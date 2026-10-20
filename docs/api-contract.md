@@ -1,0 +1,33 @@
+# Initial backend contract
+
+State: importable TypeScript modules and passing isolated request tests. No HTTP backend is running or deployed. No browser UI is connected, no employee account exists, and no SQL migration has been applied.
+
+`src/server/jobs-handler.ts` exports a Request/Response handler for the future Next.js route. It requires Supabase configuration and an employee Bearer token. Tests inject a fake network transport; application code has no synthetic-user bypass.
+
+| Request | Enforcement |
+| --- | --- |
+| GET jobs, no scope | Active employee; PM filters responsible_pm=self; lead/helper rely on database RLS |
+| GET jobs, scope=all | Active PM only; deterministic created/id order, 50 rows/page |
+| POST jobs | Active PM; JSON max 8192 bytes; only requestId/customer/phone/address; one create_job RPC |
+| No token | 401 before transport |
+| Valid Auth token without active app profile | 403; cached role claims are insufficient |
+| Unsupported method | 405; PATCH/DELETE not exposed |
+
+Retain the form's request UUID after uncertain failure and resend unchanged. SQL create_job locks actor/request and creates job + work + audit + retry record atomically; changed payload with reused key conflicts. Runtime/concurrency proof still requires PostgreSQL tests.
+
+`password-auth.ts` delegates password/refresh to Supabase Auth, then validates live membership. No public signup, Google route, password storage or admin secret. Session persistence, logout, recovery, invitation acceptance, user administration and real Auth tests remain required.
+
+`supabase.ts` uses employee token and public key, rejects administrative keys/insecure remote origins, disables caching and returns controlled errors. No tokens or raw SQL details are logged.
+
+Phone input proposal: formatted ten-digit US numbers, optional +1; readable input retained. International numbers/extensions are not implemented. No contacts/files endpoints exist. Private job entitlements must be maintained from actual visit participants in Phase 2; they never reserve staff.
+
+References reviewed 2026-10-20:
+
+- https://supabase.com/docs/guides/database/postgres/row-level-security
+- https://supabase.com/docs/guides/database/functions
+- https://supabase.com/docs/guides/storage/security/access-control
+- https://supabase.com/docs/reference/javascript/auth-getuser
+- https://supabase.com/docs/reference/javascript/auth-signinwithpassword
+- https://github.com/supabase/auth/blob/master/openapi.yaml
+
+Next.js/SDK installation is blocked by registry DNS; no dependency versions or lockfile have been invented. Preserve these modules when adding the framework.
