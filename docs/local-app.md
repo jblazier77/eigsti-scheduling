@@ -43,4 +43,16 @@ The job form uses controlled fields and one request UUID per form. An uncertain 
 
 ## Next action
 
-Editing browser checks and full production build (user PowerShell, 2026-10-21) are complete. Save a new Git checkpoint through normal PowerShell; agent Git writes are still restricted. Additional job contacts follow. No paid provisioning or production deployment.
+Editing browser checks and full production build (user PowerShell, 2026-10-21) are complete and uploaded as 018a1d2. Additional job contacts are implemented locally and await migration 0002, its SQL suite, full normal-user build and browser acceptance. No paid provisioning or production deployment.
+
+## Additional contacts workflow
+
+On a job, the existing customer contact remains separate. The Additional job contacts section can contain a spouse, site contact or subcontractor for that specific job. PMs see Add contact/Edit; authorized leads/helpers see read-only details and call/text/email links. This does not connect to Google or send any automatic messages. A company-wide trade directory and subcontractor visits are future phases.
+
+Only the contact name is required. Other fields are relationship/trade, phone, email and shared notes. Use synthetic details only in test. Creation retains one request UUID and locks values after an uncertain save so retry cannot duplicate the contact. Edits send only fields changed from the original form. Failed saves retain values, cancel confirms discarding edits, and removal requires an explicit confirmation panel and archives the row/history. Up to 100 active contacts per job.
+
+Verification prepared: 31 Node tests pass and TypeScript passes. Contact SQL and browser tests are not yet run. Full production build must run in normal user PowerShell; the agent is not retrying the known Windows/OneDrive cleanup failure that previously triggered sync-deletion prompts.
+
+Subsequent verification: migration 0002 applied successfully in test and its 60 checks passed (user reported); initial contacts full build passed. User browser confirmed add/refresh, clear notes, phone validation and cancel. A removal navigation bug was found: revalidating the archived edit page before a client effect navigated could show Job unavailable. Archive now redirects directly from the Server Action, with its own action state to preserve framework navigation. Three regression checks added; all 34 Node tests and TypeScript pass. Removal browser retry, helper contact route checks and a full build after this fix remain pending.
+
+Apply 0002 through a new test-project SQL query, run the 60-check contact SQL suite, run `npm.cmd run build`, then start dev. As Josh: add a synthetic spouse/contact, save/refresh, edit/clear optional values, cancel and reject invalid phone; remove and confirm disappearance. Verify helper management routes are blocked and unassigned contact reads remain hidden. Assigned-helper reads are covered by prepared SQL fixtures, not a live staffing UI. Save the checkpoint after verified checks; agent Git writes remain restricted.

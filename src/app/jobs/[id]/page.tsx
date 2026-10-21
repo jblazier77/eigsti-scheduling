@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import { requireSession } from '../../../lib/session';
 import { uuidPattern } from '../../../domain/jobs.ts';
 import { Shell } from '../../components/shell';
+import { JobContacts } from '../../components/job-contacts';
 
 export const dynamic = 'force-dynamic';
 export default async function JobDetail({ params }: { params: Promise<{ id: string }> }) {
@@ -20,5 +21,6 @@ export default async function JobDetail({ params }: { params: Promise<{ id: stri
     <div className="card"><h3>Customer contact</h3><p>{job.customer_name}<br /><span className="muted">{job.phone}</span></p><div className="two-actions"><a className="button primary" href={'tel:' + job.phone_action}>Call customer</a><a className="button" href={'sms:' + job.phone_action}>Text customer</a></div></div>
     <div className="card"><h3>Scope</h3><p className="preserve-lines">{job.scope || 'No scope added yet.'}</p></div>
     {job.access_notes && <div className="card"><h3>Access and preparation</h3><p className="preserve-lines">{job.access_notes}</p></div>}
+    <JobContacts jobId={id} isPm={actor.roles.includes('pm')} gateway={gateway} />
   </Shell>;
 }

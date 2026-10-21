@@ -34,4 +34,6 @@ All entries dated 2026-10-20.
 
 | D23 | Verified checkpoint 2026-10-21 | PM editing browser checks passed: save/refresh, clear optional notes, cancel, invalid-phone validation, helper edit-route denial and preservation of a newer phone edit by a stale scope-only form. Full production build then passed in normal user PowerShell including the edit route. These supersede D22 pending checks; simultaneous multi-connection/fault tests remain separate. Editing checkpoint ready to commit/push |
 
+| D24 | Implementation checkpoint 2026-10-21 | PM editing uploaded as 018a1d2. Additional job contacts now prepared locally: customer-side or trade contact details tied to a single job; existing customer contact retained. PM-only create/edit/archive, assigned operational readers, optional phone/email/relationship/notes, narrow patches, audited soft removal and retry-safe creation. 100 active contacts/job bounds list size and is checked under job-row lock. Global trade directory and subcontractor commitments remain separate scope. 31 Node checks/TypeScript pass; migration 0002, 60 SQL assertions, full build and browser checks await user-run setup. No new charges or Google integration |
+
 No proposal above authorizes new charges. No substantial product decisions have been reopened.

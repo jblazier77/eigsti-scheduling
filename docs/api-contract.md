@@ -23,7 +23,18 @@ Retain the form's request UUID after uncertain failure and resend unchanged. SQL
 
 `supabase.ts` uses employee token and public key, rejects administrative keys/insecure remote origins, disables caching and returns controlled errors. No tokens or raw SQL details are logged.
 
-Phone input proposal: formatted ten-digit US numbers, optional +1; readable input retained. International numbers/extensions are not implemented. No contacts/files endpoints exist. Private job entitlements must be maintained from actual visit participants in Phase 2; they never reserve staff.
+Phone input proposal: formatted ten-digit US numbers, optional +1; readable input retained. International numbers/extensions are not implemented. Private job entitlements must be maintained from actual visit participants in Phase 2; they never reserve staff.
+
+## Additional job contacts (migration 0002 pending)
+
+Cookie-authenticated Server Actions add/edit/archive contacts with independent live membership and PM checks. No application REST contact endpoint or administrative key is introduced. Direct employee-token SELECT on `job_contacts` follows `private.can_read_job(job_id)` and excludes archived rows. The client filters the parent job plus contact ID; SQL mutations match both IDs and refuse cross-job spoofing. Authenticated users have SELECT only; all raw writes are denied.
+
+- Create RPC: `create_job_contact(p_job_id,p_request_id,p_values)`. Values have name/relationship/phone/email/notes string keys; the UI supplies empty strings for optional fields. Same actor/request/payload returns the original ID without a second contact or audit. A changed job/payload conflicts. A replay never restores an archived contact.
+- Update RPC: `update_job_contact(p_job_id,p_contact_id,p_patch)`. Only changed allowed text fields; empty optional fields clear values, empty name is invalid. Phone actions are recomputed or cleared atomically. Updates have last-save-wins semantics for submitted fields and do not deduplicate audit events.
+- Removal RPC: `archive_job_contact(p_job_id,p_contact_id)`. PM-only soft archive; repeat is safe and does not duplicate archive history. No public restore/delete command.
+- Name max 100, relationship/trade max 100, phone max 40 with optional ten-digit US format/+1, email max 254, notes max 1000 with multiline text. Only name is required in the UI. Maximum 100 active contacts per job; create checks the count while holding the parent job lock.
+
+Each successful mutation audits the real employee and identifies the contact without copying contact values into the audit event. Before 0002 is applied, a missing-table/schema-cache result shows an unavailable contact section and preserves the rest of the job page. Other failures propagate normally. The company trade directory, subcontractor commitments and files are separate future work. Six Node checks cover validation, role boundaries, scoped transport, narrow patching and interrupted/missing-schema behavior; SQL execution and browser acceptance remain pending.
 
 References reviewed 2026-10-20:
 

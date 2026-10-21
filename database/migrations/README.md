@@ -5,3 +5,13 @@
 Run `database/tests/` against an isolated Supabase instance before use. Node request tests do not prove SQL correctness or database authorization. Next: apply from empty, run all pgTAP and multi-connection tests, repeat clean setup; then add contacts/private files, account provisioning and the Next.js interface. Visit/staffing tables belong to Phase 2. Every migration must include its access boundary.
 
 Apply identical ordered migrations in isolated test and production. Do not manually patch the production schema. Seed production with configuration only; demo records belong exclusively to local/test. Recovery and backward compatibility are separate from migration execution.
+
+## 0002: additional job contacts (applied in test)
+
+On 2026-10-21 the user reported successful application in the isolated test project, then 60 checks with no failures from the contact SQL suite. Full contacts production build also passed in normal user PowerShell. Browser verification remains pending. The setup instructions below are a reference for a fresh environment; do not rerun this applied migration on the same project. Further functional database changes require a new migration.
+
+Apply `0002_job_contacts.sql` once, after 0001, through a new SQL Editor query in test project `vglhojtrccygjgupxsrd`. It runs in a transaction and adds no seed data or account changes. SHA-256 at preparation: `84a57017a9ec4ba63ee3d100f0fbe6c0550c683d85ef003f7058ee23e7998c6d`.
+
+Adds `job_contacts` with job-based read RLS, authenticated SELECT only, and PM-only create/update/archive RPCs. Names are required; relationship/trade, US phone, email and shared notes are optional. Independent SQL validation, parent job/contact matching, audit events, narrow patches and creation retry deduplication are enforced. Removal archives without erasing history; replaying an old create does not restore a removed contact. Maximum 100 active contacts per job, enforced under a parent-row lock; the read client loads all 100. This is job-local contact information, including customer-side or trade contacts, not the company trade directory or subcontractor schedule.
+
+After success, run `database/tests/0002_job_contacts.test.sql` (60 assertions, all fixtures rolled back). Neither this migration nor its SQL tests have been run by the agent. Do not rerun 0001 on the existing project. Do not drop tables as a retry strategy; inspect any SQL error first.

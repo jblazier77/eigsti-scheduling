@@ -14,3 +14,11 @@ When a synthetic-only Supabase test instance is available:
 Account provisioning is deliberately not public: no user signup/role promotion RPC exists. Initial company admin/PM app profiles must be provisioned through an authorized technical process, then the phone invite/user administration flow can be implemented with separate administrative secrets kept server-side. Database Auth rows in this test are fixtures only, not usable employee accounts.
 
 Helper `private.job_access` records are information-access entitlements, not staff reservations. Phase 2 must derive and revoke these from real visit participants transactionally before helper schedules are enabled. No UI may grant broad access just because a helper has free time.
+
+## Contact suite (60 checks passed in test, user reported)
+
+On 2026-10-21, after migration 0002 succeeded, the user ran this suite in Supabase SQL Editor and reported 60 checks, no failures. This is user-reported cloud database evidence, not a local agent SQL execution. Actual contact browser verification remains pending.
+
+After migration 0002 succeeds, run `0002_job_contacts.test.sql` in a separate SQL Editor query. It has 60 pgTAP assertions and an end guard that rejects missing or failed assertions. It creates only reserved-domain synthetic identities and rolls back the entire fixture, leaving the actual Josh/helper accounts and saved test job unchanged.
+
+Covers assigned helper/lead contact reads; unrelated, closed-job, revoked, inactive, uninvited, admin-only and anonymous denial; raw-write restrictions; PM cross-job commands; creation replay/collision; input validation; forged job/contact relationships and actor fields; narrow patches; clearing optional values; archive persistence/replay; old-create replay after archive; live deactivation; 100-contact limit and atomic rejection. Node transport tests do not establish these SQL results. Multi-connection retry/limit tests, full clean setup and actual app/REST contact checks remain separate.

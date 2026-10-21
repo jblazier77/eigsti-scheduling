@@ -1,6 +1,7 @@
 import { AppError, type Actor, type AccountRole } from '../domain/access.ts';
 import type { JobsGateway, JobSummary, ValidJobInput } from '../domain/jobs.ts';
 import type { JobPatch } from '../domain/job-edits.ts';
+import type { ContactPatch, ContactValues, JobContact } from '../domain/contacts.ts';
 
 export type SupabaseConfig = { url: string; publishableKey: string; environment: 'development' | 'test' | 'production' };
 export type JobDetail = JobSummary & { scope: string; access_notes: string };
@@ -42,6 +43,7 @@ export class SupabaseSession implements JobsGateway {
       if (response.status === 403) throw new AppError('not_allowed', 403, 'You do not have access to this action.');
       const detail = await response.json().catch(() => null);
       const code = detail?.code;
+      if (code === 'PGRST205' || code === 'PGRST202' || code === '42P01') throw new AppError('schema_pending', 503, 'Additional contacts are temporarily unavailable. Please try again later.');
       if (code === '42501') throw new AppError('not_allowed', 403, 'You do not have access to this action.');
       if (code === '22023') throw new AppError('invalid_input', 400, 'Check the job details.');
       if (code === '23505') throw new AppError('request_conflict', 409, 'This request was already used with different details.');
@@ -81,5 +83,28 @@ export class SupabaseSession implements JobsGateway {
 
   async updateJob(id: string, patch: JobPatch): Promise<JobDetail> {
     return this.request('/rest/v1/rpc/update_job', { method: 'POST', body: JSON.stringify({ p_job_id: id, p_patch: patch }) });
+  }
+
+  async listContacts(jobId: string): Promise<JobContact[]> {
+    const params = new URLSearchParams({ select: 'id,job_id,name,relationship,phone,phone_action,email,notes', job_id: 'eq.' + jobId, archived_at: 'is.null', order: 'created_at.asc,id.asc', limit: '100' });
+    return this.request('/rest/v1/job_contacts?' + params);
+  }
+
+  async getContact(jobId: string, contactId: string): Promise<JobContact | null> {
+    const params = new URLSearchParams({ select: 'id,job_id,name,relationship,phone,phone_action,email,notes', job_id: 'eq.' + jobId, id: 'eq.' + contactId, archived_at: 'is.null', limit: '1' });
+    const rows = await this.request('/rest/v1/job_contacts?' + params);
+    return rows[0] ?? null;
+  }
+
+  async createContact(jobId: string, requestId: string, values: ContactValues): Promise<{ id: string }> {
+    return this.request('/rest/v1/rpc/create_job_contact', { method: 'POST', body: JSON.stringify({ p_job_id: jobId, p_request_id: requestId, p_values: values }) });
+  }
+
+  async updateContact(jobId: string, contactId: string, patch: ContactPatch): Promise<{ id: string }> {
+    return this.request('/rest/v1/rpc/update_job_contact', { method: 'POST', body: JSON.stringify({ p_job_id: jobId, p_contact_id: contactId, p_patch: patch }) });
+  }
+
+  async archiveContact(jobId: string, contactId: string): Promise<{ id: string }> {
+    return this.request('/rest/v1/rpc/archive_job_contact', { method: 'POST', body: JSON.stringify({ p_job_id: jobId, p_contact_id: contactId }) });
   }
 }
