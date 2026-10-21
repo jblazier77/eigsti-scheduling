@@ -16,6 +16,7 @@ Agreed role responsibilities come from the handoff. Detailed resource boundaries
 | Reorder lead queue | With PM/lead role | Any lead | Own queue | No |
 | Add/update sub commitments | With PM/lead role | All jobs | Assigned job | No |
 | Add files / follow-ups | With PM/lead role | All jobs | Assigned job | No |
+| Remove job files (soft archive) | With PM/lead role | Any accessible file | Own uploads on assigned job | No |
 | View personal week/schedule | With operational role | All with filters | Own + relevant shared job context | Own assignments only |
 | View staffing availability | With PM/lead role | All, details authorized | Minimal busy/free and person identity | No company-wide availability |
 | Close/archive whole job | With PM role | Yes, portions handled or explicit resolution | No | No |
@@ -24,5 +25,7 @@ Agreed role responsibilities come from the handoff. Detailed resource boundaries
 Admin does not automatically mean PM in this proposal; one person can receive both roles. This avoids a hidden operational-permission assumption. Helper's relevant job view contains shared job context needed to do assigned work but not the whole company schedule. Exact visibility after past assignments is a pilot decision: proposed active-job access until job closure, then only assignment summary; confidential office-only notes are not a first-release feature.
 
 ## Required negative checks before Phase 1 exit
+
+File implementation prepared in migration 0003: ready reads follow job access; pending reads/upload capability require the current uploader with job write access. Helpers have no upload/finish/archive commands. Lead archive is own-only; PM archive is any job. Direct object overwrite/delete is denied. New downloads recheck membership and return a 60-second forced-download capability; an issued capability is not immediately revocable. Signed upload capabilities last two hours; final publication always rechecks access. See job-files.md for limits and required real Storage tests. Migration/SQL execution and browser acceptance remain pending.
 
 Anonymous, deactivated and uninvited accounts retrieve no operational data. Helper cannot POST/PATCH/DELETE via direct API or sign another job's file URL. Lead cannot change another lead's queue, take existing helper, enumerate unrelated customer details through availability, promote self, or forge an audit actor. PM can edit another PM's job. Role changes take effect without waiting for a stale session token to expire. Test both server endpoints and direct data/storage paths, including forged job/work/visit relationships and combined-role users.

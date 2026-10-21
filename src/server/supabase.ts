@@ -34,7 +34,7 @@ export class SupabaseSession implements JobsGateway {
     this.headers = { apikey: config.publishableKey, Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' };
   }
 
-  private async request(path: string, options: RequestInit = {}) {
+  protected async request(path: string, options: RequestInit = {}) {
     let response: Response;
     try { response = await this.transport(this.origin + path, { ...options, headers: this.headers, cache: 'no-store', redirect: 'error', signal: AbortSignal.timeout(15000) }); }
     catch { throw new AppError('connection_failed', 503, 'Could not connect. Your changes have not been confirmed saved.'); }
@@ -43,8 +43,11 @@ export class SupabaseSession implements JobsGateway {
       if (response.status === 403) throw new AppError('not_allowed', 403, 'You do not have access to this action.');
       const detail = await response.json().catch(() => null);
       const code = detail?.code;
-      if (code === 'PGRST205' || code === 'PGRST202' || code === '42P01') throw new AppError('schema_pending', 503, 'Additional contacts are temporarily unavailable. Please try again later.');
+      if (code === 'PGRST205' || code === 'PGRST202' || code === '42P01') throw new AppError('schema_pending', 503, 'This feature is temporarily unavailable. Please try again later.');
+      if (code === '55000') throw new AppError('upload_pending', 409, 'The upload is not complete. Keep this tab open and retry.');
       if (code === '42501') throw new AppError('not_allowed', 403, 'You do not have access to this action.');
+      if (code === '22023' && detail?.message === 'File limit reached') throw new AppError('invalid_input', 400, 'This job already has 100 available or unfinished files. Remove an outdated file or unfinished upload first.');
+      if (code === '22023' && detail?.message === 'Uploaded file does not match') throw new AppError('invalid_input', 400, 'The stored file does not match the selected size or type. Return to the job, remove the unfinished upload, then choose the file again.');
       if (code === '22023') throw new AppError('invalid_input', 400, 'Check the job details.');
       if (code === '23505') throw new AppError('request_conflict', 409, 'This request was already used with different details.');
       if (code === 'P0002') throw new AppError('job_unavailable', 404, 'This job is unavailable.');

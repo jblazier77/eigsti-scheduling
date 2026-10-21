@@ -25,7 +25,7 @@ Retain the form's request UUID after uncertain failure and resend unchanged. SQL
 
 Phone input proposal: formatted ten-digit US numbers, optional +1; readable input retained. International numbers/extensions are not implemented. Private job entitlements must be maintained from actual visit participants in Phase 2; they never reserve staff.
 
-## Additional job contacts (migration 0002 pending)
+## Additional job contacts (migration 0002 applied in test)
 
 Cookie-authenticated Server Actions add/edit/archive contacts with independent live membership and PM checks. No application REST contact endpoint or administrative key is introduced. Direct employee-token SELECT on `job_contacts` follows `private.can_read_job(job_id)` and excludes archived rows. The client filters the parent job plus contact ID; SQL mutations match both IDs and refuse cross-job spoofing. Authenticated users have SELECT only; all raw writes are denied.
 
@@ -34,7 +34,7 @@ Cookie-authenticated Server Actions add/edit/archive contacts with independent l
 - Removal RPC: `archive_job_contact(p_job_id,p_contact_id)`. PM-only soft archive; repeat is safe and does not duplicate archive history. No public restore/delete command.
 - Name max 100, relationship/trade max 100, phone max 40 with optional ten-digit US format/+1, email max 254, notes max 1000 with multiline text. Only name is required in the UI. Maximum 100 active contacts per job; create checks the count while holding the parent job lock.
 
-Each successful mutation audits the real employee and identifies the contact without copying contact values into the audit event. Before 0002 is applied, a missing-table/schema-cache result shows an unavailable contact section and preserves the rest of the job page. Other failures propagate normally. The company trade directory, subcontractor commitments and files are separate future work. Six Node checks cover validation, role boundaries, scoped transport, narrow patching and interrupted/missing-schema behavior; SQL execution and browser acceptance remain pending.
+Each successful mutation audits the real employee and identifies the contact without copying contact values into the audit event. Before 0002 is applied, a missing-table/schema-cache result shows an unavailable contact section and preserves the rest of the job page. Other failures propagate normally. The company trade directory, subcontractor commitments and files are separate future work. Six Node checks cover validation, role boundaries, scoped transport, narrow patching and interrupted/missing-schema behavior; 60 SQL checks and recorded contact browser acceptance passed per user.
 
 References reviewed 2026-10-20:
 
@@ -46,3 +46,13 @@ References reviewed 2026-10-20:
 - https://github.com/supabase/auth/blob/master/openapi.yaml
 
 Exact Next.js/Supabase packages are installed and locked. See local-app.md for current full-build filesystem limits and the actual Auth/browser tests still required.
+
+## Private files (migration 0003 applied in test)
+
+prepareFileAction accepts only job/request IDs and small name/size/mime metadata, verifies Auth/profile, and reserves the pending job_files row through begin_job_file. An employee-token Storage client then obtains an insert-only signed URL for the generated job UUID/file UUID path. No administrative key or employee token is returned to the browser. Browser PUT sends bytes directly to that capability; the existing 32 KB Server Action limit stays unchanged.
+
+finishFileAction reauthorizes and calls finish_job_file. SQL matches job/file/owner, expected byte size/MIME against storage.objects metadata, then atomically publishes/audits once. A retry first tries finalization, and reissues a capability only for an upload-pending response. It never overwrites an existing object. This validates metadata, not binary content. Archive is soft, idempotent and audited; PM any/assigned lead own only. No direct table write, Storage overwrite or Storage deletion is granted by this feature.
+
+GET /jobs/[id]/files/[fileId]/download verifies Auth/profile and ready-file RLS, then returns a no-store/no-referrer 303 to a forced-download signed URL with 60-second TTL. Already issued URLs remain bearer capabilities until expiry; new URLs always recheck access. Upload capabilities last two hours and can outlive an account change, but final publication requires current access. No byte stream traverses the application server. Pending/archived files cannot be downloaded through this route.
+
+See job-files.md for limits, source references, original HEIC behavior, orphan/archived byte retention and required actual Storage/phone tests. Migration 0003 and its 66 metadata/RLS SQL assertions passed per user, as did the full build and desktop upload/download/refresh/removal/helper upload denial. 40 Node tests and TypeScript pass. Phone, fault/retry and remaining access/expiry acceptance remain pending.
