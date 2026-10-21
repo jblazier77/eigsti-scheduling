@@ -1,76 +1,61 @@
 # Current status
 
-Updated 2026-10-21. Development resumed; initial PM sign-in, job creation/persistence and logout checks passed through user browser testing. Phase 0 exit pending. This is a local development checkout, not a production application.
+Updated 2026-10-21. Initial app, PM editing and additional job contacts have passed the checks recorded below. Phase 0 exit and remaining Phase 1 work are still pending. No production deployment.
 
 ## Checkpoint
 
-- Workspace: `C:\Users\jrbla\OneDrive\Projects\ChatGPT\Eigsti Scheduling`
-- Branch: `phase-0-foundation`
-- Latest saved checkpoint: `018a1d2`, committed by Josh Blazier and pushed to origin/phase-0-foundation (push output confirmed). Additional contacts work is local and not yet committed. Agent Git writes remain restricted.
-- Company GitHub: https://github.com/jblazier77/eigsti-scheduling.git; origin configured and first checkpoint upload confirmed.
-- Supabase test project: `vglhojtrccygjgupxsrd`, created by user in Eigsti Construction organization using Free plan. No production hosting/deployment. Corrected migration applied successfully via user SQL Editor; 35 database checks reported, 0 failed.
-- Baseline read in full: Eigsti Architecture and Development Handoff v1.0, 248 lines; Library file libfile_43703675297881918e01ebfd5fa6463f.
-- No existing project or applicable ancestor AGENTS.md was found at initialization.
+- Workspace: C:\Users\jrbla\OneDrive\Projects\ChatGPT\Eigsti Scheduling
+- Branch: phase-0-foundation
+- Latest confirmed uploaded commit: 64609f0 (contacts and removal navigation fix). Prior editing checkpoint: 018a1d2. This subsequent verification documentation is not yet committed.
+- Private origin: https://github.com/jblazier77/eigsti-scheduling.git
+- Test Supabase project: vglhojtrccygjgupxsrd, Free plan in Eigsti Construction organization.
+- User PowerShell manages commits/pushes because agent Git writes remain restricted.
+- User stopped dev for the latest successful build. No restart since that build is confirmed. Browser was last signed in as the synthetic helper.
+- Keep .env.local ignored. No passwords, tokens or administrative secrets are recorded here.
 
-## Prepared
+## Verified implementation
 
-README, architecture, stable requirements, proposed permission matrix, approved/proposed decision log, sequential plan, sourced cost estimate and company prerequisites, operational/recovery design, all 15 handoff verification scenarios, migration contract, reproducible fixtures, and local phone interaction prototype.
+- Standalone individual password sign-in/sign-out; cookie session handling and live account checks; no Google integration.
+- PM My Jobs/All Jobs, three-field create plus default work item, authorized job details and phone/directions links.
+- PM editing of title/customer/phone/address/scope/access notes; narrow updates preserve unrelated fields. Optional notes clear; invalid phone retains form; cancel discards changes.
+- Additional contacts for a single job, including customer-side/site/trade contacts. Name required; relationship, US phone, email and shared notes optional. PM add/edit/archive, authorized job readers, call/text/email links, narrow changes, audited soft removal and retry-safe creation. Maximum 100 active contacts per job.
+- No connected staffing/scheduling, private attachments, global trade directory or complete invitation/recovery/account administration yet.
 
-Synthetic seed has 20 active leads, 30 active house projects, ten window jobs, two PMs, one helper, one admin and a deactivated employee. It represents distinct job portions, Leading/Helping roles, vacant assistance, a no-time Friday subcontractor visit, waiting work and tentative future cabinets. It does not claim database capacity performance.
+## Database and automated evidence
 
-## Current database setup
+- Applied migration 0001: user reported SQL success and 35 checks, 0 failed.
+- Applied migration 0002: user reported SQL success and 60 contact checks, 0 failed.
+- Both SQL suites use synthetic transaction fixtures and roll them back. Cloud SQL evidence is user reported; the agent did not run a local database.
+- Do not edit or rerun these applied migrations on the existing project. Future functional SQL changes require new ordered migrations.
+- Latest automated Node suite: 34 passed, including removal action navigation, uncertain failure and helper denial regression checks. TypeScript passed.
+- Latest full production build AFTER the removal fix passed in user PowerShell: compilation, TypeScript, page generation/optimization and all contact routes.
+- Fixture generator and prototype structural smoke checks previously passed. Those are separate from real database/browser evidence.
+- PostgreSQL version/full TAP transcripts, clean-reset repeat and simultaneous multi-connection tests remain pending. Earlier sequential retry and stale-form checks are not concurrent-transaction proof.
 
-User first received PostgreSQL 42601 at the update_job CASE expression. The expression was corrected locally, the complete migration rerun, and user reported "Success. No rows returned". User then ran the 35-check pgTAP suite and reported "35 checks, 0 failed". Evidence is user-reported SQL Editor output, not direct agent database access.
+## User browser evidence
 
-The suite checks direct database role access, rejected writes/promotion, deactivation, atomic job/default work/audit creation, sequential retry deduplication, payload collision and narrow patches. The SQL Editor wrapper captures every assertion and raises an exception on incomplete/failing results; all temporary fixtures are rolled back.
+- Josh admin/PM account: initial sign-in, job create/detail, refresh persistence, logout protected-route redirect and sign-in again passed.
+- Fictional job: 2b2fa044-12b5-4ce8-9f6a-e2de614a84f2 (Test Customer One). Phone was changed to 309-555-0102 during two-tab checks; another tab's scope-only save preserved it.
+- PM editing: scope/access note save/refresh, clear optional notes, cancel and invalid phone 555 checks passed.
+- Synthetic helper helper.test@example.com, UID 8d91ac92-7ff3-4a2c-ac04-b7ca31d82184: empty assignment list/no create button; direct job detail, new-job and job-edit access denied.
+- Contact Test Spouse (dbb6527e-0bae-4998-a0f8-04c7b6ea65b6): add/call-text display, refresh, clear notes, invalid phone and cancel preserving saved phone 309-555-0103 passed. Original removal archived it but showed Job unavailable at its edit URL.
+- Fix in 64609f0: archive ends in a server redirect to the job, with a separate action state that preserves framework navigation. No SQL change.
+- On resume, user confirmed Test Spouse absent, created Test Removal, then confirmed removal returned to the job without error and remained absent after refresh. Main customer contact retention was requested but not separately explicitly confirmed.
+- Helper contact create and edit routes both blocked and returned to /jobs. The tested edit URL referred to an archived contact; SQL fixtures separately cover active contact permissions.
+- Actual call/text/email dispatch, live assigned-helper browser reads, contact same-field conflict behavior, session expiry, live deactivation and phone usability remain unverified. No test messages/calls were sent.
 
-Migration file SHA-256 at this checkpoint: `3739d78d66e60f78a4bd1eca89a902bcf693e20c8ffde18ab374f12e871c888c`. PostgreSQL version, full TAP transcript, clean-reset repeat and multi-connection concurrency proof are still pending.
+## Constraints and pending inputs
 
-## Framework and screen checkpoint
-
-Dependencies installed by user in normal PowerShell with exact versions and lockfile. Next.js 16.4.2 / React 19.3.1 / Supabase SSR 0.12.7 / client 2.118.0 / TypeScript 7.0.2.
-
-Added actual sign-in/sign-out, cookie session refresh, live membership checks, PM My/All Jobs, assigned-job views, three-field creation and authorized job details/phone links. No Google login or role selector. Controlled job form retains inputs and request ID on uncertain save. User configured the test publishable key in ignored .env.local and created an individual Auth account with an active Josh Blazier admin/PM profile. No passwords or keys are recorded here. See local-app.md.
-
-Latest full production build passed in user PowerShell (compilation, TypeScript, page generation and route output). User restarted development on port 4310 and created fictional Test Customer One, job ID `2b2fa044-12b5-4ce8-9f6a-e2de614a84f2`. Screenshot confirms customer, phone 309-555-0101 and address 123 Example Lane, Morton (no state/ZIP shown in the submitted screenshot). User confirmed details survived refresh, sign-out redirected protected /jobs to /login, and signing back in restored the job in My Jobs. Agent loopback/browser limits remain; this browser evidence is user supplied. Token refresh expiry, additional role boundaries and phone usability are not yet verified.
-
-## Phase 1 progress
-
-- Contact browser progress: user added Test Spouse (contact ID dbb6527e-0bae-4998-a0f8-04c7b6ea65b6), confirmed call/text display and refresh persistence, cleared notes while preserving other fields, rejected phone 555 and canceled with saved phone 309-555-0103 preserved. Removal then showed generic Job unavailable at the contact edit URL (screenshot). Likely successful archive followed by edit-page revalidation before client navigation; actual archived state is not yet confirmed. Fixed archive success to terminate with a server redirect to the job, outside error handling, and wired the remove button directly to its own useActionState so the redirect is not swallowed. Added three executed Server Action regression checks (success navigation, uncertain failure, helper denial). All 34 Node checks and TypeScript pass. No SQL changes. Recheck job/contact state, then repeat remove confirmation/redirect and helper route checks. Full build after this fix remains pending user PowerShell.
-- Contacts setup verified 2026-10-21: user reported migration 0002 success in test project vglhojtrccygjgupxsrd and 60 SQL checks, no failures. User then ran full production build successfully: compilation, TypeScript, page generation/optimization and new contact create/edit routes. This supersedes the earlier contacts migration/SQL/build pending notes below. Contacts browser verification and Git checkpoint remain pending. Do not rerun or change applied migration 0002.
-- Additional job contacts implemented locally: job-local customer-side/site/trade contacts, optional relationship/US phone/email/notes, PM-only add/edit/archive pages and Server Actions, authorized job readers see call/text/email links. Existing primary customer contact is unchanged. Migration 0002 adds RLS/SELECT-only grants, validated command RPCs, audit, retry-safe creation, soft archive and a serialized 100-active-contact limit. Missing migration does not hide the rest of the job. Six focused checks added: 31 Node tests and TypeScript pass. SQL suite has 60 assertions but is NOT executed; migration is NOT applied. Contacts full build and browser checks pending. No agent build retry because earlier output cleanup triggered Windows/OneDrive issues. No Google integration, global trade directory, subcontractor scheduling or new service charges.
-- Editing full production build passed in normal user PowerShell on 2026-10-21: compilation, TypeScript, page collection/generation and optimization all succeeded, including /jobs/[id]/edit. This supersedes the earlier agent build-permission blocker for this code. User returned to the PowerShell prompt; no dev server restart is confirmed. Editing changes are ready for Git commit/push.
-- Editing browser checks passed per user on 2026-10-21: scope and access notes saved and persisted after refresh; clearing access notes left scope intact; cancel discarded changed scope; invalid phone 555 showed validation and retained the form; helper direct /jobs/[id]/edit access was blocked. In two PM browser tabs, first saved phone 309-555-0102; second submitted a scope-only change from an older form, and user confirmed the resulting phone remained correct. This is sequential stale-form preservation evidence, not simultaneous multi-connection testing. User is now signed in as Josh. Full editing production build remains pending normal-user PowerShell.
-- PM edit implementation added: /jobs/[id]/edit, edit link for PMs, controlled six-field form, active-PM Server Action, narrow patch validation and employee-token update_job RPC. Scope/access notes are optional and clearable; title changes are explicit. Invalid input and uncertain failures retain form values, cancellation confirms discarding changes, and successful saves refresh job/list views. Uses existing applied SQL, without a new migration. Four focused checks added: 25 Node tests pass, TypeScript passes. Editing full build attempt failed before compilation on Windows EPERM removing an old .next-check directory; a normal-user build is still required for this change. Editing browser verification is pending. Existing 35 DB checks are prior evidence, not rerun for this UI change.
-- Synthetic helper account `helper.test@example.com`, UID `8d91ac92-7ff3-4a2c-ac04-b7ca31d82184`, created in test Auth with active helper-only app profile (user reported SQL result). Actual helper session showed zero assigned jobs and no create button (screenshot); direct access to the existing PM job returned job unavailable, and /jobs/new blocked access/returned to /jobs (user reported). No assignment grants were added. User signed back into Josh's PM account after checks. These cover unassigned access and the create page, not assigned-helper reads, forged mutations or deactivation in a live session.
-- TypeScript domain validation and active-role checks; individual password/refresh Auth transport and live membership verification; jobs Request/Response handler; PM My/All listing and atomic-create RPC adapter. See api-contract.md.
-- Migration 0001 applied to the Free test project. Its job/access subset passed the 35-check database suite according to user SQL Editor results. No production schema exists.
-- pgTAP suite passed 35 checks, 0 failed (user reported); multi-connection tests and actual Auth/REST/Storage checks remain required.
-- Earlier agent registry DNS failed; user normal PowerShell reached npm registry and installed the packages successfully. User subsequently completed the full production build successfully.
-- No additional contacts/files UI or full account lifecycle yet. PM job editing and initial browser checks are implemented and verified as above. Session refresh expiry, additional role boundaries and phone usability remain pending.
-
-## Checks and limitations
-
-- `npm run seed`: passed; deterministic generated JSON.
-- `npm test`: 25 checks passed (fixture, domain/request/Auth transport, environment guard and job editing checks). Mocked transport tests remain separate from the user-reported 35 cloud database checks.
-- `npm run check:prototype`: passed JavaScript syntax and DOM-stub smoke checks for all role screens, helper control restrictions, planning, return work, new job/default work, unassigned planning guard and unknown-time sub entry. This is not browser rendering or backend authorization evidence.
-- Local preview server started on loopback port 4310. HTTP readiness request failed with sandbox `EACCES`; browser could not reach loopback, and open-in-app tool returned an error. Therefore rendered layout, clicks and phone usability remain unverified. No network restrictions were bypassed.
-- Node 24.21.0, npm 11.19.0, Git 2.53.0 available. No Docker/psql detected; local PostgreSQL remains unavailable, but user-run cloud SQL Editor migration and 35-check database suite succeeded. Node native TypeScript loading passed; TypeScript compiler check now passes. See framework checkpoint for the Windows final-build-output limit.
-- No approved mockup files were supplied. Prototype is proposed interaction design only; calendar toggle, exact/multi-day controls, staffing editor, live files/auth and administration are not implemented.
-- `git diff --check`: passed for the empty tracked diff; new files were separately checked by fixture/prototype tools. Staging/commit attempted with explicit Codex automation identity, but `.git/index.lock` creation was denied. No company employee identity was assumed.
-
-## Outstanding inputs (do not reopen product scope)
-
-1. Company domain eigsticonstruction.com confirmed; DNS access/app subdomain and production hosting/backup/email ownership pending. GitHub account/repository now exist and initial code is uploaded.
-2. Standalone invitation/password app sign-in confirmed as baseline; company currently uses Google email without integration. Working defaults approved: Monday-Friday, 07:00-15:30, split at noon, America/Chicago. Specific holiday/overtime exceptions remain to define.
-3. Pilot participants (two leads, PM, helper), phone workflow review, and preferred attachment limits/types including iPhone HEIC. Existing approved mockups, if any, can be supplied for fidelity review.
-
-These inputs do not block the completed local foundation. They do block claims of Phase 0 completion and account-dependent integration. No paid services should be bought until the company setup and estimate are reviewed.
+- Baseline: Eigsti Architecture and Development Handoff v1.0 (previously read in full), one development chat and repository records.
+- Company domain eigsticonstruction.com confirmed. DNS/app subdomain, production hosting/backup/email ownership, pilot participants and phone workflow review remain pending.
+- Approved calendar default: Monday-Friday 07:00-15:30, split at noon, America/Chicago; holiday/overtime exceptions remain to define.
+- Attachment policy is still proposed: 10 MiB JPEG/PNG/WebP/PDF with iPhone HEIC review pending.
+- No paid provisioning or production data authorized. Phase 0 is not complete.
+- Prior agent builds encountered Windows cleanup permissions; user builds succeeded. OneDrive bulk-deletion prompts showed generated files but full target lists were not inspected. Do not approve unreviewed bulk deletion.
+- Agent loopback/browser access was unavailable in earlier work. User screenshots and confirmations supply the browser evidence.
 
 ## Exact next action
 
-UI checkpoint 8ea6753 and verification checkpoint 5588284 were uploaded. The editing production build has now passed; dev server was stopped for that build. Keep .env.local ignored. Supabase data persists independently.
+Commit/push this final contacts verification documentation through user PowerShell. Code/fix is already uploaded as 64609f0, full final build and removal/helper route retests now passed. Then begin the next bounded Phase 1 item: private job attachments after resolving the pending format/size policy. Account lifecycle and remaining access/session/recovery checks follow. Do not recreate accounts, repeat migrations or duplicate the fictional job.
 
-Next: return to the existing job page and inspect whether Test Spouse remains listed. Removal navigation bug was fixed locally; if already archived, add a new synthetic contact to repeat confirmation/removal, otherwise retry existing one. Confirm return to the job, removed contact absent and primary customer contact retained. Then helper management-route denial and full normal-user build after the navigation fix. Guide one step at a time. Migrations 0001/0002 and 60 contact SQL checks are complete; do not rerun migrations or recreate accounts/duplicate the job. After browser verification and build, commit/push contacts code/docs/migration/tests. Earlier OneDrive bulk-deletion prompts showed generated JS/manifests; keep unreviewed targets. Session expiry, live deactivation, assigned-helper access, multi-connection, private files/account administration remain Phase 1 work. No production data or paid provisioning.
-
-Initial GitHub checkpoint is uploaded. Save subsequent changes through user PowerShell while agent Git writes remain restricted. Calendar/domain/standalone sign-in baseline are recorded. Pilot phone review, DNS access, ownership and attachment policy remain pending Phase 0 inputs. GitHub is the implementation checkpoint destination; the older recovery ZIP predates these database corrections/results.
+To pause: Ctrl+C stops dev; commit/push outstanding changes, then close PowerShell/browser. Database data persists independently. To resume: npm.cmd run dev from the workspace and http://127.0.0.1:4310. GitHub is the implementation checkpoint destination; the older Library recovery ZIP predates current work.

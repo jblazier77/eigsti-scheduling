@@ -35,15 +35,15 @@ The job form uses controlled fields and one request UUID per form. An uncertain 
 
 ## Verification evidence and limits
 
-- 25 Node checks passed; TypeScript check passed after adding editing, including patch validation, role denial and narrow payload checks.
-- User PowerShell completed the full initial app build before the editing change. Editing build result is recorded in status.md.
+- 34 Node checks passed; TypeScript passed, including contact removal action regression checks.
+- User PowerShell completed the full production build after the removal navigation fix, including both contact routes.
 - Optional `EIGSTI_BUILD_DIRECTORY=.next-check` selects an isolated verification cache; all other values use `.next`. Both generated caches are ignored. No source folders were deleted to address permissions.
 - Agent HTTP requests to loopback failed EACCES and the in-app browser was unavailable. User subsequently supplied screenshots and confirmations of PM sign-in/create/refresh/logout/re-login and unassigned helper job/create-page denial. User also confirmed scope/access-note save and refresh, optional-note clearing, cancel, invalid-phone validation, helper edit-page denial and preservation of a newer phone change by a stale scope-only form.
 - The existing cloud database suite remains 35 checks, 0 failed, user reported. Expiring-session refresh, live deactivation, assigned-helper access, phone UI and fault testing remain pending.
 
 ## Next action
 
-Editing browser checks and full production build (user PowerShell, 2026-10-21) are complete and uploaded as 018a1d2. Additional job contacts are implemented locally and await migration 0002, its SQL suite, full normal-user build and browser acceptance. No paid provisioning or production deployment.
+PM editing is uploaded as 018a1d2 and contacts/removal fix as 64609f0. Migration 0002, its 60 SQL checks, final build and recorded browser acceptance checks are complete. Save the final verification documentation, then address private attachments policy/implementation. No paid provisioning or production deployment.
 
 ## Additional contacts workflow
 
@@ -51,8 +51,8 @@ On a job, the existing customer contact remains separate. The Additional job con
 
 Only the contact name is required. Other fields are relationship/trade, phone, email and shared notes. Use synthetic details only in test. Creation retains one request UUID and locks values after an uncertain save so retry cannot duplicate the contact. Edits send only fields changed from the original form. Failed saves retain values, cancel confirms discarding edits, and removal requires an explicit confirmation panel and archives the row/history. Up to 100 active contacts per job.
 
-Verification prepared: 31 Node tests pass and TypeScript passes. Contact SQL and browser tests are not yet run. Full production build must run in normal user PowerShell; the agent is not retrying the known Windows/OneDrive cleanup failure that previously triggered sync-deletion prompts.
+Current verification: 34 Node tests and TypeScript pass. Contact migration and 60 SQL assertions passed per user. Full final production build passed in normal user PowerShell.
 
-Subsequent verification: migration 0002 applied successfully in test and its 60 checks passed (user reported); initial contacts full build passed. User browser confirmed add/refresh, clear notes, phone validation and cancel. A removal navigation bug was found: revalidating the archived edit page before a client effect navigated could show Job unavailable. Archive now redirects directly from the Server Action, with its own action state to preserve framework navigation. Three regression checks added; all 34 Node tests and TypeScript pass. Removal browser retry, helper contact route checks and a full build after this fix remain pending.
+User browser confirmed add/refresh, clear notes, phone validation and cancel. A removal navigation bug was fixed: archive now redirects directly from the Server Action, with its own action state to preserve framework navigation. Three regression checks cover success redirect, uncertain failure and helper denial. User then added Test Removal, confirmed return to the job after removal and absence after refresh, and confirmed helper create/edit contact routes were blocked. The final full build after this fix passed. Actual call/text/email dispatch and live assigned-helper browser reads were not tested.
 
-Apply 0002 through a new test-project SQL query, run the 60-check contact SQL suite, run `npm.cmd run build`, then start dev. As Josh: add a synthetic spouse/contact, save/refresh, edit/clear optional values, cancel and reject invalid phone; remove and confirm disappearance. Verify helper management routes are blocked and unassigned contact reads remain hidden. Assigned-helper reads are covered by prepared SQL fixtures, not a live staffing UI. Save the checkpoint after verified checks; agent Git writes remain restricted.
+Do not rerun applied migrations on the existing test project. Assigned-helper reads are covered by the passed SQL fixtures; no live staffing UI exists yet. See status.md for remaining checks and save the final verification documentation through normal user PowerShell.

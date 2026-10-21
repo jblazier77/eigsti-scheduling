@@ -36,4 +36,6 @@ All entries dated 2026-10-20.
 
 | D24 | Implementation checkpoint 2026-10-21 | PM editing uploaded as 018a1d2. Additional job contacts now prepared locally: customer-side or trade contact details tied to a single job; existing customer contact retained. PM-only create/edit/archive, assigned operational readers, optional phone/email/relationship/notes, narrow patches, audited soft removal and retry-safe creation. 100 active contacts/job bounds list size and is checked under job-row lock. Global trade directory and subcontractor commitments remain separate scope. 31 Node checks/TypeScript pass; migration 0002, 60 SQL assertions, full build and browser checks await user-run setup. No new charges or Google integration |
 
+| D25 | Verified checkpoint 2026-10-21 | Contacts/removal fix uploaded as 64609f0. Migration 0002 and its 60 SQL assertions passed per user; 34 Node tests/TypeScript passed. User browser confirmed removal returned to job without error, persisted after refresh, and helper contact create/edit routes were blocked. Final production build after the navigation fix passed in normal user PowerShell. Actual phone action dispatch, live assigned-helper reads and simultaneous connection tests remain separate. Final verification documentation ready to commit |
+
 No proposal above authorizes new charges. No substantial product decisions have been reopened.
