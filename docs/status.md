@@ -6,11 +6,11 @@ Updated 2026-10-21. Initial app, PM editing and additional job contacts have pas
 
 - Workspace: C:\Users\jrbla\OneDrive\Projects\ChatGPT\Eigsti Scheduling
 - Branch: phase-0-foundation
-- Latest confirmed uploaded commit: dea0af9 (contacts final verification; prior contacts/fix 64609f0, PM editing 018a1d2). Current private attachments code/migration/tests/docs are local and not yet committed.
+- Latest confirmed uploaded commit: 193c50d (private files and recorded desktop checks; prior contacts dea0af9, PM editing 018a1d2). Signed-in password-change code/tests/docs are local and not yet committed.
 - Private origin: https://github.com/jblazier77/eigsti-scheduling.git
 - Test Supabase project: vglhojtrccygjgupxsrd, Free plan in Eigsti Construction organization.
 - User PowerShell manages commits/pushes because agent Git writes remain restricted.
-- Full attachments build passed in user PowerShell; dev was restarted for browser checks. Browser is currently signed in as the synthetic helper.
+- Full account build passed in user PowerShell, including /account; dev restarted for tests. Helper password changed successfully and browser is now signed out after the anonymous-access check.
 - Keep .env.local ignored. No passwords, tokens or administrative secrets are recorded here.
 
 ## Verified implementation
@@ -21,6 +21,7 @@ Updated 2026-10-21. Initial app, PM editing and additional job contacts have pas
 - Additional contacts for a single job, including customer-side/site/trade contacts. Name required; relationship, US phone, email and shared notes optional. PM add/edit/archive, authorized job readers, call/text/email links, narrow changes, audited soft removal and retry-safe creation. Maximum 100 active contacts per job.
 - Private attachments are implemented locally with original HEIC/HEIF, PDF/JPEG/PNG/WebP, a 10 MiB/file limit, private direct upload, scoped download and soft archive. Migration 0003, 66 SQL checks, full build and basic desktop Storage/browser checks passed per user. Real iPhone acceptance remains pending. See job-files.md.
 - No connected staffing/scheduling, global trade directory or complete invitation/recovery/account administration yet.
+- Signed-in own-password changes are implemented locally at /account for all active roles, with explicit current-password reauthentication, live membership checks and logout after success. Full build and core helper browser checks passed per user; see accounts.md. Cancel, phone and fault acceptance remain pending. Forgotten-password recovery and admin account setup remain following work.
 
 ## Database and automated evidence
 
@@ -29,12 +30,14 @@ Updated 2026-10-21. Initial app, PM editing and additional job contacts have pas
 - Applied migration 0002: user reported SQL success and 60 contact checks, 0 failed.
 - Both SQL suites use synthetic transaction fixtures and roll them back. Cloud SQL evidence is user reported; the agent did not run a local database.
 - Do not edit or rerun these applied migrations on the existing project. Future functional SQL changes require new ordered migrations.
-- Latest automated Node suite: 40 passed, including six file validation/role/retry/scoped signing checks and prior contact removal regressions. TypeScript passed after file changes.
-- Latest full production build including file upload/download routes passed in user PowerShell. No new agent cleanup attempt is made due prior Windows/OneDrive issues.
+- Latest automated Node suite: 46 passed, including six account/password checks, six file checks and prior contact removal regressions. TypeScript passed after account changes. Auth SDK transport is mocked for automated password tests; separate real helper password-change browser checks passed per user.
+- Latest full production build including /account and file upload/download routes passed in user PowerShell. No new agent cleanup attempt is made due prior Windows/OneDrive issues.
 - Fixture generator and prototype structural smoke checks previously passed. Those are separate from real database/browser evidence.
 - PostgreSQL version/full TAP transcripts, clean-reset repeat and simultaneous multi-connection tests remain pending. Earlier sequential retry and stale-form checks are not concurrent-transaction proof.
 
 ## User browser evidence
+
+- Password change: helper confirmed mismatched confirmation rejected, wrong current password rejected, correct change redirected to sign-in with success notice, old password rejected, new password signed in successfully, and signed-out /account redirected to sign-in. Passwords remained private. Cancel, real deactivation, phone and interrupted-write/browser tests are still pending.
 
 - Attachments: user confirmed upload returned to the job and listed the test file, download opened correctly and matched the original, file remained after refresh, removal succeeded and remained removed after refresh. Unassigned helper direct upload route was blocked. This is actual desktop Storage/browser evidence; file format and size were not recorded. Assigned-helper download, anonymous download, URL expiry, transfer interruption/retry, invalid/oversize input and real phone/HEIC acceptance remain unverified in the browser.
 - Josh admin/PM account: initial sign-in, job create/detail, refresh persistence, logout protected-route redirect and sign-in again passed.
@@ -59,6 +62,6 @@ Updated 2026-10-21. Initial app, PM editing and additional job contacts have pas
 
 ## Exact next action
 
-Commit/push the attachments checkpoint through user PowerShell, keeping .env.local ignored. Migration 0003, all 66 SQL checks, full build and basic desktop upload/download/removal/helper upload denial passed. Do not rerun applied migrations. Guide one step at a time. Remaining phone/HEIC, near-limit transfer, retry/fault, assigned-helper and issued-URL expiry checks remain required before pilot. Account lifecycle and remaining access/session/recovery work follow.
+Commit/push the verified signed-in password-change checkpoint through user PowerShell. Full build and core helper browser checks passed; browser is signed out. Then proceed to forgotten-password recovery and account setup prerequisites as recorded in accounts.md. No migration or new secrets required. Private files checkpoint 193c50d is already pushed; do not rerun applied migrations. Remaining phone/HEIC, near-limit transfer, retry/fault, assigned-helper and issued-URL expiry checks remain required before pilot. Invitation/recovery email and account administration follow this password-change slice.
 
 To pause: Ctrl+C stops dev; commit/push outstanding changes, then close PowerShell/browser. Database data persists independently. To resume: npm.cmd run dev from the workspace and http://127.0.0.1:4310. GitHub is the implementation checkpoint destination; the older Library recovery ZIP predates current work.
