@@ -1,5 +1,6 @@
 import { AppError, type Actor, type AccountRole } from '../domain/access.ts';
 import type { JobsGateway, JobSummary, ValidJobInput } from '../domain/jobs.ts';
+import type { JobPatch } from '../domain/job-edits.ts';
 
 export type SupabaseConfig = { url: string; publishableKey: string; environment: 'development' | 'test' | 'production' };
 export type JobDetail = JobSummary & { scope: string; access_notes: string };
@@ -44,6 +45,7 @@ export class SupabaseSession implements JobsGateway {
       if (code === '42501') throw new AppError('not_allowed', 403, 'You do not have access to this action.');
       if (code === '22023') throw new AppError('invalid_input', 400, 'Check the job details.');
       if (code === '23505') throw new AppError('request_conflict', 409, 'This request was already used with different details.');
+      if (code === 'P0002') throw new AppError('job_unavailable', 404, 'This job is unavailable.');
       throw new AppError('save_failed', 503, 'The action was not confirmed. Retry using the same request.');
     }
     if (response.status === 204) return null;
@@ -75,5 +77,9 @@ export class SupabaseSession implements JobsGateway {
     const params = new URLSearchParams({ select: 'id,customer_name,phone,phone_action,address,title,scope,access_notes,responsible_pm,lifecycle', id: 'eq.' + id, limit: '1' });
     const rows = await this.request('/rest/v1/jobs?' + params);
     return rows[0] ?? null;
+  }
+
+  async updateJob(id: string, patch: JobPatch): Promise<JobDetail> {
+    return this.request('/rest/v1/rpc/update_job', { method: 'POST', body: JSON.stringify({ p_job_id: id, p_patch: patch }) });
   }
 }

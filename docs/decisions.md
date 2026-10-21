@@ -30,4 +30,8 @@ All entries dated 2026-10-20.
 
 | D21 | Implementation checkpoint | User normal PowerShell installed exact framework dependencies. Initial actual app screens and server cookie sessions implemented; 21 Node checks/type check pass; final build output verification and real connection/session tests pending |
 
+| D22 | Implementation checkpoint 2026-10-21 | Initial PM create/persistence/logout and unassigned helper denial browser checks passed (user evidence), recorded in uploaded commit 5588284. Added PM details/scope/access-notes editing using existing update_job RPC, six allowed fields and client original-value diff. Title remains explicit. Uncertain edit saves retain values and allow inspecting saved job before manual resave; updates are not deduplicated. 25 Node checks and TypeScript pass; editing browser acceptance and full normal-user build remain pending. No migration or paid service added |
+
+| D23 | Verified checkpoint 2026-10-21 | PM editing browser checks passed: save/refresh, clear optional notes, cancel, invalid-phone validation, helper edit-route denial and preservation of a newer phone edit by a stale scope-only form. Full production build then passed in normal user PowerShell including the edit route. These supersede D22 pending checks; simultaneous multi-connection/fault tests remain separate. Editing checkpoint ready to commit/push |
+
 No proposal above authorizes new charges. No substantial product decisions have been reopened.

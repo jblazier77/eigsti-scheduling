@@ -7,6 +7,7 @@ import { authClient } from '../lib/supabase-server';
 import { appConfig } from '../lib/config';
 import { SupabaseSession } from '../server/supabase.ts';
 import { createJob } from '../domain/jobs.ts';
+import { updateJob } from '../domain/job-edits.ts';
 import { AppError } from '../domain/access.ts';
 
 export type FormState = { message: string; uncertain?: boolean; jobId?: string };
@@ -59,4 +60,30 @@ export async function createJobAction(_previous: FormState, form: FormData): Pro
   }
   revalidatePath('/jobs');
   return { message: 'Job saved.', jobId: id };
+}
+
+export async function updateJobAction(_previous: FormState, form: FormData): Promise<FormState> {
+  let id: string;
+  try {
+    const env = appConfig();
+    if (!env) return { message: 'The app connection is not configured yet.' };
+    const client = await authClient(true);
+    const { data } = await client.auth.getSession();
+    if (!data.session) return { message: 'Your sign-in expired. Your changes are still on this screen.' };
+    const gateway = new SupabaseSession(env, data.session.access_token);
+    const actor = await gateway.getActor();
+    const rawPatch = form.get('patch');
+    let patch: unknown;
+    try {
+      if (typeof rawPatch !== 'string' || rawPatch.length > 16000) throw new Error('Invalid patch');
+      patch = JSON.parse(rawPatch);
+    } catch { throw new AppError('invalid_input', 400, 'Check the job details.'); }
+    const job = await updateJob(actor, form.get('jobId'), patch, gateway);
+    id = job.id;
+  } catch (error) {
+    return { message: error instanceof AppError ? error.message : 'The save was not confirmed. Your changes are still here.', uncertain: !(error instanceof AppError) || ['connection_failed', 'save_failed'].includes(error.code) };
+  }
+  revalidatePath('/jobs');
+  revalidatePath('/jobs/' + id);
+  return { message: 'Changes saved.', jobId: id };
 }

@@ -1,6 +1,6 @@
 # Initial backend contract
 
-State: importable TypeScript modules and passing isolated request tests. The Request/Response jobs handler is now wired into the Next.js /api/jobs route; no hosted deployment exists. Initial browser screens are implemented with server-rendered session handling, but the test project publishable key and employee Auth/profile setup are still pending. Migration 0001 is applied in the isolated Free test project, and user reported 35 database checks, 0 failed.
+State: importable TypeScript modules and passing isolated request tests. The Request/Response jobs handler is wired into the Next.js /api/jobs route; no hosted deployment exists. Test project connection, PM/helper profiles and initial browser sign-in, create/persistence/logout and unassigned helper denial checks are complete. Migration 0001 is applied in the isolated Free test project, and user reported 35 database checks, 0 failed.
 
 `src/server/jobs-handler.ts` exports a Request/Response handler for the future Next.js route. It requires Supabase configuration and an employee Bearer token. Tests inject a fake network transport; application code has no synthetic-user bypass.
 
@@ -12,6 +12,10 @@ State: importable TypeScript modules and passing isolated request tests. The Req
 | No token | 401 before transport |
 | Valid Auth token without active app profile | 403; cached role claims are insufficient |
 | Unsupported method | 405; PATCH/DELETE not exposed |
+
+PM editing uses the cookie-authenticated `updateJobAction` Server Action, not a new REST PATCH endpoint. Every submission verifies Auth and live app membership, then requires an active PM. Only title/customer_name/phone/address/scope/access_notes strings are accepted. The client compares against the original form and sends only changed fields; the server independently validates keys, UUID, phone, lengths and text. Empty optional scope/access notes clear those fields. No automatic title regeneration on contact/address edits. `update_job(p_job_id,p_patch)` already exists in migration 0001 and atomically updates fields plus audit history; no new migration is needed. Other fields, lifecycle and PM assignment are not accepted.
+
+An uncertain update retains the form and offers a separate-tab link to inspect saved values. Updates have no creation-style request UUID/deduplication: a manual repeat save wins again for the submitted fields and creates another audit event. This must not be described as exactly-once or as protection against conflicting edits to the same field.
 
 Retain the form's request UUID after uncertain failure and resend unchanged. SQL create_job locks actor/request and creates job + work + audit + retry record atomically; changed payload with reused key conflicts. Sequential creation/retry behavior passed the user-run database suite; simultaneous multi-connection behavior still requires testing.
 
