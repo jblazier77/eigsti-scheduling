@@ -1,6 +1,6 @@
 # Employee accounts: development checkpoint
 
-Updated 2026-10-21. Standalone app passwords; no Google integration. Private files checkpoint 193c50d was pushed by the user. The signed-in password-change slice passed full build and core browser checks; local changes await commit/push.
+Updated 2026-10-21. Standalone app passwords; no Google integration. Private files checkpoint 193c50d was pushed by the user. The signed-in password-change slice passed full build and core browser checks; pushed as e95f6ea.
 
 ## Implemented slice
 
@@ -16,9 +16,11 @@ The temporary session is signed out on completion/failure where possible. A conf
 
 All 46 Node tests pass and TypeScript passes. The six new account tests exercise the installed Auth SDK with mocked transport: all four roles, current-password verification, own-identity binding, live deactivation/revocation, weak-password rejection, ambiguous server failure, temporary-session cleanup and byte limits. Real Server Action tests cover expired sessions, response secrecy, cookie cleanup despite failed logout and successful redirect outside error handling. These do not prove real Auth password changes.
 
-User reported successful full production build including /account. Helper browser checks passed: mismatched confirmation and wrong current password rejected; correct change returned to sign-in with success notice; old password rejected; new password signed in; after logout, /account redirected to sign-in. No password was shared in chat. Cancel, phone, live deactivation and interrupted-update acceptance remain unverified. Next commit/push this checkpoint.
+User reported successful full production build including /account. Helper browser checks passed: mismatched confirmation and wrong current password rejected; correct change returned to sign-in with success notice; old password rejected; new password signed in; after logout, /account redirected to sign-in. No password was shared in chat. Cancel, phone, live deactivation and interrupted-update acceptance remain unverified. Checkpoint pushed as e95f6ea.
 
 ## Following work
+
+User decision: email invitations, self-service forgotten-password recovery and custom SMTP/DNS setup are deferred to the post-pilot list. Custom SMTP is off; DNS is managed by someone else. Limited pilot uses manual onboarding/administrator-assisted resets. See post-pilot.md. Phone account administration remains initial scope.
 
 Forgotten-password email requests, callback/reset handling, account invitations, role/deactivation administration and last-admin protection are not implemented by this slice. Production invite/recovery delivery needs verified company SMTP and an approved app URL/redirect allowlist. The default Supabase test mail service is not a production delivery solution. No provider account or paid provisioning was created and no test email was sent.
 
