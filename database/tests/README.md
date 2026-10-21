@@ -1,12 +1,12 @@
 # Isolated database verification
 
-The SQL suite is **authored, not executed**. This computer has no PostgreSQL/Docker, and package-registry DNS is unavailable. Node unit/request-adapter tests are separate evidence and cannot establish RLS, SQL syntax, transaction atomicity or real Auth behavior.
+The corrected schema was applied to the isolated Free Supabase test project vglhojtrccygjgupxsrd. User reported **35 checks, 0 failed** from SQL Editor. Local PostgreSQL/Docker remain unavailable. Node tests are separate evidence; real Auth, REST/Storage, clean-reset repetition and multi-connection concurrency checks remain pending.
 
 When a synthetic-only Supabase test instance is available:
 
 1. Record instance/project identity and verify it is not production. Use the same schema/migration path intended for production.
 2. Apply `database/migrations/0001_jobs_and_access.sql` to an empty application schema. It requires Supabase's `auth.users`, `auth.uid()`, `anon` and `authenticated` roles.
-3. Run `database/tests/0001_jobs_and_access.test.sql` with a privileged test connection and pgTAP available. It creates reserved-domain synthetic identities in a transaction and rolls them back. Check TAP output for every assertion; a SQL client exit code alone is insufficient if TAP contains failures.
+3. Run `database/tests/0001_jobs_and_access.test.sql` with a privileged test connection and pgTAP available. It creates reserved-domain synthetic identities in a transaction and rolls them back. The script captures all 35 assertions in a temporary table and raises an exception on any failure or missing assertion; inspect its checks/failed summary. Retain complete TAP output when running from a CLI.
 4. Capture PostgreSQL version, migration checksum and complete pass/fail output. Then repeat from a clean reset.
 5. Add two-connection tests: simultaneous same-request CreateJob gives one job/work/audit; different requests remain separate; concurrent narrow patches to scope and phone both persist. A single-connection pgTAP retry is not proof of concurrency behavior.
 6. Before Phase 1 exit, test actual Supabase Auth password/invite/recovery sessions, direct REST API reads/writes, and private Storage authorization/uploads on phones.

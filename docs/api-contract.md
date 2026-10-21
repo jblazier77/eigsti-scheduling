@@ -1,6 +1,6 @@
 # Initial backend contract
 
-State: importable TypeScript modules and passing isolated request tests. No HTTP backend is running or deployed. No browser UI is connected, no employee account exists, and no SQL migration has been applied.
+State: importable TypeScript modules and passing isolated request tests. No HTTP backend is running or deployed. No browser UI is connected and no employee account exists. Migration 0001 is applied in the isolated Free test project, and user reported 35 database checks, 0 failed.
 
 `src/server/jobs-handler.ts` exports a Request/Response handler for the future Next.js route. It requires Supabase configuration and an employee Bearer token. Tests inject a fake network transport; application code has no synthetic-user bypass.
 
@@ -13,7 +13,7 @@ State: importable TypeScript modules and passing isolated request tests. No HTTP
 | Valid Auth token without active app profile | 403; cached role claims are insufficient |
 | Unsupported method | 405; PATCH/DELETE not exposed |
 
-Retain the form's request UUID after uncertain failure and resend unchanged. SQL create_job locks actor/request and creates job + work + audit + retry record atomically; changed payload with reused key conflicts. Runtime/concurrency proof still requires PostgreSQL tests.
+Retain the form's request UUID after uncertain failure and resend unchanged. SQL create_job locks actor/request and creates job + work + audit + retry record atomically; changed payload with reused key conflicts. Sequential creation/retry behavior passed the user-run database suite; simultaneous multi-connection behavior still requires testing.
 
 `password-auth.ts` delegates password/refresh to Supabase Auth, then validates live membership. No public signup, Google route, password storage or admin secret. Session persistence, logout, recovery, invitation acceptance, user administration and real Auth tests remain required.
 

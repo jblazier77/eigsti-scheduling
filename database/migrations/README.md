@@ -1,6 +1,6 @@
 # Migration contract
 
-`0001_jobs_and_access.sql` is authored but **not applied or PostgreSQL-verified**. It requires Supabase Auth schemas and roles. It creates users, jobs, default work, audit/retry records, private information-access entitlements, read RLS and PM-only create/update commands. It grants no raw operational writes to employee roles.
+`0001_jobs_and_access.sql` was corrected after a CASE-expression parse error and applied through the isolated Supabase test-project SQL Editor. User subsequently reported 35 checks, 0 failed from the database suite. Further functional changes now require a new migration; do not silently edit this applied migration. It requires Supabase Auth schemas and roles. It creates users, jobs, default work, audit/retry records, private information-access entitlements, read RLS and PM-only create/update commands. It grants no raw operational writes to employee roles.
 
 Run `database/tests/` against an isolated Supabase instance before use. Node request tests do not prove SQL correctness or database authorization. Next: apply from empty, run all pgTAP and multi-connection tests, repeat clean setup; then add contacts/private files, account provisioning and the Next.js interface. Visit/staffing tables belong to Phase 2. Every migration must include its access boundary.
 

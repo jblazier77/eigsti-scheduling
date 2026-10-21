@@ -1,6 +1,6 @@
 # Permission matrix
 
-Agreed role responsibilities come from the handoff. Detailed resource boundaries below are proposed for pilot validation. The initial Phase 1 code implements a subset (job reads, PM create/patch commands, live membership); SQL policies remain unverified in PostgreSQL, and the matrix is not yet fully implemented. Default deny, require active individual identity, and enforce every scope in server commands AND direct database/storage API policies.
+Agreed role responsibilities come from the handoff. Detailed resource boundaries below are proposed for pilot validation. The initial Phase 1 code implements a subset (job reads, PM create/patch commands, live membership); the initial job/access SQL subset passed the user-run 35-check PostgreSQL suite, and the matrix is not yet fully implemented. Default deny, require active individual identity, and enforce every scope in server commands AND direct database/storage API policies.
 
 | Action | Admin | PM | Lead | Helper |
 | --- | --- | --- | --- | --- |

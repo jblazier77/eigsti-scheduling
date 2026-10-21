@@ -193,8 +193,8 @@ begin
     if v_key in ('customer_name','phone','address','title') and length(btrim(v_value)) = 0 then
       raise exception using errcode='22023',message='Required field';
     end if;
-    if length(v_value) > case v_key when 'customer_name' then 100 when 'phone' then 40 when 'address' then 300 when 'title' then 405 when 'scope' then 5000 else 2000 end
-      or v_value ~ '[[:cntrl:]]' and v_key in ('customer_name','phone','address','title') then
+    if length(v_value) > (case v_key when 'customer_name' then 100 when 'phone' then 40 when 'address' then 300 when 'title' then 405 when 'scope' then 5000 else 2000 end)
+      or (v_value ~ '[[:cntrl:]]' and v_key in ('customer_name','phone','address','title')) then
       raise exception using errcode='22023',message='Invalid patch length';
     end if;
   end loop;

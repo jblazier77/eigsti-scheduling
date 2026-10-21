@@ -26,4 +26,6 @@ All entries dated 2026-10-20.
 | D18 | Implementation checkpoint | Prepare dependency-free TypeScript core and unapplied SQL while package-registry DNS and PostgreSQL tooling are unavailable; mocked requests do not prove RLS or Auth integration |
 | D19 | Proposed validation convention | Initial phones accept formatted US ten-digit numbers with optional +1; readable input retained; extensions/international formats not implemented |
 
+| D20 | Confirmed setup | GitHub origin jblazier77/eigsti-scheduling and checkpoint dc95ab1 uploaded. Free Supabase test project vglhojtrccygjgupxsrd created; initial migration failed with PostgreSQL 42601; corrected CASE expression then applied successfully; subsequent user-run database suite reported 35 checks, 0 failed |
+
 No proposal above authorizes new charges. No substantial product decisions have been reopened.
