@@ -1,12 +1,12 @@
 # Current status
 
-Updated 2026-10-21. Development paused after successful first app sign-in. Phase 0 exit pending; initial Phase 1 app checkpoint prepared. This is a local development checkout, not a production application.
+Updated 2026-10-21. Development resumed; initial PM sign-in, job creation/persistence and logout checks passed through user browser testing. Phase 0 exit pending. This is a local development checkout, not a production application.
 
 ## Checkpoint
 
 - Workspace: `C:\Users\jrbla\OneDrive\Projects\ChatGPT\Eigsti Scheduling`
 - Branch: `phase-0-foundation`
-- Latest saved checkpoint: `e9b75e7`, committed by Josh Blazier and pushed to origin/phase-0-foundation. New framework/UI/configuration work and this status update are not yet committed. Agent Git writes remain restricted.
+- Latest saved checkpoint: `8ea6753`, committed by Josh Blazier and pushed to origin/phase-0-foundation (push output confirmed). This subsequent verification/status update is not yet committed. Agent Git writes remain restricted.
 - Company GitHub: https://github.com/jblazier77/eigsti-scheduling.git; origin configured and first checkpoint upload confirmed.
 - Supabase test project: `vglhojtrccygjgupxsrd`, created by user in Eigsti Construction organization using Free plan. No production hosting/deployment. Corrected migration applied successfully via user SQL Editor; 35 database checks reported, 0 failed.
 - Baseline read in full: Eigsti Architecture and Development Handoff v1.0, 248 lines; Library file libfile_43703675297881918e01ebfd5fa6463f.
@@ -32,15 +32,16 @@ Dependencies installed by user in normal PowerShell with exact versions and lock
 
 Added actual sign-in/sign-out, cookie session refresh, live membership checks, PM My/All Jobs, assigned-job views, three-field creation and authorized job details/phone links. No Google login or role selector. Controlled job form retains inputs and request ID on uncertain save. User configured the test publishable key in ignored .env.local and created an individual Auth account with an active Josh Blazier admin/PM profile. No passwords or keys are recorded here. See local-app.md.
 
-Latest full production build passed in user PowerShell (compilation, TypeScript, page generation and route output). User started the development server on port 4310, signed in successfully and supplied a screenshot showing the empty My Jobs screen in the test workspace. Job creation was requested as the next check but has not been confirmed. Agent loopback/browser limits remain; this browser evidence is user supplied.
+Latest full production build passed in user PowerShell (compilation, TypeScript, page generation and route output). User restarted development on port 4310 and created fictional Test Customer One, job ID `2b2fa044-12b5-4ce8-9f6a-e2de614a84f2`. Screenshot confirms customer, phone 309-555-0101 and address 123 Example Lane, Morton (no state/ZIP shown in the submitted screenshot). User confirmed details survived refresh, sign-out redirected protected /jobs to /login, and signing back in restored the job in My Jobs. Agent loopback/browser limits remain; this browser evidence is user supplied. Token refresh expiry, additional role boundaries and phone usability are not yet verified.
 
 ## Phase 1 progress
 
+- Synthetic helper account `helper.test@example.com`, UID `8d91ac92-7ff3-4a2c-ac04-b7ca31d82184`, created in test Auth with active helper-only app profile (user reported SQL result). Actual helper session showed zero assigned jobs and no create button (screenshot); direct access to the existing PM job returned job unavailable, and /jobs/new blocked access/returned to /jobs (user reported). No assignment grants were added. User signed back into Josh's PM account after checks. These cover unassigned access and the create page, not assigned-helper reads, forged mutations or deactivation in a live session.
 - TypeScript domain validation and active-role checks; individual password/refresh Auth transport and live membership verification; jobs Request/Response handler; PM My/All listing and atomic-create RPC adapter. See api-contract.md.
 - Migration 0001 applied to the Free test project. Its job/access subset passed the 35-check database suite according to user SQL Editor results. No production schema exists.
 - pgTAP suite passed 35 checks, 0 failed (user reported); multi-connection tests and actual Auth/REST/Storage checks remain required.
 - Earlier agent registry DNS failed; user normal PowerShell reached npm registry and installed the packages successfully. User subsequently completed the full production build successfully.
-- No contacts/files/editing UI or full account lifecycle yet. Initial sign-in and empty My Jobs screen are confirmed by user screenshot. Job creation/persistence, session refresh, logout, additional role boundaries and phone usability checks remain pending.
+- No contacts/files/editing UI or full account lifecycle yet. Initial PM sign-in, job creation/persistence, logout and sign-in again passed user browser checks. Session refresh expiry, additional role boundaries and phone usability remain pending.
 
 ## Checks and limitations
 
@@ -62,8 +63,8 @@ These inputs do not block the completed local foundation. They do block claims o
 
 ## Exact next action
 
-Pause checkpoint: save and upload the current UI/dependency/documentation changes through user PowerShell. The .env.local file must remain ignored. Last confirmed uploaded commit remains e9b75e7 until a new push is confirmed. Stop the development server with Ctrl+C before closing PowerShell. Supabase data persists independently of the local server.
+UI checkpoint 8ea6753 was uploaded before the pause. Development server is running again in user PowerShell. Keep .env.local ignored. Stop with Ctrl+C before closing PowerShell on the next pause; Supabase data persists independently.
 
-On resume, start with `npm.cmd run dev` from the project folder and open http://127.0.0.1:4310. First check whether a fictional test job already exists, since creation has not been confirmed; avoid creating a duplicate. If absent, create Test Customer One / 309-555-0101 / 123 Example Lane, Morton, IL 61550. Verify save, refresh persistence, session/logout and role boundaries. Multi-connection, contacts/private files/account administration remain Phase 1 work. No production data or paid provisioning.
+Next: commit/push the browser verification documentation, then implement bounded PM job details/scope/access-notes editing using the existing narrow update RPC. Helper account and initial denial checks are complete. Do not alter Josh's admin/PM roles. The existing fictional job is already saved; avoid creating a duplicate. Session expiry, live deactivation, assigned-helper access, multi-connection, contacts/private files/account administration remain Phase 1 work. No production data or paid provisioning.
 
 Initial GitHub checkpoint is uploaded. Save subsequent changes through user PowerShell while agent Git writes remain restricted. Calendar/domain/standalone sign-in baseline are recorded. Pilot phone review, DNS access, ownership and attachment policy remain pending Phase 0 inputs. GitHub is the implementation checkpoint destination; the older recovery ZIP predates these database corrections/results.
