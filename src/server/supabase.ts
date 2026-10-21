@@ -2,6 +2,7 @@ import { AppError, type Actor, type AccountRole } from '../domain/access.ts';
 import type { JobsGateway, JobSummary, ValidJobInput } from '../domain/jobs.ts';
 
 export type SupabaseConfig = { url: string; publishableKey: string; environment: 'development' | 'test' | 'production' };
+export type JobDetail = JobSummary & { scope: string; access_notes: string };
 type Transport = typeof fetch;
 
 export function validateConfig(config: SupabaseConfig) {
@@ -68,5 +69,11 @@ export class SupabaseSession implements JobsGateway {
     const params = new URLSearchParams({ select: 'id,customer_name,phone,phone_action,address,title,responsible_pm,lifecycle', order: 'created_at.desc,id.desc', limit: String(query.limit), offset: String(query.offset), lifecycle: 'neq.archived' });
     if (query.responsiblePm) params.set('responsible_pm', 'eq.' + query.responsiblePm);
     return this.request('/rest/v1/jobs?' + params);
+  }
+
+  async getJob(id: string): Promise<JobDetail | null> {
+    const params = new URLSearchParams({ select: 'id,customer_name,phone,phone_action,address,title,scope,access_notes,responsible_pm,lifecycle', id: 'eq.' + id, limit: '1' });
+    const rows = await this.request('/rest/v1/jobs?' + params);
+    return rows[0] ?? null;
   }
 }

@@ -28,4 +28,6 @@ All entries dated 2026-10-20.
 
 | D20 | Confirmed setup | GitHub origin jblazier77/eigsti-scheduling and checkpoint dc95ab1 uploaded. Free Supabase test project vglhojtrccygjgupxsrd created; initial migration failed with PostgreSQL 42601; corrected CASE expression then applied successfully; subsequent user-run database suite reported 35 checks, 0 failed |
 
+| D21 | Implementation checkpoint | User normal PowerShell installed exact framework dependencies. Initial actual app screens and server cookie sessions implemented; 21 Node checks/type check pass; final build output verification and real connection/session tests pending |
+
 No proposal above authorizes new charges. No substantial product decisions have been reopened.
