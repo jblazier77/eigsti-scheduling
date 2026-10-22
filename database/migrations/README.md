@@ -37,3 +37,7 @@ Adds update_job_work_batch: PM-only, 1-100 unique narrow row patches, parent job
 0006 evidence: user confirmed successful application, 40 SQL checks/0 failed and full production build. Shared-card Cancel passed; client save-button completion correction awaits browser/full-build retest. Do not rerun applied 0006; subsequent correction changes only client code/styles.
 
 0006 final checkpoint: user confirmed shared-card Cancel, corrected Save completion, refresh persistence and final production build passed. No SQL changed after application. Commit/push pending.
+
+## 0007: ordered lead queues (prepared; NOT applied)
+
+Private queue state/event snapshots, get/save employee RPCs, membership triggers on ownership/completion and job lifecycle, existing-work backfill, full-order validation and stable request receipts. PM-any/lead-own; raw writes and helper/admin-only access denied. One company-wide mutation advisory lock precedes queue row locks; reads remain lock-free. No paid service/employee fixtures/dates/staffing. Prepared SHA-256: 5e080ac2d88727e66ff696adba6dfe5c1c7488e0d3bf836fa2523dae09818d1e. Apply once after 0001-0006 in test, run new 58-check suite, full user build and browser/concurrent acceptance. See docs/lead-queues.md.

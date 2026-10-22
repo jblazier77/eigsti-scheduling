@@ -48,6 +48,8 @@ export class SupabaseSession implements JobsGateway {
       if (code === '42501') throw new AppError('not_allowed', 403, 'You do not have access to this action.');
       if (code === '22023' && detail?.message === 'File limit reached') throw new AppError('invalid_input', 400, 'This job already has 100 available or unfinished files. Remove an outdated file or unfinished upload first.');
       if (code === '22023' && detail?.message === 'Uploaded file does not match') throw new AppError('invalid_input', 400, 'The stored file does not match the selected size or type. Return to the job, remove the unfinished upload, then choose the file again.');
+      if (code === '22023' && detail?.message === 'Queue membership changed') throw new AppError('queue_membership_changed', 409, 'Assigned work changed while this queue was open. Reload the queue before saving.');
+      if (code === '22023' && detail?.message === 'Queue limit exceeded') throw new AppError('invalid_input', 400, 'This queue has more than 500 work portions. Ask a project manager to review the assignments.');
       if (code === '22023') throw new AppError('invalid_input', 400, 'Check the job details.');
       if (code === '23505') throw new AppError('request_conflict', 409, 'This request was already used with different details.');
       if (code === 'P0002') throw new AppError('job_unavailable', 404, 'This job is unavailable.');

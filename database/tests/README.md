@@ -46,3 +46,7 @@ Run 0005_lead_contact_creation.test.sql after 0005 application. Synthetic data r
 Run 0006_work_card_save.test.sql after 0006. Fixtures roll back and a 40-result guard rejects missing/failed assertions. Covers earlier valid edit/audit/receipt rollback on later invalid lead, cross-job or completed work, role denial, batch validation/count, canonical replay/collision, narrow changes preserving newer fields, old retry preserving a newer save, current retry response and closed-job behavior. No actual multi-connection or browser evidence is claimed.
 
 User confirmed all 40 batch/card SQL checks passed after 0006 application. Full production build and basic card display/Cancel passed separately. Save completion UI correction awaits browser/full-build retest.
+
+## Lead queues (58 checks prepared; NOT executed)
+
+Run 0007_lead_queues.test.sql after 0007. All synthetic fixtures roll back; 58-result guard checks complete pass. Covers roles/raw RPC boundaries, exact membership, malformed/bounded arrays, sequential two-PM latest-save behavior, unrelated contact retention, order/actor history, old retry safety, own-lead save, no-op and automatic membership lifecycle. Not a simultaneous two-connection test. Before pilot race actual queue saves and reassignments on distinct connections and inspect final state/history/contact preservation. See docs/lead-queues.md.

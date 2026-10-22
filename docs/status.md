@@ -1,26 +1,28 @@
 # Current status
 
-Updated 2026-10-21. Initial app, PM editing and additional job contacts have passed the checks recorded below. Phase 0 exit and remaining Phase 1 work are still pending. No production deployment.
+Updated 2026-10-22. Initial app, PM editing and additional job contacts have passed the checks recorded below. Phase 0 exit and remaining Phase 1 work are still pending. No production deployment.
 
 ## Checkpoint
 
 - Workspace: C:\Users\jrbla\OneDrive\Projects\ChatGPT\Eigsti Scheduling
 - Branch: phase-0-foundation
-- Latest confirmed uploaded commit: a79c78e (verified atomic work card Save/Cancel; prior inline work and lead contacts 85cad7a). Additional ownership/revocation browser evidence is local and not yet committed.
+- Latest confirmed uploaded commit: c38984c (ownership/revocation evidence; prior implementation a79c78e). Workspace was clean and tracking origin on resume. Lead queues code/migration/tests/docs are local and not yet committed.
 - Private origin: https://github.com/jblazier77/eigsti-scheduling.git
 - Test Supabase project: vglhojtrccygjgupxsrd, Free plan in Eigsti Construction organization.
 - User PowerShell manages commits/pushes because agent Git writes remain restricted.
-- Final shared-card production build passed and a79c78e was pushed. Dev restarted for ownership checks. User most recently returned to Josh/PM to restore Test Lead on the cabinet portion; countertop portion remains unassigned.
+- Final shared-card production build passed and a79c78e was pushed. Dev restarted for ownership checks. User most recently returned to Josh/PM to restore Test Lead on the cabinet portion; both cabinet and countertop portions are now assigned to Test Lead after queue acceptance.
 - Keep .env.local ignored. No passwords, tokens or administrative secrets are recorded here.
 
 ## Verified implementation
+
+- New local slice: ordered per-lead work queues with PM-any/lead-own access, Up/Down, one Save/Cancel, canonical request retries, latest committed full-order saves and ownership/completion/job-lifecycle membership triggers. 63 Node tests/TypeScript pass. User confirmed 0007 applied, 58 SQL checks/0 failed, full build and core PM/lead/helper desktop acceptance. Concurrent, phone and fault acceptance remain pending. See lead-queues.md.
 
 - Standalone individual password sign-in/sign-out; cookie session handling and live account checks; no Google integration.
 - PM My Jobs/All Jobs, three-field create plus default work item, authorized job details and phone/directions links.
 - PM editing of title/customer/phone/address/scope/access notes; narrow updates preserve unrelated fields. Optional notes clear; invalid phone retains form; cancel discards changes.
 - Additional contacts for a single job, including customer-side/site/trade contacts. Name required; relationship, US phone, email and shared notes optional. PM add/edit/archive, authorized job readers, call/text/email links, narrow changes, audited soft removal and retry-safe creation. Maximum 100 active contacts per job.
 - Private attachments are implemented locally with original HEIC/HEIF, PDF/JPEG/PNG/WebP, a 10 MiB/file limit, private direct upload, scoped download and soft archive. Migration 0003, 66 SQL checks, full build and basic desktop Storage/browser checks passed per user. Real iPhone acceptance remains pending. See job-files.md.
-- Work ownership/lead assignment is prepared locally; migration 0004 is applied in the test project; user confirmed 58 checks, 0 failed and a full production build before the inline editor change. Queues, visits/staffing, global trade directory and complete account administration are not implemented. Email invitations/self-service recovery moved to the post-pilot list by user decision; manual onboarding/reset is the limited-pilot provision.
+- Work ownership/lead assignment is prepared locally; migration 0004 is applied in the test project; user confirmed 58 checks, 0 failed and a full production build before the inline editor change. Queues now pass the desktop checks below; visits/staffing, global trade directory and complete account administration are not implemented. Email invitations/self-service recovery moved to the post-pilot list by user decision; manual onboarding/reset is the limited-pilot provision.
 - Signed-in own-password changes are implemented locally at /account for all active roles, with explicit current-password reauthentication, live membership checks and logout after success. Full build and core helper browser checks passed per user; see accounts.md. Cancel, phone and fault acceptance remain pending. Signed-in password changes are pushed as e95f6ea. Email recovery/invitations are deferred; phone admin account management remains initial scope.
 
 ## Database and automated evidence
@@ -30,7 +32,7 @@ Updated 2026-10-21. Initial app, PM editing and additional job contacts have pas
 - Applied migration 0002: user reported SQL success and 60 contact checks, 0 failed.
 - Both SQL suites use synthetic transaction fixtures and roll them back. Cloud SQL evidence is user reported; the agent did not run a local database.
 - Do not edit or rerun these applied migrations on the existing project. Future functional SQL changes require new ordered migrations.
-- Latest automated Node suite: 58 passed, including five work ownership/action tests, six account/password checks, six file checks and prior contact removal regressions. TypeScript passed after work ownership changes. User reported 58 work SQL checks passed and the original work routes built successfully. The inline editor change passed Node/TypeScript; its full build remains pending; inline Cancel/Save/refresh and lead read-only browser checks passed. User confirmed 0005 applied, 32 SQL checks with no failures and full production build after inline work/contact changes. Lead contact creation/refresh and helper direct-create denial passed. Auth SDK transport is mocked for automated password tests; separate real helper password-change browser checks passed per user.
+- Latest automated Node suite: 63 passed, including five work ownership/action tests, six account/password checks, six file checks and prior contact removal regressions. TypeScript passed after work ownership changes. User reported 58 work SQL checks passed and the original work routes built successfully. The inline editor change passed Node/TypeScript; its full build remains pending; inline Cancel/Save/refresh and lead read-only browser checks passed. User confirmed 0005 applied, 32 SQL checks with no failures and full production build after inline work/contact changes. Lead contact creation/refresh and helper direct-create denial passed. Auth SDK transport is mocked for automated password tests; separate real helper password-change browser checks passed per user.
 - Latest full production build including /account and file upload/download routes passed in user PowerShell. No new agent cleanup attempt is made due prior Windows/OneDrive issues.
 - Fixture generator and prototype structural smoke checks previously passed. Those are separate from real database/browser evidence.
 - PostgreSQL version/full TAP transcripts, clean-reset repeat and simultaneous multi-connection tests remain pending. Earlier sequential retry and stale-form checks are not concurrent-transaction proof.
@@ -76,6 +78,10 @@ Updated 2026-10-21. Initial app, PM editing and additional job contacts have pas
 
 ## Exact next action
 
-Commit/push the ownership/revocation browser evidence (documentation only; no build needed). Latest implementation a79c78e is already pushed; all migrations 0001-0006 are applied. Test Lead is restored on the cabinet portion, countertops unassigned, per last user acknowledgment. Next implement per-lead ordered queues with PM-any/lead-own reorder, latest committed full-order save, narrow operational boundaries and concurrency/retry verification. Visits/staffing follow. Email invitations/recovery remain deferred per post-pilot.md.
+Commit/push queue implementation and verified desktop evidence through user PowerShell. Applied 0001-0007 must not be rerun. Both test portions are assigned to Test Lead. Next development slice is visits/staffing; remaining queue two-client, real multi-connection, phone and fault checks remain required before pilot. Latest confirmed uploaded checkpoint is still c38984c until the new push is confirmed.
 
 To pause: Ctrl+C stops dev; commit/push outstanding changes, then close PowerShell/browser. Database data persists independently. To resume: npm.cmd run dev from the workspace and http://127.0.0.1:4310. GitHub is the implementation checkpoint destination; the older Library recovery ZIP predates current work.
+
+## Queue acceptance checkpoint, 2026-10-22
+
+User confirmed 0007 applied; corrected test-only integer assertions, then 58 checks/0 failed; full production build including /queue passed. PM two-row display, Up/Down, Cancel, Save/idle and refresh passed. Test Lead saw the PM order and saved a new order retained after refresh. Helper direct /queue blocked and redirected to /jobs. PM unassigned countertops: only cabinets remained. Reassignment appended countertops after cabinets. Both portions now belong to Test Lead. These are desktop/user-reported checks; simultaneous database races and phone/fault acceptance are not established.
