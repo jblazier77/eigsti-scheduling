@@ -2,6 +2,7 @@ import { AppError, type Actor, type AccountRole } from '../domain/access.ts';
 import type { JobsGateway, JobSummary, ValidJobInput } from '../domain/jobs.ts';
 import type { JobPatch } from '../domain/job-edits.ts';
 import type { ContactPatch, ContactValues, JobContact } from '../domain/contacts.ts';
+import type { JobClassification, Subcontractor, SubcontractorValues } from '../domain/job-classification.ts';
 
 export type SupabaseConfig = { url: string; publishableKey: string; environment: 'development' | 'test' | 'production' };
 export type JobDetail = JobSummary & { scope: string; access_notes: string };
@@ -46,6 +47,19 @@ export class SupabaseSession implements JobsGateway {
       if (code === 'PGRST205' || code === 'PGRST202' || code === '42P01') throw new AppError('schema_pending', 503, 'This feature is temporarily unavailable. Please try again later.');
       if (code === '55000') throw new AppError('upload_pending', 409, 'The upload is not complete. Keep this tab open and retry.');
       if (code === '42501') throw new AppError('not_allowed', 403, 'You do not have access to this action.');
+      if (code === '22023' && ['Planned visits remain','Open returns remain','Return visit still planned','Return already scheduled','Planned visit required','Open return required','Completed work required','Reopen portion explicitly','Describe return work','Return limit reached','Open job required','Invalid progress command','Invalid progress field','Invalid progress relationship','Invalid remaining note','Invalid return flag','Invalid return date'].includes(detail?.message)) {
+        const messages: Record<string,string>={
+          'Planned visits remain':'Finish or cancel the scheduled entries for this portion before completing it.',
+          'Open returns remain':'Mark the outstanding return work handled before completing this portion.',
+          'Return visit still planned':'Finish or cancel the planned return appointment first.',
+          'Return already scheduled':'This return already has a planned appointment. Edit that appointment on this page.',
+          'Planned visit required':'This scheduled entry has already been finished or cancelled. Refresh to see its state.',
+          'Reopen portion explicitly':'Reopen this portion explicitly before adding return work.',
+          'Describe return work':'Briefly describe what needs a return trip.',
+          'Return limit reached':'This job already has 100 open follow-ups. Resolve an existing item first.'
+        };
+        throw new AppError('progress_conflict',409,messages[detail.message]??'This work changed or is not available for that action. Review its current state.');
+      }
       if (code === '23P01') throw new AppError('staff_conflict', 409, 'Someone is already assigned during this time. No assignments were changed. Choose another time or person.');
       if (['23514', '22007', '22008', '22P02'].includes(code)) throw new AppError('invalid_input', 400, 'Check the visit dates, weekday time block and helper count.');
       if (code === '22023' && ['Invalid visit', 'Invalid visit field', 'Invalid visit value', 'Invalid helper count', 'Invalid staffing', 'Visit dates and coordinator required', 'Active staff required', 'Open work required', 'Named help exceeds need', 'Coordinator already helping', 'Invalid visit state', 'Invalid schedule range', 'Schedule limit exceeded'].includes(detail?.message)) throw new AppError('invalid_input', 400, detail.message === 'Named help exceeds need' ? 'Remove named help before reducing the number of helper spaces.' : detail.message === 'Active staff required' ? 'Choose active leads or helpers. An assigned person may have been deactivated.' : detail.message === 'Open work required' ? 'This job, work portion or visit is no longer open for planning.' : 'Check the visit dates, time block, coordinating lead and helper spaces.');
@@ -77,20 +91,45 @@ export class SupabaseSession implements JobsGateway {
     return this.request('/rest/v1/rpc/create_job', { method: 'POST', body: JSON.stringify({ p_request_id: input.requestId, p_customer: input.customer, p_phone: input.phone, p_address: input.address }) });
   }
 
-  async listJobs(query: { responsiblePm?: string; limit: number; offset: number }): Promise<JobSummary[]> {
-    const params = new URLSearchParams({ select: 'id,customer_name,phone,phone_action,address,title,responsible_pm,lifecycle', order: 'created_at.desc,id.desc', limit: String(query.limit), offset: String(query.offset), lifecycle: 'neq.archived' });
+  async listJobs(query: { responsiblePm?: string; limit: number; offset: number; rainDay?: boolean; filler?: boolean }): Promise<JobSummary[]> {
+    const params = new URLSearchParams({ select: 'id,customer_name,phone,phone_action,address,title,responsible_pm,lifecycle,rain_day,filler,whole_house,trades', order: 'created_at.desc,id.desc', limit: String(query.limit), offset: String(query.offset), lifecycle: query.rainDay || query.filler ? 'eq.open' : 'neq.archived' });
+    if (query.rainDay) params.set('rain_day','eq.true');
+    if (query.filler) params.set('filler','eq.true');
     if (query.responsiblePm) params.set('responsible_pm', 'eq.' + query.responsiblePm);
     return this.request('/rest/v1/jobs?' + params);
   }
 
   async getJob(id: string): Promise<JobDetail | null> {
-    const params = new URLSearchParams({ select: 'id,customer_name,phone,phone_action,address,title,scope,access_notes,responsible_pm,lifecycle', id: 'eq.' + id, limit: '1' });
+    const params = new URLSearchParams({ select: 'id,customer_name,phone,phone_action,address,title,scope,access_notes,responsible_pm,lifecycle,rain_day,filler,whole_house,trades', id: 'eq.' + id, limit: '1' });
     const rows = await this.request('/rest/v1/jobs?' + params);
     return rows[0] ?? null;
   }
 
   async updateJob(id: string, patch: JobPatch): Promise<JobDetail> {
     return this.request('/rest/v1/rpc/update_job', { method: 'POST', body: JSON.stringify({ p_job_id: id, p_patch: patch }) });
+  }
+
+  async createClassifiedJob(input: ValidJobInput, classification: Partial<JobClassification>): Promise<{id:string}> {
+    return this.request('/rest/v1/rpc/create_classified_job',{method:'POST',body:JSON.stringify({p_request_id:input.requestId,p_customer:input.customer,p_phone:input.phone,p_address:input.address,p_classification:classification})});
+  }
+  async saveClassification(id:string, requestId:string, patch:Partial<JobClassification>): Promise<{id:string}> {
+    return this.request('/rest/v1/rpc/save_job_classification',{method:'POST',body:JSON.stringify({p_job_id:id,p_request_id:requestId,p_patch:patch})});
+  }
+  async jobMarkers(ids:string[]): Promise<Record<string,JobClassification>> {
+    const unique=[...new Set(ids)];
+    if (!unique.length) return {};
+    if (unique.length>500 || unique.some(id=>!/^[a-f0-9-]{36}$/i.test(id))) throw new AppError('invalid_input',400,'Invalid job list.');
+    const chunks=Array.from({length:Math.ceil(unique.length/100)},(_,i)=>unique.slice(i*100,i*100+100));
+    const groups=await Promise.all(chunks.map(ids=>this.request('/rest/v1/jobs?'+new URLSearchParams({select:'id,rain_day,filler,whole_house,trades',id:'in.('+ids.join(',')+')',limit:'100'}))));
+    return Object.fromEntries(groups.flat().map((r:JobClassification&{id:string})=>[r.id,r]));
+  }
+  async listSubcontractors(trade?:string):Promise<Subcontractor[]> {
+    const params=new URLSearchParams({select:'id,name,phone,phone_action,email,trades,archived_at',archived_at:'is.null',order:'name.asc,id.asc',limit:'500'});
+    if(trade)params.set('trades','cs.{'+trade+'}');
+    return this.request('/rest/v1/subcontractors?'+params);
+  }
+  async saveSubcontractor(id:string|null,requestId:string,patch:Partial<SubcontractorValues>&{archive?:true}):Promise<{id:string}> {
+    return this.request('/rest/v1/rpc/save_subcontractor',{method:'POST',body:JSON.stringify({p_id:id,p_request_id:requestId,p_patch:patch})});
   }
 
   async listContacts(jobId: string): Promise<JobContact[]> {

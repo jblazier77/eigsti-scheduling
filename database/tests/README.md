@@ -54,3 +54,7 @@ Run 0007_lead_queues.test.sql after 0007. All synthetic fixtures roll back; 58-r
 0008_scheduled_visits.test.sql: 60 prepared checks, NOT run; requires 0001-0008. Synthetic fixtures roll back. Tests optional times, explicit conflicts/rollback, roles/rosters/access/retries/calendar/scope; single connection only. Full user build/browser/concurrent/phone acceptance remains separate.
 
 0008 user-reported result: 60 checks/0 failed. New 0009_visit_card_save.test.sql: 38 prepared checks, NOT run, requires 0001-0009; fixtures roll back.
+
+0010_completion_and_returns.test.sql: 60 prepared checks, NOT run. Requires 0001-0010; standalone tests roll back. User bundle database/batches/0010_completion_and_returns.sql wraps new DDL plus this exact suite under a savepoint, rolls back fixtures then commits DDL only after all checks pass. Node packaging test verifies boundaries.
+
+Combined acceptance: database/batches/0010_0011_combined.sql runs 60 completion/return and 51 job-tag/trade assertions, validates every result, and rolls back both fixture suites before committing ordered DDL. 111 checks are prepared, not confirmed executed. Standalone 0011_job_tags_and_trades.test.sql is rollback-only and assumes the schema is already applied; use the combined update for this initial rollout, not both alternatives. See docs/combined-batch.md.

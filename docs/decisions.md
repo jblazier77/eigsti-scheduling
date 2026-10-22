@@ -77,3 +77,54 @@ Josh requests minimal clicks and edit-in-place throughout the program to support
 ## D41 - One Save/Cancel per visit card (2026-10-22)
 
 User requests one Save instead of separate Save visit/Save staffing controls. Implement one shared inline draft and Save/Cancel pair for dates, helper need and named staffing. Selecting a helper can add the required space in the same draft; saved-time busy status must not prevent selecting staff for changed draft dates. Final availability/permissions/capacity checks remain authoritative and atomic. New 0009 is required; applied 0008 is unchanged. 77 Node tests/TypeScript pass; 38 SQL checks/full build/browser acceptance pending. See visit-card-save.md.
+
+## D42 - Larger completion/return development batch
+
+User approved grouping finishing scheduled work, completing a portion and planning return work into one implementation/testing batch, one database update and a consolidated acceptance checklist. Prepare all work first; interrupt only for a blocking business decision. 0010 keeps visit finish/portion completion/job close distinct; return notes can be undated, preserve work identity and link optional appointments. Completion blocks unresolved planned entries/returns and does not touch another portion/job. One outer transaction plus fixture savepoint bundles migration and 60 checks; commit DDL only after all pass and fixtures are rolled back. 86 Node tests/TypeScript pass; database/build/browser acceptance pending. Whole-job closure remains a separate future guarded command.
+## D43 - Rain-day discovery and flexible filler work (2026-10-22)
+
+Josh paused completion/return testing and requested initial-build additions: tag jobs as potential bad-weather work with an easily recognized marker, and maintain undated filler work such as punch-list items and small repairs. Documented as R25/R26 in rain-day-and-filler-work.md; not implemented. Proposed independent classifications preserve readiness, assignments and existing access. User confirmed filler work is a standalone job tag, using normal job details and permissions. No weather integration or automatic scheduling is requested.
+
+## D44 - Trade and project-scope icons (2026-10-22)
+
+Josh requested subcontractor trade icons and compact project-scope icons on job cards, with a Whole house indicator for full-scope projects. R27 and trade-and-scope-icons.md capture this addition; not implemented. Keep actual project scopes independent of subcontractor assignment and retain readable expanded labels. Filler work is confirmed as a standalone job tag.
+
+## D45 - Combined development and acceptance
+
+User requested developing the rain-day, filler-job and trade/scope additions before testing the prepared completion/return work, then testing all of it together. Plan one consolidated setup and grouped acceptance checklist after implementation, with automated verification during development. Preserve ordered migrations and detect whether 0010 has been applied before preparing the combined database update. No intermediate user acceptance is needed unless a blocking issue or business decision arises.
+
+## D46 - Combined implementation prepared
+
+0010 and 0011 are now implemented locally, with one guarded database update and grouped acceptance in combined-batch.md. 98 Node checks and TypeScript pass; 111 SQL checks, normal-user production build and browser acceptance remain pending. Job tags/scopes are PM edits; directory management is PM/admin with lead read access and helper denial. Filler creation uses an atomic normal-job/default-work/tag wrapper. Whole house preserves selected scopes; no automatic subcontractor assignment, readiness or staffing change. Applied 0001-0009 unchanged. Latest confirmed uploaded checkpoint remains a91da8c.
+
+## D47 - Approved carpenter-first layout and consistent initial pages
+
+User approved the fictional job-details preview and requested the same theme across initial screens. Implemented one combined card per work portion, current user work first, visible arrival notes, all scope toggles visible (green selected/neutral inactive), inline PM edits and expandable supporting information/history. Shared compact theme covers Jobs/Queue/Schedule/Subcontractors/Account/Login. Existing atomic commands, role checks and applied SQL remain unchanged. 107 Node tests/TypeScript pass; new full build and authenticated/phone acceptance pending. See ui-layout-refresh.md.
+
+## D48 - Scope at top and attachments as a bottom gallery
+
+User asked for scope to be always visible near the top, with a small pencil edit control, top paperclip/photo add controls and bottom attachment thumbnails. Implemented inline native file selection/upload, protected lazy JPEG/PNG/WebP photo previews and labeled PDF/HEIC original-file tiles. Project work must be reviewed separately next and is not redesigned in this slice. Existing job scope edit and upload/remove roles remain authoritative; no applied SQL changed. 114 Node checks pass; production build and authenticated browser/device checks remain pending.
+
+## D49 - Compact unified job contacts and three discovery filters
+
+User requested one smaller alphabetical contact list, treating Subcontractor as a contact Type, and removal of the combined Rain-day filler filter from My Jobs. Customer and additional contacts now sort together by name, case-insensitively; compact rows expose call/text/email and PM pencil controls. Add/edit/remove stay on the job page. Existing relationship/trade labels remain intact, with Type choices Customer/Subcontractor/Site contact/Other using the existing relationship field. PMs and assigned leads can copy a directory subcontractor into a new job contact; this is an editable job-specific snapshot, not a live association or automatic scope/staff assignment. Only PMs edit/remove, helpers receive no directory payload. The primary customer still edits with the job-details pencil. My Jobs exposes only All work/Rain day/Filler; stale kind=both falls back to All work. No new SQL. 118 Node checks and TypeScript pass; authenticated UI acceptance and final production build remain pending.
+
+## D50 - Simplified work overview
+
+User approved the preceding scope/attachment/contact UI and requested simplification of the work sections. The default view now shows a compact portion heading with lead/status, then scheduled dates/crew. One section-heading pencil opens the existing atomic multi-portion Work & leads form with one Save/Cancel; Add work opens beside it on the same page. Both management panels close after confirmed success or explicit Cancel, retaining uncertain-result retries. Removed the duplicate full-width Edit work/leads and Add work support rows. Per-entry date/crew editing is a small pencil and Finish is a quiet action; Add date is an inline text control. Completion/reopen/return commands remain under one More control per portion, open returns remain visible and completed history remains separate. Role checks, date-only scheduling, optional times, helper selection, atomic saves and completion guards are unchanged. No SQL or deployment. 119 automated checks and TypeScript pass; authenticated visual/phone review and final normal-user production build remain pending.
+
+## D51 - Scheduled entries are plans, not completion reports
+
+User clarified that the tool plans future days and is not for checking up on completed work. Removed both Finish and Finish scheduled work controls from the shared scheduled-entry component, including job details and day/week schedule views. Entries retain dates, optional times, crew and edit/cancel controls. No daily finish action is required to create, move, staff or view plans. Supersedes the scheduled-entry Finish UI described in D50 and earlier completion acceptance.
+
+This scoped UI removal does not rewrite applied SQL or historical completion data. Optional whole-portion completion and return close-out still have legacy database guards for planned entries; those are distinct from routine calendar planning. The remaining guarded whole-job/portion closure design must be reconciled with this planning-only decision before closure acceptance: do not introduce mandatory daily completion, auto-mark past plans as completed, or tell users to cancel real past plans as a workaround. No such workaround or automatic outcome inference is implemented. 119 automated checks and TypeScript pass; authenticated visual review/full build still pending.
+
+## D52 - Remove work/return completion controls as well
+
+User clarified that Complete this work is also unwanted after scheduled-entry Finish was removed. Removed whole-portion Complete/Reopen and Mark return handled controls from the active job workspace and legacy return-work component. No Finish, complete_work, resolve_return or reopen_work form is now rendered anywhere in app pages/components. Planning dates/crew and adding/planning return work remain available. Historical outcomes and applied SQL are retained, without automatic completion inference or data mutation. This supersedes D51's assumption that optional portion close-out controls should remain in the UI. Any future lifecycle/archival design must be distinct from carpenter completion reporting. 119 automated checks and TypeScript pass. No SQL update.
+
+## D53 - One notion of job work
+
+User requested Save visit be renamed Save work and clarified that work is a single notion, whether set up initially or added later. Removed the distinct Add/Plan return work flow, More submenu, return section and handled-return section. New items always use ordinary Add work; dates and crew remain optional planning details on work. Removed unused legacy return-work and progress-form UI components and the special return selector from the scheduling form. Scheduling and ordinary add-work submits use Save work; calendar removal says Remove from schedule and explicitly retains the work item.
+
+Existing follow-up records have NOT been deleted, silently migrated or duplicated: their notes, owners and target dates render with their original work as ordinary notes; the duplicated remaining-note copy is suppressed. Existing linked dates/crews still render through the same planning component. Historical outcomes remain in Work history. Backend legacy commands/fields are retained for compatibility/audit, with no current return/completion UI producing them. No SQL needed for this UI/workflow unification; any eventual data-model cleanup requires a separate reviewed migration. 120 automated checks and TypeScript pass; authenticated desktop/phone review and final production build remain pending.

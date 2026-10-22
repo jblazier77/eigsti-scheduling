@@ -75,3 +75,14 @@ export async function archiveContactAction(_previous: FormState, form: FormData)
   // before a client effect runs would produce notFound instead of returning to the job.
   redirect('/jobs/' + jobId, RedirectType.replace);
 }
+
+export async function archiveContactInlineAction(_previous: FormState, form: FormData): Promise<FormState> {
+  let jobId: string;
+  try {
+    const { gateway, actor } = await contactSession();
+    jobId = contactUuid(form.get('jobId'));
+    await archiveContact(actor, jobId, form.get('contactId'), gateway);
+  } catch (error) { return contactFailure(error); }
+  refreshContactPages(jobId);
+  return {message:'Contact removed.',jobId};
+}

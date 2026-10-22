@@ -1,0 +1,10 @@
+import {readFileSync,writeFileSync,mkdirSync} from 'node:fs';
+const root=new URL('../',import.meta.url);
+const migration=readFileSync(new URL('database/migrations/0010_completion_and_returns.sql',root),'utf8');
+const tests=readFileSync(new URL('database/tests/0010_completion_and_returns.test.sql',root),'utf8');
+if(!/commit;\s*$/.test(migration)||!/rollback;\s*$/.test(tests)||!tests.includes('Incomplete completion checks: expected 60'))throw new Error('Unexpected completion batch boundaries.');
+const header='-- SINGLE TEST-PROJECT UPDATE: apply 0010 and run 60 checks atomically.\n-- Requires applied 0001-0009. Run this file ONCE, not the separate migration.\n-- Failure aborts the outer transaction. Success removes all synthetic fixtures.\n';
+const batch=header+migration.replace(/commit;\s*$/,'')+'\nsavepoint eigsti_completion_acceptance;\n'+tests.replace(/^begin;\r?\n/m,'').replace(/rollback;\s*$/,'')+'\nrollback to savepoint eigsti_completion_acceptance;\nrelease savepoint eigsti_completion_acceptance;\ncommit;\nselect 60::integer as checks,0::integer as failed,\'0010 applied; synthetic fixtures removed\'::text as result;\n';
+mkdirSync(new URL('database/batches/',root),{recursive:true});
+writeFileSync(new URL('database/batches/0010_completion_and_returns.sql',root),batch);
+process.stdout.write('Prepared atomic completion update and 60 checks.\n');

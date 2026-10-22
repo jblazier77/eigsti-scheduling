@@ -6,9 +6,10 @@ import { cookies } from 'next/headers';
 import { authClient } from '../lib/supabase-server';
 import { appConfig } from '../lib/config';
 import { SupabaseSession } from '../server/supabase.ts';
-import { createJob } from '../domain/jobs.ts';
+import { validateCreateJob } from '../domain/jobs.ts';
+import { classificationPatch } from '../domain/job-classification.ts';
 import { updateJob } from '../domain/job-edits.ts';
-import { AppError } from '../domain/access.ts';
+import { AppError, requirePm } from '../domain/access.ts';
 import { signOutWithDeadline } from '../server/sign-out.ts';
 
 export type FormState = { message: string; uncertain?: boolean; jobId?: string };
@@ -59,7 +60,12 @@ export async function createJobAction(_previous: FormState, form: FormData): Pro
     const gateway = new SupabaseSession(env, data.session.access_token);
     // Reauthorize on every action, even if a PM form was visible earlier.
     const actor = await gateway.getActor();
-    const job = await createJob(actor, { requestId: form.get('requestId'), customer: form.get('customer'), phone: form.get('phone'), address: form.get('address') }, gateway);
+    requirePm(actor);
+    let rawClassification:unknown;
+    try{const text=form.get('classification')??'{}';if(typeof text!=='string'||text.length>6000)throw new Error('Invalid tags');rawClassification=JSON.parse(text);}
+    catch{throw new AppError('invalid_input',400,'Check the job tags.');}
+    const classification=classificationPatch(rawClassification);
+    const job = await gateway.createClassifiedJob(validateCreateJob({ requestId: form.get('requestId'), customer: form.get('customer'), phone: form.get('phone'), address: form.get('address') }), classification);
     id = job.id;
   } catch (error) {
     return { message: error instanceof AppError ? error.message : 'The save was not confirmed. Please retry.', uncertain: !(error instanceof AppError) || ['connection_failed', 'save_failed'].includes(error.code) };

@@ -28,7 +28,16 @@ Source: Handoff v1.0, 2026-10-20. Status is specified, not implemented, unless d
 | R22 | Phone-first, large tap targets, no mandatory drag | Actual lead/PM/helper phone review of core workflows | 0/4 |
 | R23 | Approx. $50 monthly initial operation; no unauthorized charges | Current-source estimate covers host, DB, auth email, files, backup and test | 0/4 |
 | R24 | About 20 leads/30 active houses represented coherently | Deterministic seed now; indexed DB queries measured later | 0/4 |
+| R25 | Tag a job as potential bad-weather/rain-day work and find it quickly in relevant views | Tag persists; clear cloud icon with text/accessibility label appears on job list/details and relevant queue/schedule entries; quick filter respects existing access | Initial build addition, 2026-10-22 |
+| R26 | Maintain a list of standalone jobs tagged Filler work, including punch-list items and small repairs, without requiring a scheduled date or time | Create and find undated work; optionally schedule it later; filler and rain-day suitability can coexist; existing ownership, readiness and access rules remain enforced | Initial build addition, 2026-10-22 |
+| R27 | Identify subcontractors by trade with icons; show project scopes on job cards and a compact Whole house indicator for full-scope projects | Recognizable icons with accessible labels; project scopes remain independent of subcontractor assignment; full scope list remains inspectable | Initial build addition, 2026-10-22 |
 
 No payroll, time clock, accounting, estimating, purchasing, CRM expansion, portals, messaging capture, notifications, offline sync, automatic routing/rescheduling, AI scheduler, or critical-path engine. Tools links are optional only if trivial and cost-neutral. No shared account or permanent primary lead per job. No paid notification services.
 
 2026-10-22 UI clarification (D40): minimize clicks across the program; use inline edits on the current job/schedule card wherever practical, avoiding separate edit screens. Visit dates, help needed, named staffing and cancellation now follow this locally; browser/build retest pending. Date-only plans allow multiple jobs per day (D39); time blocks remain optional.
+
+2026-10-22 additions R25-R27 are implemented locally with 0011; combined database/build/browser acceptance is pending. See combined-batch.md and rain-day-and-filler-work.md. Filler work is a standalone job with a tag, using normal job details, ownership and access. Trade/scope markers are added as R27; see trade-and-scope-icons.md.
+
+- R28: Calendar entries plan future days and staffing; do not require per-entry Finish actions or completion reporting. This supersedes earlier daily-finish UI requirements. Whole-job/portion close-out is a separate planning-lifecycle decision, not a daily carpenter check-off workflow.
+
+- R29: One user-facing notion of work per job. Work may be entered initially or added later through the same Add work flow. No separate return-work category or workflow. Scheduling saves say Save work; removing dates preserves the work item. Preserve existing notes, ownership, dates and staffing while unifying the UI.

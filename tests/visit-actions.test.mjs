@@ -15,6 +15,7 @@ function fixture(role = 'lead', failure) {
       saveVisit: async (...args) => { calls.push(['save', ...args]); if (failure) throw new AppError(failure, 409, 'Not confirmed'); return saved; },
       staffVisit: async (...args) => { calls.push(['staff', ...args]); if (failure) throw new AppError(failure, 409, 'Not confirmed'); return saved; }
       ,saveVisitCard: async (...args) => { calls.push(['card', ...args]); if (failure) throw new AppError(failure,409,'Not confirmed'); return saved; }
+      ,progress: async input => { calls.push(['progress',input]);if(failure)throw new AppError(failure,409,'Not confirmed');return{job_id:id,visit:saved}; }
     } }) }, '../domain/visits.ts': visits, '../domain/access.ts': { AppError }
   };
   const source = stripTypeScriptTypes(readFileSync(new URL('../src/app/visit-actions.ts', import.meta.url), 'utf8')).replace(/^import \{([^}]+)\} from '([^']+)';$/gm, 'const {$1} = require(\'$2\');').replace(/export async function (\w+)/g, 'exports.$1 = async function $1');
@@ -29,6 +30,11 @@ test('visit actions authenticate, send only selected changes and refresh after c
   assert.deepEqual(JSON.parse(JSON.stringify(f.calls[0])), ['save', id, id, id, { certainty: 'confirmed' }]); assert.equal(f.calls.length, 3);
   const helper = fixture('helper'); assert.equal((await helper.run()).visit, undefined); assert.equal(helper.calls.length, 0);
   const invalid = fixture(); invalid.form.set('slot', 'unknown'); assert.equal((await invalid.run()).visit, undefined); assert.equal(invalid.calls.length, 0);
+});
+test('return planning uses the linked progress command and confirms its actual saved visit',async()=>{
+ const f=fixture('pm');f.form.set('operation','return');f.form.set('followUpId',id);
+ assert.equal((await f.run()).visit.id,id);assert.equal(f.calls[0][0],'progress');assert.equal(f.calls[0][1].command,'plan_return');assert.equal(f.calls[0][1].followUpId,id);
+ const failure=fixture('pm','staff_conflict');failure.form.set('operation','return');failure.form.set('followUpId',id);assert.equal((await failure.run()).visit,undefined);assert.equal(failure.calls.length,1);
 });
 test('combined visit action makes one atomic RPC with narrow fields and optional roster', async () => {
   const f=fixture('pm'); f.form.set('operation','card'); f.form.set('visitId',id); f.form.set('fields','["required_helpers"]'); f.form.set('helpersMode','changed'); f.form.append('helper',id);

@@ -42,7 +42,7 @@ function actions({ roles = ['pm'], fail = false } = {}) {
     .replace(/export async function (\w+)/g, 'exports.$1 = async function $1');
   runInNewContext(compiled, { exports, require: name => { assert(name in dependencies, 'Unexpected dependency: ' + name); return dependencies[name]; } });
   const form = new FormData(); form.set('jobId', jobId); form.set('contactId', contactId);
-  return { action: exports.archiveContactAction, createAction: exports.createContactAction, calls, form };
+  return { action: exports.archiveContactAction, inlineAction:exports.archiveContactInlineAction, createAction: exports.createContactAction, calls, form };
 }
 
 test('successful removal invalidates job data then redirects directly away from archived edit page', async () => {
@@ -54,6 +54,17 @@ test('successful removal invalidates job data then redirects directly away from 
     ['revalidate', '/jobs/' + jobId + '/contacts'],
     ['redirect', '/jobs/' + jobId, 'replace']
   ]);
+});
+
+test('inline removal confirms only after successful PM command; failed and forged requests stay on the form', async () => {
+  const ok=actions();
+  assert.equal((await ok.inlineAction({message:''},ok.form)).jobId,jobId);
+  assert.deepEqual(ok.calls,[['archive',jobId,contactId],['revalidate','/jobs/'+jobId],['revalidate','/jobs/'+jobId+'/contacts']]);
+  for(const options of [{fail:true},{roles:['lead']},{roles:['helper']}]){
+    const f=actions(options),result=await f.inlineAction({message:''},f.form);
+    assert.equal(result.jobId,undefined);
+    assert(!f.calls.some(call=>call[0]==='revalidate'||call[0]==='redirect'));
+  }
 });
 
 test('unconfirmed removal retains an error state without invalidating or redirecting', async () => {

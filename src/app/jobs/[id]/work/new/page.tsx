@@ -16,5 +16,6 @@ export default async function NewWork({ params }: { params: Promise<{ id: string
   const job = await gateway.getJob(id);
   if (!job || job.lifecycle !== 'open') notFound();
   const leads = await gateway.listLeads();
-  return <Shell title="Add work portion"><div className="form-intro"><p>{job.title}</p><p>Add only the work that needs separate ownership. No dates or staffing are required here.</p></div><section className="card form-card"><WorkForm jobId={id} requestId={randomUUID()} original={{ description: '', responsible_lead: null }} leads={leads} /></section></Shell>;
+  return <Shell title="Add work"><div className="form-intro"><p>{job.title}</p><p>Add work now or later. Dates and staffing can be planned whenever needed.</p></div><section className="card form-card"><WorkForm jobId={id} requestId={randomUUID()} original={{ description: '', responsible_lead: null }} leads={leads} /></section></Shell>;
 }
+

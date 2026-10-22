@@ -35,3 +35,23 @@ button[aria-busy="true"] { cursor: wait; }
 .inline-visit-panels .two-actions input { min-width: 0; }
 .inline-visit-panels button:disabled { cursor: default; }
 .inline-visit-panels button[aria-busy="true"] { cursor: wait; }
+
+.progress-command { margin: .8rem 0; }
+.progress-command label { display: grid; gap: .4rem; }
+.progress-command .staff-choice { display: flex; }
+.return-entry { border-left: 3px solid var(--gold); padding: .6rem 1rem; margin: 1rem 0; }
+.return-entry h4 { margin: .3rem 0; }
+.return-entry details { margin: .7rem 0; }
+.job-markers{display:flex;flex-wrap:wrap;gap:.5rem;align-items:center;margin:.75rem 0}
+.scope-chip{display:inline-flex;align-items:center;gap:.4rem;border:1px solid #cbd5d1;border-radius:8px;padding:.3rem .5rem;font-size:.85rem;background:#f4f7f5;color:#253d35}
+.scope-chip.rain{background:#edf5fb;border-color:#b8d4e8;color:#254e6b}
+.scope-chip svg,.scope-details svg,.check-option svg{flex-shrink:0}
+.scope-details{max-width:100%}.scope-details summary{display:flex;gap:.45rem;align-items:center;cursor:pointer;min-height:44px;flex-wrap:wrap}
+.scope-details summary>span{display:inline-flex;align-items:center}
+.scope-labels{display:flex;flex-wrap:wrap;gap:.4rem;padding:.5rem 0}
+.trade-choices,.tag-choices{border:1px solid #d2dcd6;border-radius:10px;padding:.75rem;display:grid;gap:.5rem;min-width:0}
+.trade-choices{grid-template-columns:repeat(auto-fit,minmax(min(100%,210px),1fr))}
+.check-option{display:flex;align-items:center;gap:.55rem;min-height:44px;margin:0;font-weight:400}
+.check-option input[type=checkbox]{width:22px;height:22px;margin:0;flex:0 0 22px}
+.card>details>summary{margin:.5rem 0}.schedule-nav [aria-current=page]{background:#244f40;color:white}
+.job-card .card-link{display:block;margin-top:1rem}.job-card h2 a{text-decoration:none;color:inherit}

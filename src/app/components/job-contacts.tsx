@@ -1,24 +1,13 @@
-import Link from 'next/link';
 import { AppError } from '../../domain/access.ts';
 import type { SupabaseSession } from '../../server/supabase.ts';
+import { ContactList } from './contact-list';
 
-export async function JobContacts({ jobId, isPm, canAdd, gateway }: { jobId: string; isPm: boolean; canAdd: boolean; gateway: SupabaseSession }) {
-  let contacts;
-  try { contacts = await gateway.listContacts(jobId); }
-  catch (error) {
-    if (!(error instanceof AppError) || error.code !== 'schema_pending') throw error;
-    return <section className="card"><h3>Additional job contacts</h3><p className="muted">Additional contacts are temporarily unavailable. Please try again later.</p></section>;
-  }
-  return <section className="card">
-    <div className="section-heading"><h3>Additional job contacts</h3>{canAdd && contacts.length < 100 && <Link className="button" href={'/jobs/' + jobId + '/contacts/new'}>Add contact</Link>}</div>
-    {!contacts.length && <p className="muted">{canAdd ? 'Add a spouse, site contact or trade contact for this job.' : 'No additional contacts added yet.'}</p>}
-    {contacts.map(contact => <article className="contact-entry" key={contact.id}>
-      <div className="section-heading"><div><h3>{contact.name}</h3>{contact.relationship && <p className="muted">{contact.relationship}</p>}</div>{isPm && <Link className="button" href={'/jobs/' + jobId + '/contacts/' + contact.id + '/edit'}>Edit<span className="sr-only"> {contact.name}</span></Link>}</div>
-      {contact.phone && <p>{contact.phone}</p>}
-      {contact.phone_action && <div className="two-actions"><a className="button primary" href={'tel:' + contact.phone_action}>Call<span className="sr-only"> {contact.name}</span></a><a className="button" href={'sms:' + contact.phone_action}>Text<span className="sr-only"> {contact.name}</span></a></div>}
-      {contact.email && <p className="contact-email"><a href={'mailto:' + encodeURIComponent(contact.email)}>{contact.email}</a></p>}
-      {contact.notes && <p className="preserve-lines">{contact.notes}</p>}
-    </article>)}
-    {contacts.length >= 100 && canAdd && <p className="muted">This job has 100 additional contacts. {isPm ? 'Remove an outdated contact before adding another.' : 'Ask a project manager to remove an outdated contact before adding another.'}</p>}
-  </section>;
+export async function JobContacts({jobId,isPm,canAdd,gateway,primary}: {jobId:string;isPm:boolean;canAdd:boolean;gateway:SupabaseSession;collapsible?:boolean;primary?:{name:string;phone:string;phoneAction:string}}){
+ let contacts;
+ try {contacts=await gateway.listContacts(jobId);}
+ catch(error){if(!(error instanceof AppError)||error.code!=='schema_pending')throw error;return <section className="card"><h3>Contacts</h3><p className="muted">Contacts are temporarily unavailable. Please try again later.</p></section>;}
+ let directory:Awaited<ReturnType<SupabaseSession['listSubcontractors']>>=[];
+ let directoryUnavailable=false;
+ if(canAdd){try{directory=await gateway.listSubcontractors();}catch(error){if(!(error instanceof AppError))throw error;directoryUnavailable=true;}}
+ return <ContactList jobId={jobId} isPm={isPm} canAdd={canAdd} contacts={contacts} primary={primary} directory={directory.map(({id,name,phone,email})=>({id,name,phone,email}))} directoryUnavailable={directoryUnavailable}/>;
 }

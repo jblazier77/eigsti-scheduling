@@ -1,12 +1,30 @@
 # Current status
 
+D53 unified work is implemented: Save work replaces Save visit, all new additions use ordinary Add work, and separate return-work sections/actions/forms are removed. Earlier follow-up notes/owners/target dates remain attached to their original work as notes; linked schedules/crews and history are preserved. No data migration/deletion or SQL update. 120 automated checks and TypeScript pass. Full production build and authenticated desktop/phone review remain pending. Latest confirmed uploaded checkpoint remains a91da8c. See D53 and ui-layout-refresh.md.
+
+D52 correction implemented: Complete this work, standalone Reopen work and Mark return handled controls are removed too. No completion/check-off command forms remain rendered in app pages/components. Dates/crew planning and add/plan return work remain. Historical outcomes retained; no SQL needed. 119 automated checks and TypeScript pass. See D52; it supersedes the prior assumption that portion close-out controls remain in the UI.
+
+User clarified scheduling is planning, not daily completion reporting. Removed Finish/Finish scheduled work from all scheduled-entry views (job and calendar), leaving edit/cancel/date/crew planning. 119 automated checks and TypeScript pass. No new SQL for UI removal. Optional whole-portion/return closure still has legacy planned-entry guards and needs reconciliation before that workflow's acceptance; do not require daily check-offs or cancel real historical plans as a workaround. See D51. Authenticated visual review/final build remain pending; latest confirmed uploaded checkpoint is a91da8c.
+
+Latest work simplification is implemented: compact description/lead/status and date/crew overview, section-heading Add work/pencil controls, inline management panels that close after confirmed saves, small per-entry edit/Finish controls, and one More menu for completion/return actions. 119 automated checks and TypeScript pass. No new SQL. Authenticated desktop/phone acceptance and final normal-user production build remain pending. Work is local; latest confirmed uploaded checkpoint remains a91da8c. See ui-layout-refresh.md and D50.
+
+Latest contact follow-up: compact always-visible alphabetical list including customer, Type choices including Subcontractor, inline add/edit/remove, and optional copy from active subcontractor directory. Existing relationship labels and role boundaries are preserved. My Jobs now has All work/Rain day/Filler only. 118 automated checks and TypeScript pass. No new SQL; do not rerun 0010/0011. Authenticated browser/phone acceptance and final production build remain pending. Changes are local; latest confirmed uploaded checkpoint is still a91da8c. See ui-layout-refresh.md and D49.
+
+Latest scoped UI follow-up is implemented: always-visible top scope/pencil edit, top paperclip/photo controls with inline upload, and a bottom attachment gallery. Raster photos get private lazy thumbnails; PDF/HEIC originals get labeled tiles. Project work internals remain unchanged for the next user review. 114 automated checks and TypeScript pass; a real unsigned preview request returned 401 as expected. New full build and authenticated/device gallery acceptance remain pending. No new SQL; do not rerun applied 0010/0011. See ui-layout-refresh.md.
+
+Latest local UI work: user approved the cleaner job-details mockup and requested consistent initial pages. Implemented combined work cards, role-relevant work first, visible scope toggle buttons, inline job/work editing, expandable supporting details and a compact shared theme across initial screens. 107 Node tests and TypeScript pass; local /login returned 200 with the updated heading/theme. No new SQL. The previously applied 0010/0011 and 111/0 database evidence remain valid. Authenticated/phone review and a NEW production build after this UI refresh are pending; earlier build success predates the refresh. See ui-layout-refresh.md. Latest uploaded checkpoint remains a91da8c; no new push confirmed.
+
+Latest confirmed evidence: user reported the full production build passed including /subcontractors, then the combined database update returned 111 checks, 0 failed, 0010 and 0011 applied, synthetic fixtures removed. Both migrations are now APPLIED in the isolated test project; do not rerun either standalone migration or combined bundle. The 98 automated Node checks and TypeScript previously passed. Next: restart dev and perform the grouped browser acceptance in combined-batch.md, then record results and commit/push once. New implementation is not yet confirmed uploaded beyond a91da8c. Browser/phone/concurrent/fault/recovery gates remain distinct.
+
+Current combined batch is implemented locally: completion/returns, rain-day and filler-job tags, project-scope icons/Whole house, and subcontractor trade directory. 98 Node checks, TypeScript, user production build and all 111 combined SQL checks passed; grouped browser acceptance is pending. Use docs/combined-batch.md and database/batches/0010_0011_combined.sql; the earlier 0010-only instructions are superseded. 0010 and 0011 are applied; the new implementation is not yet confirmed pushed. No production deployment.
+
 Updated 2026-10-22. Initial app, PM editing and additional job contacts have passed the checks recorded below. Phase 0 exit and remaining Phase 1 work are still pending. No production deployment.
 
 ## Checkpoint
 
 - Workspace: C:\Users\jrbla\OneDrive\Projects\ChatGPT\Eigsti Scheduling
 - Branch: phase-0-foundation
-- Latest confirmed uploaded commit: 6285665 (lead queues and database/browser checks). Visits/staffing/calendar code is local and uncommitted. 0008 is applied with 60 checks/0 failed; new shared-card 0009 is prepared, unapplied.
+- Latest confirmed uploaded commit: a91da8c (scheduled jobs/calendar, atomic inline staffing and recorded desktop checks). Combined 0010/0011 implementation is local and uncommitted; both migrations are applied in the test database.
 - Private origin: https://github.com/jblazier77/eigsti-scheduling.git
 - Test Supabase project: vglhojtrccygjgupxsrd, Free plan in Eigsti Construction organization.
 - User PowerShell manages commits/pushes because agent Git writes remain restricted.
@@ -78,7 +96,7 @@ Updated 2026-10-22. Initial app, PM editing and additional job contacts have pas
 
 ## Exact next action
 
-Run final production build in normal user PowerShell after stopping dev, then commit/push all outstanding visit, inline card, sign-out and documentation changes. Applied 0008 passed 60 SQL checks; 0009 passed 38 SQL checks. Latest Node suite: 79 passed, TypeScript passed. Core desktop checks passed as recorded below. Do not rerun applied 0001-0009. Latest uploaded checkpoint remains 6285665 until the new push is confirmed. Phone, real concurrent database, fault and recovery checks remain separate pilot gates.
+Run the normal-user build, then apply database/batches/0010_0011_combined.sql ONCE in the isolated test project, only after the build passes. Expect 111 checks/0 failed; stop on any SQL error. Restart dev and use docs/combined-batch.md for one grouped acceptance pass. The file preflight rejects an existing 0010/0011 or missing 0009 RPC. Do not rerun applied migrations. Latest confirmed uploaded checkpoint a91da8c.
 
 To pause: Ctrl+C stops dev; commit/push outstanding changes, then close PowerShell/browser. Database data persists independently. To resume: npm.cmd run dev from the workspace and http://127.0.0.1:4310. GitHub is the implementation checkpoint destination; the older Library recovery ZIP predates current work.
 
@@ -115,3 +133,21 @@ User clarified the helper had not actually been assigned during the empty-schedu
 As PM, user set one of the same-day entries to Morning and saved, then attempted Morning on the other and confirmed the scheduling conflict message. Cancel discarded the rejected draft; first entry was returned to No time set and saved. User confirmed both entries show No time set in a newly opened job page. This supplies fresh-page persistence evidence despite uncertainty about the browser refresh control. Existing helper assignment/personal schedule/read-only access, lead locked helper selection and whole-card Cancel checks passed earlier. Final build after sign-out/wording edits and Git commit/push are next; not yet claimed complete.
 
 Final user production build passed after all visit-card, sign-out and empty-calendar wording changes (including /schedule and /visits/[id]). Database suites 0008: 60/0 and 0009: 38/0, Node 79/0, TypeScript and recorded core desktop checks passed. Next action is commit/push all outstanding changes through user PowerShell. Not yet backed up beyond uploaded 6285665.
+
+
+## Larger completion/return batch prepared
+
+User requested larger development/testing batches instead of many small checks. 0010 implements inline finish scheduled work, guarded portion completion/reopen, undated return follow-ups, linked return appointments and explicit resolution. Independent portions/job remain untouched. One SQL bundle applies schema and all 60 checks atomically; fixture savepoint rolls back before committing DDL. 86 Node tests/TypeScript pass. New SQL, full user build and consolidated browser checklist are pending. Do not claim applied or backed up. See completion-and-returns.md. Prior a91da8c is uploaded/clean before this new work.
+
+## Local preview connection failure diagnosed
+
+After combined SQL success, the agent launched dev through its execution tool. /login returned HTTP 200, but the authenticated app failed to load. The running process then reported network-policy rejection for https://vglhojtrccygjgupxsrd.supabase.co:443 and exited; an earlier npm-launched process also reported registry.npmjs.org blocked. No listener remained on 4310. This is evidence that agent-hosted dev cannot reliably reach the backend under the current execution policy, not evidence of an incorrect password or failed schema update. Resume dev from the user's normal PowerShell (npm.cmd run dev) and keep that window open. Do not launch another agent-owned dev server, rerun applied 0010/0011, or change auth/data/schema to address this transport restriction. Grouped browser acceptance is still pending.
+
+## Scope and attachment placement follow-up
+
+User requested always-visible scope at the top with a small edit icon, attachment/photo add icons near the top and thumbnails at the bottom, before separately reviewing Project work. Implemented those UI changes with private raster-photo previews and PDF/HEIC original-file tiles. Project work behavior is unchanged. 114 Node checks pass; TypeScript/build/browser evidence is recorded in ui-layout-refresh.md. No new SQL. Current new preview endpoint requires browser validation with real private test photos; actual phone/HEIC preview compatibility remains a separate limitation. User-facing review should use the real /jobs page, not the static fictional /previews mockup.
+
+
+
+
+

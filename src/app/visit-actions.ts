@@ -32,6 +32,12 @@ export async function saveVisitAction(_previous: VisitState, form: FormData): Pr
     } else if (operation === 'cancel') {
       if (!id) throw new AppError('invalid_input', 400, 'Choose a saved visit.');
       visit = await gateway.saveVisit(work, id, request, { state: 'cancelled' });
+    } else if (operation === 'return') {
+      if (id) throw new AppError('invalid_input',400,'Choose a new return appointment.');
+      const values=validateVisit(Object.fromEntries(form.entries()));
+      const result=await gateway.progress({workId:work,visitId:null,followUpId:visitId(form.get('followUpId')),requestId:request,command:'plan_return',values});
+      if (!result.visit) throw new AppError('save_failed',503,'The return plan was not confirmed. Retry the same save.');
+      visit=result.visit;
     } else if (operation === 'save') {
       const values = validateVisit(Object.fromEntries(form.entries()));
       let patch: Partial<VisitValues> = values;

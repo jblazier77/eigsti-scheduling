@@ -1,13 +1,15 @@
 import { createClient } from '@supabase/supabase-js';
 import { SupabaseSession, validateConfig, type SupabaseConfig } from './supabase.ts';
 import { AppError, type Actor } from '../domain/access.ts';
-import { FILE_BUCKET, beginFile, filePath, fileUuid, requireFileWriter, type FileInput, type JobFile } from '../domain/files.ts';
+import { FILE_BUCKET, MAX_FILE_BYTES, canPreviewPhoto, beginFile, filePath, fileUuid, requireFileWriter, type FileInput, type JobFile } from '../domain/files.ts';
 
 export class FileSession extends SupabaseSession {
   private storage;
   private storageOrigin: string;
+  private previewTransport:typeof fetch;
   constructor(config: SupabaseConfig, token: string, transport: typeof fetch = fetch) {
     super(config, token, transport);
+    this.previewTransport=transport;
     this.storageOrigin = validateConfig(config);
     this.storage = createClient(this.storageOrigin, config.publishableKey, {
       auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false },
@@ -39,6 +41,20 @@ export class FileSession extends SupabaseSession {
     const { data, error } = await this.storage.createSignedUrl(filePath(file.job_id, file.id), 60, { download: file.filename });
     if (error || !data) throw new AppError('file_unavailable', 404, 'This file is unavailable.');
     return this.scopedUrl(data.signedUrl, '/storage/v1/object/sign/' + FILE_BUCKET + '/' + file.object_path);
+  }
+  async photoPreview(jobId:string,fileId:string):Promise<{body:ReadableStream<Uint8Array>;mime:string}> {
+    const file=await this.getFile(fileUuid(jobId),fileUuid(fileId));
+    if(!file||file.job_id!==jobId||file.id!==fileId||file.object_path!==filePath(jobId,fileId)||!canPreviewPhoto(file)||file.byte_size<1||file.byte_size>MAX_FILE_BYTES)throw new AppError('file_unavailable',404,'Photo unavailable.');
+    // RLS is checked on metadata and again when Storage signs this exact object.
+    const {data,error}=await this.storage.createSignedUrl(file.object_path,60);
+    if(error||!data)throw new AppError('file_unavailable',404,'Photo unavailable.');
+    const url=this.scopedUrl(data.signedUrl,'/storage/v1/object/sign/'+FILE_BUCKET+'/'+file.object_path);
+    let response:Response;
+    try{response=await this.previewTransport(url,{cache:'no-store',redirect:'error',credentials:'omit',referrerPolicy:'no-referrer',signal:AbortSignal.timeout(15000)});}
+    catch{throw new AppError('connection_failed',503,'Photo preview unavailable.');}
+    const contentType=response.headers.get('content-type')?.split(';')[0].trim().toLowerCase();
+    if(!response.ok||!response.body||contentType!==file.mime_type){await response.body?.cancel();throw new AppError('file_unavailable',404,'Photo unavailable.');}
+    return{body:response.body,mime:file.mime_type};
   }
   private scopedUrl(value: string, expectedPath: string): string {
     const url = new URL(value);

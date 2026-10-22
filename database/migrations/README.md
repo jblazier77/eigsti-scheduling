@@ -45,3 +45,9 @@ Private queue state/event snapshots, get/save employee RPCs, membership triggers
 0008_scheduled_visits.sql: prepared, NOT applied. After applied 0001-0007 only. Visits, date-only plans/optional reservations, named staffing, private snapshots, scoped read/write RPCs and helper entitlement maintenance. See docs/scheduled-visits.md. 6285665 is the uploaded queue checkpoint.
 
 0008 is now applied; user reported 60 checks/0 failed and pre-inline full build. Do not rerun. 0009_visit_card_save.sql is prepared, NOT applied: single atomic Save for visit fields and optional roster. See docs/visit-card-save.md.
+
+0010_completion_and_returns.sql prepared, NOT applied. Preferred user update: database/batches/0010_completion_and_returns.sql combines this migration and all 60 checks atomically. Use the bundle ONCE after 0001-0009; do not also apply standalone migration. Successful bundle removes synthetic fixtures before committing DDL.
+
+## Combined 0010/0011 update (current next action)
+
+The earlier 0010-only bundle is superseded for this unapplied combined slice. Use database/batches/0010_0011_combined.sql ONCE after the known applied 0001-0009 checkpoint. It applies ordered 0010 completion/returns and 0011 job tags/trades, then runs 111 guarded SQL checks under fixture savepoints before committing. Preflight stops if either new table already exists or the 0009 RPC is absent. If any part was applied independently, stop and verify state before preparing a remaining update. Neither new migration is confirmed applied. Regenerate with node scripts/prepare-combined-batch.mjs. See docs/combined-batch.md.

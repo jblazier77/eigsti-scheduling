@@ -3,7 +3,7 @@ import { normalizePhone, uuidPattern } from './jobs.ts';
 
 export const contactFields = [
   { name: 'name', label: 'Contact name', max: 100, required: true },
-  { name: 'relationship', label: 'Relationship or trade', max: 100, required: false },
+  { name: 'relationship', label: 'Type', max: 100, required: false },
   { name: 'phone', label: 'Phone number', max: 40, required: false },
   { name: 'email', label: 'Email address', max: 254, required: false },
   { name: 'notes', label: 'Contact notes', max: 1000, required: false }
@@ -13,6 +13,10 @@ export type ContactValues = Record<ContactField, string>;
 export type ContactPatch = Partial<ContactValues>;
 export type JobContact = ContactValues & { id: string; job_id: string; phone_action: string | null };
 export const emptyContact: ContactValues = { name: '', relationship: '', phone: '', email: '', notes: '' };
+export const contactTypes = ['Customer', 'Subcontractor', 'Site contact', 'Other'] as const;
+export function alphabeticalContacts<T extends {id:string;name:string}>(contacts: readonly T[]): T[] {
+  return [...contacts].sort((a,b) => a.name.localeCompare(b.name, 'en', {sensitivity:'base',numeric:true}) || a.id.localeCompare(b.id));
+}
 export type ContactsGateway = {
   createContact(jobId: string, requestId: string, values: ContactValues): Promise<{ id: string }>;
   updateContact(jobId: string, contactId: string, patch: ContactPatch): Promise<{ id: string }>;

@@ -1,6 +1,11 @@
 import { WorkSession } from './work.ts';
 import type { StaffOption, Visit, VisitValues } from '../domain/visits.ts';
+import type { ProgressInput, ProgressResult, WorkProgress } from '../domain/progress.ts';
 export class VisitSession extends WorkSession {
+  async progress(input: ProgressInput): Promise<ProgressResult> {
+    return this.request('/rest/v1/rpc/work_progress_command',{method:'POST',body:JSON.stringify({p_work_id:input.workId,p_visit_id:input.visitId,p_follow_up_id:input.followUpId,p_request_id:input.requestId,p_command:input.command,p_values:input.values})});
+  }
+  async jobProgress(jobId: string): Promise<WorkProgress[]> { return this.request('/rest/v1/rpc/list_job_progress',{method:'POST',body:JSON.stringify({p_job_id:jobId})}); }
   async saveVisitCard(workId: string, visitId: string, requestId: string, patch: Partial<VisitValues>, helpers: string[] | null): Promise<Visit> {
     return this.request('/rest/v1/rpc/save_visit_card', { method: 'POST', body: JSON.stringify({ p_work_id: workId, p_visit_id: visitId, p_request_id: requestId, p_patch: patch, p_helpers: helpers }) });
   }

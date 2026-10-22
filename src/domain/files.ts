@@ -7,6 +7,9 @@ export const FILE_TYPES = { pdf: 'application/pdf', jpg: 'image/jpeg', jpeg: 'im
 export const FILE_ACCEPT = '.pdf,.jpg,.jpeg,.png,.webp,.heic,.heif';
 export type FileInput = { name: string; size: number; mime: string };
 export type JobFile = { id: string; job_id: string; filename: string; byte_size: number; mime_type: string; object_path: string; status: 'pending' | 'ready' | 'archived'; created_by: string; created_at: string };
+export function canPreviewPhoto(file:Pick<JobFile,'status'|'mime_type'>):boolean {
+  return file.status==='ready'&&['image/jpeg','image/png','image/webp'].includes(file.mime_type);
+}
 
 export function fileUuid(value: unknown): string {
   if (typeof value !== 'string' || !uuidPattern.test(value)) throw new AppError('invalid_input', 400, 'Invalid file or job identifier.');

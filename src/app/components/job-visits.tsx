@@ -10,10 +10,11 @@ export async function JobVisits({ jobId, isOpen }: { jobId: string; isOpen: bool
     const visits = await gateway.jobVisits(jobId);
     const work = isOpen && (pm || actor.roles.includes('lead')) ? (await gateway.listWork(jobId)).filter(w => w.completion === 'open' && (pm || w.responsible_lead === actor.id)) : [];
     const leads = work.length && pm ? await gateway.listLeads() : [];
-    return <section className="card"><h2>Scheduled visits</h2>
-      {!visits.length && <p>No visits planned yet.</p>}
+    return <section className="card"><h2>Scheduled work</h2>
+      {!visits.length && <p>No work scheduled yet.</p>}
       {visits.map(visit => <article id={'visit-' + visit.id} key={visit.id} className="visit-summary"><InlineVisit visit={visit} editable={isOpen && (pm || actor.roles.includes('lead') && visit.coordinator_id === actor.id)} /></article>)}
-      {!!work.length && <details><summary className="button">Plan a visit</summary><VisitEditor work={work} leads={leads} pm={pm} actorId={actor.id} requestId={randomUUID()} /></details>}
+      {!!work.length && <details><summary className="button">Schedule work</summary><VisitEditor work={work} leads={leads} pm={pm} actorId={actor.id} requestId={randomUUID()} /></details>}
     </section>;
-  } catch (error) { if (error instanceof AppError && error.code === 'schema_pending') return <section className="card"><h2>Scheduled visits</h2><p>Scheduling is temporarily unavailable.</p></section>; throw error; }
+  } catch (error) { if (error instanceof AppError && error.code === 'schema_pending') return <section className="card"><h2>Scheduled work</h2><p>Scheduling is temporarily unavailable.</p></section>; throw error; }
 }
+
