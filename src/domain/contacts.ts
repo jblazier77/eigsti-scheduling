@@ -1,4 +1,4 @@
-import { AppError, requirePm, type Actor } from './access.ts';
+import { AppError, requireActive, requirePm, hasRole, type Actor } from './access.ts';
 import { normalizePhone, uuidPattern } from './jobs.ts';
 
 export const contactFields = [
@@ -51,7 +51,9 @@ export function changedContactFields(original: ContactValues, values: ContactVal
 }
 
 export async function createContact(actor: Actor | null, jobId: unknown, requestId: unknown, input: unknown, gateway: ContactsGateway) {
-  requirePm(actor);
+  requireActive(actor);
+  if (!hasRole(actor, 'pm') && !hasRole(actor, 'lead')) throw new AppError('not_allowed', 403, 'A project manager or assigned lead account is required.');
+  // SQL additionally enforces this lead's live access to the target job.
   return gateway.createContact(contactUuid(jobId), contactUuid(requestId), validateContact(input) as ContactValues);
 }
 export async function updateContact(actor: Actor | null, jobId: unknown, contactId: unknown, input: unknown, gateway: ContactsGateway) {

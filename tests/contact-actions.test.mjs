@@ -15,6 +15,11 @@ function actions({ roles = ['pm'], fail = false } = {}) {
   const calls = [];
   class Gateway {
     async getActor() { return { id: jobId, active: true, roles }; }
+    async createContact(actualJob, requestId, values) {
+      calls.push(['create', actualJob, requestId, values]);
+      if (fail) throw new AppError('not_allowed', 403, 'Job access revoked.');
+      return { id: contactId };
+    }
     async archiveContact(actualJob, actualContact) {
       calls.push(['archive', actualJob, actualContact]);
       if (fail) throw new AppError('connection_failed', 503, 'Removal not confirmed.');
@@ -37,7 +42,7 @@ function actions({ roles = ['pm'], fail = false } = {}) {
     .replace(/export async function (\w+)/g, 'exports.$1 = async function $1');
   runInNewContext(compiled, { exports, require: name => { assert(name in dependencies, 'Unexpected dependency: ' + name); return dependencies[name]; } });
   const form = new FormData(); form.set('jobId', jobId); form.set('contactId', contactId);
-  return { action: exports.archiveContactAction, calls, form };
+  return { action: exports.archiveContactAction, createAction: exports.createContactAction, calls, form };
 }
 
 test('successful removal invalidates job data then redirects directly away from archived edit page', async () => {
@@ -65,4 +70,23 @@ test('helper cannot trigger a removal or successful navigation by forging the Se
   assert.equal(result.message, 'PM account required.');
   assert.equal(result.uncertain, false);
   assert.deepEqual(calls, []);
+});
+
+test('lead contact creation reaches job-scoped gateway and returns confirmed navigation only after success', async () => {
+  const f = actions({ roles: ['lead'] });
+  const values = { ...contacts.emptyContact, name: 'SYNTHETIC Site Contact' };
+  f.form.set('requestId', contactId); f.form.set('values', JSON.stringify(values));
+  assert.equal((await f.createAction({ message: '' }, f.form)).jobId, jobId);
+  assert.deepEqual(f.calls, [['create', jobId, contactId, values], ['revalidate', '/jobs/' + jobId], ['revalidate', '/jobs/' + jobId + '/contacts']]);
+});
+
+test('helper contact forgery is stopped before transport and revoked lead access never reports a saved result', async () => {
+  for (const roles of [['helper'], ['lead']]) {
+    const f = actions({ roles, fail: true });
+    f.form.set('requestId', contactId); f.form.set('values', JSON.stringify({ ...contacts.emptyContact, name: 'Test' }));
+    const result = await f.createAction({ message: '' }, f.form);
+    assert.equal(result.jobId, undefined); assert.equal(result.uncertain, false);
+    assert(!f.calls.some(call => call[0] === 'revalidate'));
+    assert.equal(f.calls.length, roles[0] === 'helper' ? 0 : 1);
+  }
 });

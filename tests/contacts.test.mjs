@@ -28,15 +28,20 @@ test('contact patches clear optional fields while omitting stale phone and relat
   assert.throws(() => validateContact({}, true), { code: 'invalid_input' });
 });
 
-test('all contact commands deny helper, lead, admin-only, anonymous and inactive actors before writing', async () => {
+test('contact creation denies helpers/admin-only/disabled; editing and removal also deny leads', async () => {
   let writes = 0;
   const gateway = { createContact: async () => { writes++; }, updateContact: async () => { writes++; }, archiveContact: async () => { writes++; } };
-  for (const actor of [null, { ...pm, active: false }, ...['helper', 'lead', 'admin'].map(role => ({ ...pm, roles: [role] }))]) {
+  for (const actor of [null, { ...pm, active: false }, ...['helper', 'admin'].map(role => ({ ...pm, roles: [role] }))]) {
     await assert.rejects(createContact(actor, jobId, requestId, values, gateway));
     await assert.rejects(updateContact(actor, jobId, contactId, { notes: 'Forged' }, gateway));
     await assert.rejects(archiveContact(actor, jobId, contactId, gateway));
   }
   assert.equal(writes, 0);
+  const lead = { ...pm, roles: ['lead'] };
+  await assert.rejects(updateContact(lead, jobId, contactId, { notes: 'Forged' }, gateway));
+  await assert.rejects(archiveContact(lead, jobId, contactId, gateway));
+  await createContact(lead, jobId, requestId, values, gateway);
+  assert.equal(writes, 1); // Database must enforce the lead's actual job access.
 });
 
 test('active PM commands validate IDs, pass stable create retry identity and send only changed fields', async () => {

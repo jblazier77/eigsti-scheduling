@@ -38,7 +38,7 @@ insert into pg_temp.eigsti_contact_results values (2,is((select count(*) from pu
 insert into pg_temp.eigsti_contact_results values (3,throws_ok($$insert into public.job_contacts(job_id,name,created_by,updated_by) values('aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa','Attack','44444444-4444-4444-8444-444444444444','44444444-4444-4444-8444-444444444444')$$,'42501',null,'Helper raw insert denied'));
 insert into pg_temp.eigsti_contact_results values (4,throws_ok($$update public.job_contacts set name='Attack' where id='cccccccc-cccc-4ccc-8ccc-cccccccccccc'$$,'42501',null,'Helper raw update denied'));
 insert into pg_temp.eigsti_contact_results values (5,throws_ok($$delete from public.job_contacts where id='cccccccc-cccc-4ccc-8ccc-cccccccccccc'$$,'42501',null,'Helper raw delete denied'));
-insert into pg_temp.eigsti_contact_results values (6,throws_ok($$select public.create_job_contact('aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa','eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee','{"name":"SYNTHETIC New","relationship":"Spouse","phone":"(309) 555-0103","email":"test@example.invalid","notes":"First note"}')$$,'42501','PM account required','Helper create RPC denied'));
+insert into pg_temp.eigsti_contact_results values (6,throws_ok($$select public.create_job_contact('aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa','eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee','{"name":"SYNTHETIC New","relationship":"Spouse","phone":"(309) 555-0103","email":"test@example.invalid","notes":"First note"}')$$,'42501',null,'Helper create RPC denied'));
 insert into pg_temp.eigsti_contact_results values (7,throws_ok($$select public.update_job_contact('aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa','cccccccc-cccc-4ccc-8ccc-cccccccccccc','{"notes":"Attack"}')$$,'42501','PM account required','Helper edit RPC denied'));
 insert into pg_temp.eigsti_contact_results values (8,throws_ok($$select public.archive_job_contact('aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa','cccccccc-cccc-4ccc-8ccc-cccccccccccc')$$,'42501','PM account required','Helper archive RPC denied'));
 reset role;
@@ -68,7 +68,7 @@ insert into pg_temp.eigsti_contact_results values (15,is((select count(*) from p
 set local role authenticated;
 select set_config('request.jwt.claim.sub','66666666-6666-4666-8666-666666666666',true);
 insert into pg_temp.eigsti_contact_results values (16,is((select count(*) from public.job_contacts),0::bigint,'Inactive PM reads no contacts'));
-insert into pg_temp.eigsti_contact_results values (17,throws_ok($$select public.create_job_contact('aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa','eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee','{"name":"SYNTHETIC New","relationship":"Spouse","phone":"(309) 555-0103","email":"test@example.invalid","notes":"First note"}')$$,'42501','PM account required','Inactive PM cannot create'));
+insert into pg_temp.eigsti_contact_results values (17,throws_ok($$select public.create_job_contact('aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa','eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee','{"name":"SYNTHETIC New","relationship":"Spouse","phone":"(309) 555-0103","email":"test@example.invalid","notes":"First note"}')$$,'42501',null,'Inactive PM cannot create'));
 set local role authenticated;
 select set_config('request.jwt.claim.sub','11111111-1111-4111-8111-111111111111',true);
 insert into pg_temp.eigsti_contact_results values (18,is((select count(*) from public.job_contacts),2::bigint,'PM reads contacts on all jobs'));

@@ -8,7 +8,7 @@ import { ContactForm } from '../../../../components/contact-form';
 export const dynamic = 'force-dynamic';
 export default async function NewContact({ params }: { params: Promise<{ id: string }> }) {
   const { actor, gateway } = await requireSession();
-  if (!actor.roles.includes('pm')) redirect('/jobs');
+  if (!actor.roles.includes('pm') && !actor.roles.includes('lead')) redirect('/jobs');
   const { id } = await params;
   if (!uuidPattern.test(id)) notFound();
   const job = await gateway.getJob(id);

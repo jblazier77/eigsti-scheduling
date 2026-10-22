@@ -24,7 +24,7 @@ export default async function JobDetail({ params }: { params: Promise<{ id: stri
     <div className="card"><h3>Scope</h3><p className="preserve-lines">{job.scope || 'No scope added yet.'}</p></div>
     {job.access_notes && <div className="card"><h3>Access and preparation</h3><p className="preserve-lines">{job.access_notes}</p></div>}
     <JobWork jobId={id} isOpen={job.lifecycle === 'open'} />
-    <JobContacts jobId={id} isPm={actor.roles.includes('pm')} gateway={gateway} />
+    <JobContacts jobId={id} isPm={actor.roles.includes('pm')} canAdd={actor.roles.includes('pm') || actor.roles.includes('lead')} gateway={gateway} />
     <JobFiles jobId={id} />
   </Shell>;
 }

@@ -9,7 +9,7 @@ import { AppError, requirePm } from '../domain/access.ts';
 import { archiveContact, contactUuid, createContact, updateContact } from '../domain/contacts.ts';
 import type { FormState } from './actions';
 
-async function contactSession() {
+async function contactSession(allowLeadCreation = false) {
   const env = appConfig();
   if (!env) throw new AppError('schema_pending', 503, 'The app connection is not configured yet.');
   const client = await authClient(true);
@@ -17,7 +17,7 @@ async function contactSession() {
   if (!data.session) throw new AppError('sign_in_required', 401, 'Your sign-in expired. Your contact details are still on this screen.');
   const gateway = new SupabaseSession(env, data.session.access_token);
   const actor = await gateway.getActor();
-  requirePm(actor);
+  if (!allowLeadCreation) requirePm(actor);
   return { gateway, actor };
 }
 
@@ -44,7 +44,7 @@ function refreshContactPages(jobId: string) {
 export async function createContactAction(_previous: FormState, form: FormData): Promise<FormState> {
   let jobId: string;
   try {
-    const { gateway, actor } = await contactSession();
+    const { gateway, actor } = await contactSession(true);
     jobId = contactUuid(form.get('jobId'));
     await createContact(actor, jobId, form.get('requestId'), contactPayload(form), gateway);
   } catch (error) { return contactFailure(error); }

@@ -8,7 +8,8 @@ Agreed role responsibilities come from the handoff. Detailed resource boundaries
 | Create jobs / assign responsible PM | With PM role | Yes | No | No |
 | View job details / authorized files | With PM/lead role | All jobs | Assigned job and shared work on that job | Jobs with own named assignment |
 | Edit job/customer information | With PM role | All jobs | No; scope/remaining notes on own work only | No |
-| Add/edit/remove additional job contacts | With PM role | All jobs | Read only on accessible jobs | Read only on assigned jobs |
+| Add additional job contacts | With PM/lead role | All jobs | Assigned jobs (0005 pending verification) | No |
+| Edit/remove additional job contacts | With PM role | All jobs | Read only, including own additions | Read only on assigned jobs |
 | Assign/reassign lead ownership | With PM role | All jobs | No | No |
 | Plan/complete work and coordinated visits | With PM/lead role | All jobs | Work they lead or visits they coordinate | No |
 | Fill vacant assistance | With PM/lead role | Yes | Own/coordinated visit, vacant need, available person only | No |

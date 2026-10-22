@@ -31,6 +31,12 @@ After migration 0003 succeeds, run 0003_job_files.test.sql in a separate SQL que
 
 Storage metadata rows simulate uploaded objects. They do NOT prove any bytes exist, prove binary safety or exercise HTTP capabilities. Real signed upload/download, near-limit file size, retry/fault behavior, expiration and phone HEIC tests are still required. Do not interpret fixture metadata as an actual restored file or completed backup.
 
-## Work ownership suite (58 checks prepared; NOT executed)
+## Work ownership suite (58 checks passed in test, user reported)
 
 After applying 0004 once, run 0004_work_ownership.test.sql. It creates only rolled-back synthetic fixtures, with 58 assertions and a missing/failure guard. Covers PM-only directory/create/update, raw write and forged parent/field denial, active-lead validation, replay/collision, assigned read access, remaining-portion access, reassignment revocation across job/contact/ready-file metadata, live deactivation, narrow patch preservation, no-op audit and 100-work limit. Not actual binary Storage, a concurrent multi-connection test or browser acceptance.
+
+User explicitly confirmed all 58 work ownership checks, 0 failed after successful 0004 application. Original work production build also passed separately. Inline editor and remaining role/portion browser checks remain separate evidence.
+
+## Lead contact creation (32 checks passed in test, user reported)
+
+Run 0005_lead_contact_creation.test.sql after 0005 application. Synthetic data rolls back; a guard rejects failures/missing assertions. Covers authorized/unrelated/revoked/deactivated leads, helpers/admin-only/anonymous denial, own-contact edit/removal denial, attribution, retry/collision, no resurrection, PM compatibility and limit. Existing 0002 helper/inactive create-denial assertions were relaxed only from exact old PM-only message to SQLSTATE 42501 for cross-version compatibility; no rerun of those older assertions is claimed. User confirmed all 32 new checks passed after 0005 application; full build and recorded browser checks also passed separately. See docs/lead-contacts.md.
