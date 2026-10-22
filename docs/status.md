@@ -6,11 +6,11 @@ Updated 2026-10-21. Initial app, PM editing and additional job contacts have pas
 
 - Workspace: C:\Users\jrbla\OneDrive\Projects\ChatGPT\Eigsti Scheduling
 - Branch: phase-0-foundation
-- Latest confirmed uploaded commit: 85cad7a (inline PM work editing and verified lead contact creation; prior work 5b6ed89). Shared work-card controls, new atomic batch migration 0006/tests/docs are local and not yet committed.
+- Latest confirmed uploaded commit: a79c78e (verified atomic work card Save/Cancel; prior inline work and lead contacts 85cad7a). Additional ownership/revocation browser evidence is local and not yet committed.
 - Private origin: https://github.com/jblazier77/eigsti-scheduling.git
 - Test Supabase project: vglhojtrccygjgupxsrd, Free plan in Eigsti Construction organization.
 - User PowerShell manages commits/pushes because agent Git writes remain restricted.
-- Full account build passed in user PowerShell, including /account; dev restarted for tests. Helper password changed successfully and browser is now signed out after the anonymous-access check.
+- Final shared-card production build passed and a79c78e was pushed. Dev restarted for ownership checks. User most recently returned to Josh/PM to restore Test Lead on the cabinet portion; countertop portion remains unassigned.
 - Keep .env.local ignored. No passwords, tokens or administrative secrets are recorded here.
 
 ## Verified implementation
@@ -36,6 +36,8 @@ Updated 2026-10-21. Initial app, PM editing and additional job contacts have pas
 - PostgreSQL version/full TAP transcripts, clean-reset repeat and simultaneous multi-connection tests remain pending. Earlier sequential retry and stale-form checks are not concurrent-transaction proof.
 
 ## User browser evidence
+
+- Ownership/revocation browser acceptance: after an initial test likely cleared both leads, user restored only Test Lead on the cabinet portion, left countertops unassigned, saved, then signed in as Test Lead and confirmed job visibility. PM then cleared the final cabinet assignment; Test Lead saw no jobs and direct job details plus direct new-contact route both showed Job unavailable. User then acknowledged restoring the cabinet assignment as Josh/PM for the next test setup. No application bug or code change was established by the initial empty list. This verifies remaining-portion access and final-ownership revocation; concurrent reassignment, second-lead handoff and phone/fault behavior remain separate.
 
 - Shared-card correction verified: user confirmed Save now completes with the expected button/cursor/field behavior, refresh retains both work descriptions and lead assignments, and a final normal-user production build passed after the fix. Single Cancel had already restored both draft descriptions. Exact final description text after the small retest edit was not recorded. No new SQL was needed for the button fix.
 
@@ -74,6 +76,6 @@ Updated 2026-10-21. Initial app, PM editing and additional job contacts have pas
 
 ## Exact next action
 
-Commit/push the shared card Save/Cancel implementation, applied 0006, tests and verification docs through user PowerShell. 58 Node tests/TypeScript, 40 batch SQL checks, shared Cancel/Save completion/refresh and final normal-user build passed. Dev was stopped for the build. Latest uploaded checkpoint remains 85cad7a; these changes are local. Do not rerun applied 0001-0006. After checkpoint continue remaining ownership/reassignment/revocation browser checks before queues/visits/staffing. Email remains deferred.
+Commit/push the ownership/revocation browser evidence (documentation only; no build needed). Latest implementation a79c78e is already pushed; all migrations 0001-0006 are applied. Test Lead is restored on the cabinet portion, countertops unassigned, per last user acknowledgment. Next implement per-lead ordered queues with PM-any/lead-own reorder, latest committed full-order save, narrow operational boundaries and concurrency/retry verification. Visits/staffing follow. Email invitations/recovery remain deferred per post-pilot.md.
 
 To pause: Ctrl+C stops dev; commit/push outstanding changes, then close PowerShell/browser. Database data persists independently. To resume: npm.cmd run dev from the workspace and http://127.0.0.1:4310. GitHub is the implementation checkpoint destination; the older Library recovery ZIP predates current work.

@@ -19,3 +19,6 @@ User confirmed full normal-user production build and dev restart. As Test Lead, 
 ## Related inline work evidence
 
 User confirmed inline work editor loading after restart guidance, Cancel resetting the draft to Whole job without navigation, Save changing it to Kitchen cabinets without navigation, and refresh retaining Kitchen cabinets/Test Lead. Test Lead signed in, saw Test Customer One, and its work section was read-only as intended. Full production build after inline work and lead-contact changes passed in user PowerShell. The initial new client-export runtime error is not a proven root-cause diagnosis; loading recovered after restart guidance.
+
+Additional browser evidence: after PM removed Test Lead from the final owned portion, Test Lead direct new-contact page showed Job unavailable. Same session had no jobs and direct job details were unavailable. This verifies actual contact-create form denial after job access removal, separate from SQL assertions. User then acknowledged restoring the cabinet assignment for ongoing development.
+

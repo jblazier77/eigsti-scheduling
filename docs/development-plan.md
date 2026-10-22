@@ -23,3 +23,6 @@ At meaningful checkpoints: update status/decisions, run appropriate checks, comm
 User workflow update: 85cad7a was pushed. Replaced per-portion controls in the PM card with one shared Save/Cancel draft. New 0006 makes all changed portions one atomic, retry-safe save; 58 Node tests and TypeScript pass. Next apply 0006, run its 40 SQL checks, full build and card browser acceptance. See work-card-save.md.
 
 Shared work-card verification: 0006 applied; user reported 40 SQL checks/0 failed, one Cancel resetting both drafts, one Save saving both portions on the job page, corrected idle button state, refresh persistence and final production build passed. 58 Node tests/TypeScript pass. Commit/push next; remaining reassignment/revocation and scheduling work continue afterward. See work-card-save.md.
+
+Ownership acceptance checkpoint: a79c78e pushed. User browser checks confirmed access through one remaining owned portion, loss of jobs-list/direct-job access after final ownership cleared, and direct contact-create denial after revocation. Test setup restored to cabinets/Test Lead and countertops/unassigned. Save this documentation checkpoint, then begin per-lead ordered queues; second-lead handoff, multi-connection/fault and phone checks remain separate.
+
