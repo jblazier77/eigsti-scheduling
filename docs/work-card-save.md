@@ -1,0 +1,27 @@
+# One Save/Cancel pair for Work and leads
+
+User request 2026-10-21: one Save and Cancel at the bottom of the PM Work and leads card, instead of separate controls for each work portion. Implemented locally. User confirmed 0006 applied, all 40 SQL checks passed and a full production build passed. Browser controls/Cancel/Save/refresh passed after the completion-state fix below, followed by a successful final production build. Ready for user commit/push.
+
+## Behavior
+
+The PM edits all open portions in one form. Save sends only changed portions and changed fields. Cancel discards all unsaved card edits and clears its feedback. No navigation follows save. Completed portions and non-PM views remain read-only. Adding a new portion retains its existing separate form; leaving the card to add one warns before discarding unsaved changes. Input labels are unique per portion; fields stack on phones.
+
+The whole card is one database transaction. New RPC update_job_work_batch validates a unique array of 1-100 work IDs/patches, then calls the existing narrow update_job_work command under the parent job lock. A later invalid/missing/cross-job/completed portion or invalid lead aborts earlier updates and their audits. Every existing PM/open-job/open-work/active-lead restriction remains. No applied migration or old edit RPC is changed, and raw table writes remain denied.
+
+A stable actor/request UUID and canonical payload identify the save. Identical retries return the original receipt plus current work without replaying old edits over a newer save. Reordered patch entries canonicalize to the same request; changed payloads conflict. Each effective row update retains its audit, plus one batch summary audit/request receipt. Different actors have separate request scopes. No-op rows retain the existing row-audit behavior; a newly accepted batch still gets its summary receipt.
+
+After success the UI uses current rows returned by SQL, rotates the request UUID and refreshes server data. Definite validation failures retain editable drafts. Uncertain saves retain/freeze the same payload for retry, offer checking stored work and explain that cancel cannot undo a save that may already have completed. The browser form/action bounds serialized changes to 20,000 UTF-8 bytes to fit the existing 32 KB Server Action input limit; oversized drafts remain visible with a shortening message. Direct RPC also enforces row-count and independent field bounds. There is no partial-save fallback.
+
+## Verification
+
+58 Node tests and TypeScript pass, including five new card domain/transport/action checks. These prove scoped single-request transport, narrow diffs, normalization/duplicate/privilege/size validation and failure handling with mocked database responses; they do not establish SQL atomicity. New 0006_work_card_save.test.sql prepares 40 rolled-back SQL checks for actual rollback of an earlier valid edit when a later entry fails, audit/receipt rollback, roles, malformed/duplicate/forged parent fields, narrow changes, actor-scoped retry, no overwrite on old retry, current rows in retry response, completed/closed work and input bounds. User reported all 40 SQL checks, 0 failed after successful 0006 application. Multi-connection/fault/phone acceptance remains separate.
+
+Migration 0006 prepared SHA-256: a717a49ebe12998dc071bdf056eb4463a5dda80228cbd25381aa3efbaed93309. Apply once after 0001-0005 in isolated test project vglhojtrccygjgupxsrd. No seed data, service secret or emails. Do not rerun applied migrations.
+
+Next run 0006, then all 40 SQL checks, then the full normal-user build. Restart dev after adding the new client component; the prior inline export hot-reload error needed restart guidance. Browser acceptance as Josh: confirm two portions exist (Kitchen cabinets and Countertops; the latter's save has not been explicitly confirmed), one Save/Cancel pair, edit both/Cancel resets both, edit both/Save stays on page and refresh persists both. Check two-tab stale description preserving a newer lead assignment, uncertain retry and whole-batch failure; verify lead/helper read-only ownership controls. Commit/push after verification.
+
+Last confirmed uploaded checkpoint before this change: 85cad7a (inline per-row editing and verified assigned-lead contact creation).
+
+Browser update: user confirmed Kitchen cabinets and Countertops both exist with one Save/Cancel pair. Editing both and Cancel restored both saved descriptions without navigation. Saving Kitchen cabinet installation and Countertop installation appeared to complete but the button/cursor remained busy. Inspection found the global disabled-button wait cursor also applied to the clean Save button, plus an unnecessary router.refresh inside the action although revalidatePath already supplies refreshed UI. Removed that extra refresh; clean success now reads Saved and only aria-busy pending uses wait cursor. 58 Node tests and TypeScript pass after correction. User confirmed Save completion now works, both descriptions/lead assignments survive refresh and a final full production build passed. No applied SQL changed.
+
+Verified checkpoint: all recorded shared-card browser checks and final build passed per user. Exact description after the small retest edit was not captured. Remaining browser fault/retry, stale-tab, lead/helper regression, ownership/reassignment and phone acceptance are separate; do not infer them from the 40 SQL checks. Next commit/push through user PowerShell.

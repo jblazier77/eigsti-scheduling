@@ -3,7 +3,9 @@ import { uuidPattern } from './jobs.ts';
 
 export type WorkValues = { description: string; responsible_lead: string | null };
 export type WorkPatch = Partial<WorkValues>;
+export type WorkChange = { work_id: string; patch: WorkPatch };
 export type JobWork = WorkValues & { id: string; job_id: string; lead_name: string | null; completion: 'open' | 'completed' };
+export type WorkBatchResult = { id: string; work: JobWork[] };
 export type LeadOption = { id: string; display_name: string };
 export type WorkGateway = {
   createWork(jobId: string, requestId: string, values: WorkValues): Promise<{ id: string }>;
@@ -39,4 +41,29 @@ export async function createWork(actor: Actor | null, jobId: unknown, requestId:
 export async function updateWork(actor: Actor | null, jobId: unknown, workId: unknown, input: unknown, gateway: WorkGateway) {
   requirePm(actor);
   return gateway.updateWork(workUuid(jobId), workUuid(workId), validateWork(input, true));
+}
+
+export function validateWorkChanges(input: unknown): WorkChange[] {
+  if (!Array.isArray(input) || input.length < 1 || input.length > 100) throw new AppError('invalid_input', 400, 'Change at least one work portion before saving.');
+  if (new TextEncoder().encode(JSON.stringify(input)).length > 20000) throw new AppError('invalid_input', 400, 'These edits are too large for one save. Shorten the work descriptions before saving.');
+  const seen = new Set<string>();
+  return input.map(change => {
+    if (!change || typeof change !== 'object' || Array.isArray(change) || Object.keys(change).length !== 2 || !Object.hasOwn(change, 'work_id') || !Object.hasOwn(change, 'patch')) throw new AppError('invalid_input', 400, 'Check the work changes.');
+    const work_id = workUuid(change.work_id);
+    if (seen.has(work_id)) throw new AppError('invalid_input', 400, 'A work portion appears more than once.');
+    seen.add(work_id);
+    return { work_id, patch: validateWork(change.patch, true) };
+  }).sort((a, b) => a.work_id.localeCompare(b.work_id));
+}
+
+export function changedWorkCard(original: JobWork[], values: Record<string, WorkValues>): WorkChange[] {
+  return original.filter(item => item.completion === 'open').flatMap(item => {
+    const patch = changedWorkFields(item, values[item.id] ?? item);
+    return Object.keys(patch).length ? [{ work_id: item.id, patch }] : [];
+  });
+}
+
+export async function updateWorkCard(actor: Actor | null, jobId: unknown, requestId: unknown, input: unknown, gateway: { updateWorkBatch(jobId: string, requestId: string, changes: WorkChange[]): Promise<WorkBatchResult> }) {
+  requirePm(actor);
+  return gateway.updateWorkBatch(workUuid(jobId), workUuid(requestId), validateWorkChanges(input));
 }

@@ -29,3 +29,11 @@ Apply 0004_work_ownership.sql once after 0001-0003 in the isolated test project.
 ## 0005: assigned lead contact creation (applied in test)
 
 Replaces create_job_contact with PM-or-authorized-lead creation; repeats job scope authorization after the parent row lock. All validation/retry/audit/limit/archive-replay behavior retained; edit/archive and raw writes unchanged. SHA-256: 2a084f504f6d5f05d9f20fe8879d858dbe0ece87800fa77c7aa78691eecb0b86. User confirmed successful application, 32 SQL checks with no failures, full production build, lead add/refresh/no edit controls and helper direct-create denial. Do not rerun this applied migration; fresh environments apply it once after 0004. No old migration was changed. See docs/lead-contacts.md.
+
+## 0006: atomic Work and leads card save (applied in test)
+
+Adds update_job_work_batch: PM-only, 1-100 unique narrow row patches, parent job lock, existing per-work authorization/validation, all-or-none mutation/audit, canonical actor/request receipt and current work response on retry without replaying old edits. No old migration edited. SHA-256: a717a49ebe12998dc071bdf056eb4463a5dda80228cbd25381aa3efbaed93309. Apply once after 0005 in isolated test, then run 40-check suite and full normal-user build/browser acceptance. See docs/work-card-save.md.
+
+0006 evidence: user confirmed successful application, 40 SQL checks/0 failed and full production build. Shared-card Cancel passed; client save-button completion correction awaits browser/full-build retest. Do not rerun applied 0006; subsequent correction changes only client code/styles.
+
+0006 final checkpoint: user confirmed shared-card Cancel, corrected Save completion, refresh persistence and final production build passed. No SQL changed after application. Commit/push pending.

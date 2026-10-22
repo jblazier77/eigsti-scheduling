@@ -64,3 +64,7 @@ list_assignable_leads returns active lead ID/name only to PMs. list_job_work(p_j
 ## Contact creation scope update (0005 prepared; not applied)
 
 At user request, create_job_contact also permits active leads with current target-job access. Permission is checked before replay and again after parent job lock. Existing canonical retry, 100-contact limit, validation, audit identity and archive-replay behavior retained. No role change for update_job_contact/archive_job_contact: PM only, even for a contact added by the lead. New-contact route/action and Add contact control are updated; target authorization remains SQL enforced. See lead-contacts.md for pending 32 SQL checks and browser acceptance.
+
+## Work card atomic save (0006 prepared; not applied)
+
+update_job_work_batch(p_job_id,p_request_id,p_changes) accepts 1-100 unique work_id/patch entries and canonicalizes order/patches. Active PM only. Parent lock and existing update_job_work commands make row changes/audits one transaction; any error rolls everything back. Actor/request replay returns receipt plus current authorized work without reapplying old patches; changed payload conflicts. updateWorkCardAction sends one employee RPC, revalidates only after success and returns current work to the card. The form bounds serialized changes to 20,000 UTF-8 bytes within the existing 32 KB action limit; uncertain requests retain frozen payload/UUID for retry. See work-card-save.md and the pending 40 SQL checks.

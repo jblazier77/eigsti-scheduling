@@ -6,7 +6,7 @@ Updated 2026-10-21. Initial app, PM editing and additional job contacts have pas
 
 - Workspace: C:\Users\jrbla\OneDrive\Projects\ChatGPT\Eigsti Scheduling
 - Branch: phase-0-foundation
-- Latest confirmed uploaded commit: 5b6ed89 (work ownership prepared; prior password changes e95f6ea, files 193c50d). PM inline work editor, assigned-lead contact creation (new migration 0005) and verification docs are local and not yet committed.
+- Latest confirmed uploaded commit: 85cad7a (inline PM work editing and verified lead contact creation; prior work 5b6ed89). Shared work-card controls, new atomic batch migration 0006/tests/docs are local and not yet committed.
 - Private origin: https://github.com/jblazier77/eigsti-scheduling.git
 - Test Supabase project: vglhojtrccygjgupxsrd, Free plan in Eigsti Construction organization.
 - User PowerShell manages commits/pushes because agent Git writes remain restricted.
@@ -30,12 +30,18 @@ Updated 2026-10-21. Initial app, PM editing and additional job contacts have pas
 - Applied migration 0002: user reported SQL success and 60 contact checks, 0 failed.
 - Both SQL suites use synthetic transaction fixtures and roll them back. Cloud SQL evidence is user reported; the agent did not run a local database.
 - Do not edit or rerun these applied migrations on the existing project. Future functional SQL changes require new ordered migrations.
-- Latest automated Node suite: 53 passed, including five work ownership/action tests, six account/password checks, six file checks and prior contact removal regressions. TypeScript passed after work ownership changes. User reported 58 work SQL checks passed and the original work routes built successfully. The inline editor change passed Node/TypeScript; its full build remains pending; inline Cancel/Save/refresh and lead read-only browser checks passed. User confirmed 0005 applied, 32 SQL checks with no failures and full production build after inline work/contact changes. Lead contact creation/refresh and helper direct-create denial passed. Auth SDK transport is mocked for automated password tests; separate real helper password-change browser checks passed per user.
+- Latest automated Node suite: 58 passed, including five work ownership/action tests, six account/password checks, six file checks and prior contact removal regressions. TypeScript passed after work ownership changes. User reported 58 work SQL checks passed and the original work routes built successfully. The inline editor change passed Node/TypeScript; its full build remains pending; inline Cancel/Save/refresh and lead read-only browser checks passed. User confirmed 0005 applied, 32 SQL checks with no failures and full production build after inline work/contact changes. Lead contact creation/refresh and helper direct-create denial passed. Auth SDK transport is mocked for automated password tests; separate real helper password-change browser checks passed per user.
 - Latest full production build including /account and file upload/download routes passed in user PowerShell. No new agent cleanup attempt is made due prior Windows/OneDrive issues.
 - Fixture generator and prototype structural smoke checks previously passed. Those are separate from real database/browser evidence.
 - PostgreSQL version/full TAP transcripts, clean-reset repeat and simultaneous multi-connection tests remain pending. Earlier sequential retry and stale-form checks are not concurrent-transaction proof.
 
 ## User browser evidence
+
+- Shared-card correction verified: user confirmed Save now completes with the expected button/cursor/field behavior, refresh retains both work descriptions and lead assignments, and a final normal-user production build passed after the fix. Single Cancel had already restored both draft descriptions. Exact final description text after the small retest edit was not recorded. No new SQL was needed for the button fix.
+
+- Shared card: user confirmed 0006 applied, 40 checks/0 failed, full production build and dev restart. Both portions showed one Save/Cancel pair; Cancel reset two drafts correctly. Save appeared to persist both renamed portions, but button/cursor stayed busy. Removed redundant post-action router refresh and clean-disabled wait cursor; show Saved on confirmed clean success. Browser retest/full build after this client correction pending; see work-card-save.md.
+
+- User requested one Save/Cancel pair for the entire Work and leads card after the Countertops add-portion step. Its creation was not explicitly confirmed before the UI request. Implemented a single card draft and new atomic/retry-safe batch RPC in 0006. 58 Node tests and TypeScript pass; 40 SQL checks, full build and browser acceptance pending. See work-card-save.md.
 
 - Lead contact acceptance: user confirmed 0005 applied successfully, 32 checks/0 failed, full production build and dev restart. Test Lead saw Add contact, added Test Site Contact with name only, returned to job, and refresh retained it with no edit/removal controls. Helper direct /contacts/new was blocked and returned to /jobs. Direct lead contact-edit denial, PM compatibility retest and unrelated/reassigned lead browser checks remain pending (SQL covers these boundaries).
 
@@ -68,6 +74,6 @@ Updated 2026-10-21. Initial app, PM editing and additional job contacts have pas
 
 ## Exact next action
 
-Commit/push the inline PM work editor, applied 0005 lead-contact feature and verification docs through user PowerShell. 53 Node tests/TypeScript, 32 lead-contact SQL checks, full production build and recorded basic browser checks passed. Do not rerun applied 0001-0005. Then continue remaining work portion/reassignment/revocation browser acceptance before queues/visits/staffing. Helper is currently signed in; no helper assignments exist. Email remains deferred per post-pilot.md.
+Commit/push the shared card Save/Cancel implementation, applied 0006, tests and verification docs through user PowerShell. 58 Node tests/TypeScript, 40 batch SQL checks, shared Cancel/Save completion/refresh and final normal-user build passed. Dev was stopped for the build. Latest uploaded checkpoint remains 85cad7a; these changes are local. Do not rerun applied 0001-0006. After checkpoint continue remaining ownership/reassignment/revocation browser checks before queues/visits/staffing. Email remains deferred.
 
 To pause: Ctrl+C stops dev; commit/push outstanding changes, then close PowerShell/browser. Database data persists independently. To resume: npm.cmd run dev from the workspace and http://127.0.0.1:4310. GitHub is the implementation checkpoint destination; the older Library recovery ZIP predates current work.

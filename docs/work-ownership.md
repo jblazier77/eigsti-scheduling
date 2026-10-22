@@ -35,3 +35,5 @@ Inline acceptance: as Josh/PM refresh the job; edit/cancel description and lead 
 User browser update: inline Cancel/Save/page retention and refresh passed. Whole job is now Kitchen cabinets, assigned Test Lead. Lead account sign-in/job list/detail and read-only work display passed. New lead contact creation request is prepared separately in 0005; see lead-contacts.md. Full production build after inline changes still pending.
 
 Full normal-user production build after inline work and lead-contact changes passed. Inline Cancel/Save/refresh and lead read-only work view passed; remaining portions/reassignment/revocation checks are still pending. See lead-contacts.md for the separate verified contact expansion.
+
+User superseded per-row buttons with one card-level Save/Cancel pair. This is implemented locally using a new atomic batch command in 0006, awaiting application/40 SQL checks/full build/browser verification. Existing individual update RPC/edit-route behavior remains; applied 0004 was not edited. See work-card-save.md.

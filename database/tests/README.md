@@ -40,3 +40,9 @@ User explicitly confirmed all 58 work ownership checks, 0 failed after successfu
 ## Lead contact creation (32 checks passed in test, user reported)
 
 Run 0005_lead_contact_creation.test.sql after 0005 application. Synthetic data rolls back; a guard rejects failures/missing assertions. Covers authorized/unrelated/revoked/deactivated leads, helpers/admin-only/anonymous denial, own-contact edit/removal denial, attribution, retry/collision, no resurrection, PM compatibility and limit. Existing 0002 helper/inactive create-denial assertions were relaxed only from exact old PM-only message to SQLSTATE 42501 for cross-version compatibility; no rerun of those older assertions is claimed. User confirmed all 32 new checks passed after 0005 application; full build and recorded browser checks also passed separately. See docs/lead-contacts.md.
+
+## Work card save (40 checks passed in test, user reported)
+
+Run 0006_work_card_save.test.sql after 0006. Fixtures roll back and a 40-result guard rejects missing/failed assertions. Covers earlier valid edit/audit/receipt rollback on later invalid lead, cross-job or completed work, role denial, batch validation/count, canonical replay/collision, narrow changes preserving newer fields, old retry preserving a newer save, current retry response and closed-job behavior. No actual multi-connection or browser evidence is claimed.
+
+User confirmed all 40 batch/card SQL checks passed after 0006 application. Full production build and basic card display/Cancel passed separately. Save completion UI correction awaits browser/full-build retest.
