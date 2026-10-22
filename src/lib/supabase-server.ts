@@ -4,11 +4,12 @@ import { cookies } from 'next/headers';
 import { appConfig, secureSessionCookies } from './config';
 import { AppError } from '../domain/access.ts';
 
-export async function authClient(writable = false) {
+export async function authClient(writable = false, signal?: AbortSignal) {
   const config = appConfig();
   if (!config) throw new AppError('setup_required', 503, 'The app connection has not been configured.');
   const jar = await cookies();
   return createServerClient(config.url, config.publishableKey, {
+    ...(signal ? { global: { fetch: (input: RequestInfo | URL, init?: RequestInit) => fetch(input, { ...init, signal: init?.signal ? AbortSignal.any([signal, init.signal]) : signal }) } } : {}),
     cookieOptions: { httpOnly: true, sameSite: 'lax', secure: secureSessionCookies(), path: '/' },
     cookies: {
       getAll: () => jar.getAll(),

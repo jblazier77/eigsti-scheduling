@@ -9,6 +9,7 @@ import { SupabaseSession } from '../server/supabase.ts';
 import { createJob } from '../domain/jobs.ts';
 import { updateJob } from '../domain/job-edits.ts';
 import { AppError } from '../domain/access.ts';
+import { signOutWithDeadline } from '../server/sign-out.ts';
 
 export type FormState = { message: string; uncertain?: boolean; jobId?: string };
 
@@ -33,12 +34,17 @@ export async function signInAction(_previous: FormState, form: FormData): Promis
 }
 
 export async function signOutAction() {
-  const client = await authClient(true);
-  await client.auth.signOut({ scope: 'local' });
-  // Clear this browser's project cookies even if the remote logout was interrupted.
-  const jar = await cookies();
-  const name = `sb-${process.env.EIGSTI_EXPECTED_PROJECT_REF}-auth-token`;
-  for (const cookie of jar.getAll()) if (cookie.name === name || cookie.name.startsWith(name + '.')) jar.delete(cookie.name);
+  try {
+    await signOutWithDeadline(async signal => {
+      const client = await authClient(false, signal);
+      await client.auth.signOut({ scope: 'local' });
+    });
+  } finally {
+    // Local sign-out completes even if remote refresh-token revocation fails.
+    const jar = await cookies();
+    const name = `sb-${process.env.EIGSTI_EXPECTED_PROJECT_REF}-auth-token`;
+    for (const cookie of jar.getAll()) if (cookie.name === name || cookie.name.startsWith(name + '.')) jar.delete(cookie.name);
+  }
   redirect('/login');
 }
 

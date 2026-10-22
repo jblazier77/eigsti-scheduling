@@ -30,3 +30,5 @@ Source: Handoff v1.0, 2026-10-20. Status is specified, not implemented, unless d
 | R24 | About 20 leads/30 active houses represented coherently | Deterministic seed now; indexed DB queries measured later | 0/4 |
 
 No payroll, time clock, accounting, estimating, purchasing, CRM expansion, portals, messaging capture, notifications, offline sync, automatic routing/rescheduling, AI scheduler, or critical-path engine. Tools links are optional only if trivial and cost-neutral. No shared account or permanent primary lead per job. No paid notification services.
+
+2026-10-22 UI clarification (D40): minimize clicks across the program; use inline edits on the current job/schedule card wherever practical, avoiding separate edit screens. Visit dates, help needed, named staffing and cancellation now follow this locally; browser/build retest pending. Date-only plans allow multiple jobs per day (D39); time blocks remain optional.

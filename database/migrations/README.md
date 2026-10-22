@@ -41,3 +41,7 @@ Adds update_job_work_batch: PM-only, 1-100 unique narrow row patches, parent job
 ## 0007: ordered lead queues (prepared; NOT applied)
 
 Private queue state/event snapshots, get/save employee RPCs, membership triggers on ownership/completion and job lifecycle, existing-work backfill, full-order validation and stable request receipts. PM-any/lead-own; raw writes and helper/admin-only access denied. One company-wide mutation advisory lock precedes queue row locks; reads remain lock-free. No paid service/employee fixtures/dates/staffing. Prepared SHA-256: 5e080ac2d88727e66ff696adba6dfe5c1c7488e0d3bf836fa2523dae09818d1e. Apply once after 0001-0006 in test, run new 58-check suite, full user build and browser/concurrent acceptance. See docs/lead-queues.md.
+
+0008_scheduled_visits.sql: prepared, NOT applied. After applied 0001-0007 only. Visits, date-only plans/optional reservations, named staffing, private snapshots, scoped read/write RPCs and helper entitlement maintenance. See docs/scheduled-visits.md. 6285665 is the uploaded queue checkpoint.
+
+0008 is now applied; user reported 60 checks/0 failed and pre-inline full build. Do not rerun. 0009_visit_card_save.sql is prepared, NOT applied: single atomic Save for visit fields and optional roster. See docs/visit-card-save.md.

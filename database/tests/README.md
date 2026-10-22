@@ -50,3 +50,7 @@ User confirmed all 40 batch/card SQL checks passed after 0006 application. Full 
 ## Lead queues (58 checks prepared; NOT executed)
 
 Run 0007_lead_queues.test.sql after 0007. All synthetic fixtures roll back; 58-result guard checks complete pass. Covers roles/raw RPC boundaries, exact membership, malformed/bounded arrays, sequential two-PM latest-save behavior, unrelated contact retention, order/actor history, old retry safety, own-lead save, no-op and automatic membership lifecycle. Not a simultaneous two-connection test. Before pilot race actual queue saves and reassignments on distinct connections and inspect final state/history/contact preservation. See docs/lead-queues.md.
+
+0008_scheduled_visits.test.sql: 60 prepared checks, NOT run; requires 0001-0008. Synthetic fixtures roll back. Tests optional times, explicit conflicts/rollback, roles/rosters/access/retries/calendar/scope; single connection only. Full user build/browser/concurrent/phone acceptance remains separate.
+
+0008 user-reported result: 60 checks/0 failed. New 0009_visit_card_save.test.sql: 38 prepared checks, NOT run, requires 0001-0009; fixtures roll back.
