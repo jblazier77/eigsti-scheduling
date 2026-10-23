@@ -51,3 +51,11 @@ Private queue state/event snapshots, get/save employee RPCs, membership triggers
 ## Combined 0010/0011 update (current next action)
 
 The earlier 0010-only bundle is superseded for this unapplied combined slice. Use database/batches/0010_0011_combined.sql ONCE after the known applied 0001-0009 checkpoint. It applies ordered 0010 completion/returns and 0011 job tags/trades, then runs 111 guarded SQL checks under fixture savepoints before committing. Preflight stops if either new table already exists or the 0009 RPC is absent. If any part was applied independently, stop and verify state before preparing a remaining update. Neither new migration is confirmed applied. Regenerate with node scripts/prepare-combined-batch.mjs. See docs/combined-batch.md.
+
+0012_work_planning_and_materials.sql is prepared, NOT yet applied. Requires applied 0011. Prefer the guarded database/batches/0012_work_planning_and_materials.sql bundle with 42 rollback-only fixture checks; see docs/planning-and-materials.md. Do not rerun 0010/0011.
+
+0012_work_planning_and_materials: APPLIED in isolated vglhojtrccygjgupxsrd. User screenshot confirms the guarded final result with 42 checks and synthetic fixtures removed after commit. Do not rerun this migration or its combined bundle. The initial failed test attempt was corrected before this successful application.
+
+0013_quick_work.sql is prepared, NOT applied. Requires applied 0012; prefer database/batches/0013_quick_work.sql with 33 rollback-only fixture checks. See docs/quick-work.md. Do not rerun applied 0012 or older updates.
+
+0013_quick_work is APPLIED in isolated vglhojtrccygjgupxsrd: user confirmed guarded '0013 applied; synthetic fixtures removed' result after the 33-check validation/fixture rollback/commit. Do not rerun 0013 or earlier bundles.

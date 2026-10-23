@@ -1,5 +1,17 @@
 # Current status
 
+Quick-work browser acceptance: user reported 'worked great' after the one-save window/date/help/in-stock scenario. 0012 and 0013 are applied; 139 Node checks and TypeScript passed. This verifies that scenario only; unreported phone/role/concurrency/recovery and other grouped checks remain distinct. Next: save the current batch with a user Git commit/push, then remaining initial-plan subcontractor commitments and handoff work. Latest confirmed pushed checkpoint is still a5f2bc5 until a new push is reported.
+
+0013 is APPLIED: user confirmed guarded final result '0013 applied; synthetic fixtures removed', emitted after all 33 check results pass, fixture rollback and DDL commit. Do not rerun 0013 or earlier updates. 139 Node checks and TypeScript pass. Next: restart normal-user dev and grouped quick-work review (window/date/help/materials in one save, undated helper requirement retained), then checkpoint. New full build output/device/recovery evidence remains distinct; latest confirmed uploaded checkpoint is a5f2bc5 and current batch/notes are still local. See quick-work.md.
+
+D57 quick-work follow-up implemented locally: Add work has help needed/material availability up front, optional dates and one save. Undated helper need persists and prefills Add date. 139 automated checks and TypeScript pass. Applied 0012 remains unchanged with 42 live checks; new 0013 is NOT applied and its 33-check bundle/full build/grouped browser review are pending. Latest confirmed pushed checkpoint remains a5f2bc5. See quick-work.md; do not rerun old bundles.
+
+0012 is now APPLIED: the user's SQL-result screenshot confirms 42 checks and '0012 applied; synthetic fixtures removed', the guarded success row emitted after validation, fixture rollback and commit. Do not rerun 0012 or earlier applied updates. 134 Node checks and TypeScript pass. Next: restart normal-user dev and review PM staffing warnings, optional Add-work dates and material availability together, then checkpoint. Explicit new build output/device/concurrency/recovery evidence remains separate and pending. Latest confirmed pushed checkpoint remains a5f2bc5; new batch/resume notes are local. See planning-and-materials.md.
+
+Current authorized batch D56 is implemented locally: PM calendar staffing warning, no Plan selection, optional dates during Add work, and material readiness/expected dates. 133 automated checks and TypeScript pass. New migration 0012 and its guarded 42-check bundle are prepared but NOT applied; new full build and authenticated/phone acceptance are pending. Previously applied 0010/0011 remain unchanged. Latest confirmed uploaded checkpoint is a5f2bc5; this batch/resume notes are uncommitted. See planning-and-materials.md for consolidated setup and acceptance. Further commitments/handoffs/pilot gates remain.
+
+Resume checkpoint: a5f2bc5 was committed and pushed to phase-0-foundation; user confirmed clean/up-to-date status, and the resumed workspace matched that checkpoint. User has now reported a successful full production build after the complete UI/unified-work batch, including TypeScript, page generation, private photo preview and subcontractor routes. 120 automated checks previously passed. Next: start normal-user dev and perform one grouped authenticated review of the saved UI/planning flow; phone, concurrency, recovery and pilot gates remain pending. SQL 0010/0011 is already applied with 111 checks/0 failed; do not rerun. Earlier pending-build/unpushed statements below describe prior checkpoints and are superseded by this evidence. This resume-note update is local pending a later checkpoint.
+
 D53 unified work is implemented: Save work replaces Save visit, all new additions use ordinary Add work, and separate return-work sections/actions/forms are removed. Earlier follow-up notes/owners/target dates remain attached to their original work as notes; linked schedules/crews and history are preserved. No data migration/deletion or SQL update. 120 automated checks and TypeScript pass. Full production build and authenticated desktop/phone review remain pending. Latest confirmed uploaded checkpoint remains a91da8c. See D53 and ui-layout-refresh.md.
 
 D52 correction implemented: Complete this work, standalone Reopen work and Mark return handled controls are removed too. No completion/check-off command forms remain rendered in app pages/components. Dates/crew planning and add/plan return work remain. Historical outcomes retained; no SQL needed. 119 automated checks and TypeScript pass. See D52; it supersedes the prior assumption that portion close-out controls remain in the UI.
@@ -147,6 +159,13 @@ After combined SQL success, the agent launched dev through its execution tool. /
 
 User requested always-visible scope at the top with a small edit icon, attachment/photo add icons near the top and thumbnails at the bottom, before separately reviewing Project work. Implemented those UI changes with private raster-photo previews and PDF/HEIC original-file tiles. Project work behavior is unchanged. 114 Node checks pass; TypeScript/build/browser evidence is recorded in ui-layout-refresh.md. No new SQL. Current new preview endpoint requires browser validation with real private test photos; actual phone/HEIC preview compatibility remains a separate limitation. User-facing review should use the real /jobs page, not the static fictional /previews mockup.
 
+
+
+
+
+
+
+0012 live attempt: user reported 42501 permission denied for visits. This came from direct table reads in test assertions. Corrected all such test reads to the authorized list_job_visits RPC and regenerated the guarded 42-check bundle; no application/migration privilege expansion. The failed bundle did not reach commit; live rerun remains pending. A regression test prevents direct visits-table grants/read assumptions from returning. See planning-and-materials.md.
 
 
 

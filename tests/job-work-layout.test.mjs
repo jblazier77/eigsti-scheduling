@@ -7,6 +7,7 @@ import {createElement} from 'react';
 import {renderToStaticMarkup} from 'react-dom/server';
 import {groupJobWork} from '../src/domain/job-work-layout.ts';
 import {dateLabel} from '../src/domain/visits.ts';
+import {materialLabels} from '../src/domain/planning-updates.ts';
 const require=createRequire(import.meta.url),swc=require('next/dist/build/swc');
 const lead='lead',helper='helper';
 const portion=(id,owner,extra={})=>({id,job_id:'job',description:id,responsible_lead:owner,lead_name:owner,completion:'open',remaining_note:'',planned_count:0,returns:[],...extra});
@@ -42,6 +43,7 @@ async function rendered(role,isOpen=true){
  const dependencies={
   'node:crypto':{randomUUID:()=> 'request'},'../../lib/visit-session':{visitSession:async()=>({actor,gateway})},
   '../../domain/job-work-layout.ts':{groupJobWork},'../../domain/visits.ts':{dateLabel},
+  '../../domain/planning-updates.ts':{materialLabels},'./work-materials':{WorkMaterials:()=>null},
   './inline-visit':{InlineVisit:stub('InlineVisit')},'./visit-editor':{VisitEditor:stub('VisitEditor')},
   './work-card-editor':{WorkCardEditor:stub('WorkCardEditor')},'./work-form':{InlineNewWork:stub('InlineNewWork')}
  };
@@ -72,7 +74,7 @@ test('closed job view has no mutation controls or directory lookup',async()=>{
 test('compact scheduled work keeps dates, crew and warnings visible, with no mutation controls for readers',async()=>{
  const {slotLabel}=await import('../src/domain/visits.ts');
  const source=swc.transformSync(readFileSync(new URL('../src/app/components/inline-visit.tsx',import.meta.url),'utf8'),{filename:'inline-visit.tsx',jsc:{parser:{syntax:'typescript',tsx:true},target:'es2022',transform:{react:{runtime:'automatic'}}},module:{type:'commonjs'}}).code;
- const dependencies={'../../domain/visits.ts':{dateLabel,slotLabel},'../visit-editor-actions':{loadVisitEditorAction:()=>{throw new Error('Must not load until editing');}},'./visit-editor':{CancelVisit:()=>null},'./visit-card-editor':{VisitCardEditor:()=>null},'./detail-icons':{DetailIcon:()=>null}};
+ const dependencies={'../../domain/visits.ts':{dateLabel,slotLabel},'../visit-editor-actions':{loadVisitEditorAction:()=>{throw new Error('Must not load until editing');}},'./visit-editor':{CancelVisit:()=>null},'./visit-card-editor':{VisitCardEditor:()=>null},'./detail-icons':{DetailIcon:()=>null},'./staffing-warning':{StaffingWarning:()=>null}};
  const exports={};runInNewContext(source,{exports,require:name=>dependencies[name]??require(name)});
  const v={...visit('v','w'),description:'Cabinets',end_date:'2026-10-23',slot:'day',certainty:'tentative',required_helpers:2,day_conflicts:1,participants:[{id:helper,name:'Test helper',duty:'helping'}]};
  for(const compact of [true,false])for(const editable of [true,false]){

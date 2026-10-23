@@ -4,8 +4,9 @@ import { loadVisitEditorAction, type VisitEditorData } from '../visit-editor-act
 import { CancelVisit } from './visit-editor';
 import { VisitCardEditor } from './visit-card-editor';
 import { DetailIcon } from './detail-icons';
+import { StaffingWarning } from './staffing-warning';
 import { dateLabel, slotLabel, type Visit } from '../../domain/visits.ts';
-export function InlineVisit({visit:initialVisit,editable,showJob=false,hideWorkTitle=false,compact=false}:{visit:Visit;editable:boolean;showJob?:boolean;hideWorkTitle?:boolean;compact?:boolean}) {
+export function InlineVisit({visit:initialVisit,editable,showJob=false,hideWorkTitle=false,compact=false,showStaffingWarning=false}:{visit:Visit;editable:boolean;showJob?:boolean;hideWorkTitle?:boolean;compact?:boolean;showStaffingWarning?:boolean}) {
   const [data,setData]=useState<VisitEditorData|null>(null),[loadedSignature,setLoadedSignature]=useState('');
   const [loading,setLoading]=useState(false),[message,setMessage]=useState('');
   const visit=data&&loadedSignature===initialVisit.updated_at?data.visit:initialVisit;
@@ -17,9 +18,9 @@ export function InlineVisit({visit:initialVisit,editable,showJob=false,hideWorkT
   }
   return <div className={'inline-visit'+(compact?' compact-work-plan':'')}>
     {!hideWorkTitle&&<h3>{visit.description}</h3>}{showJob&&<p>{visit.job_title}</p>}
-    <div className="schedule-line"><strong>{dateLabel(visit.start_date)}{visit.end_date!==visit.start_date?' - '+dateLabel(visit.end_date):''}</strong><span>{slotLabel(visit)}</span><span className="badge">{visit.state==='completed'?'Completed':visit.state==='cancelled'?'Cancelled':visit.certainty==='confirmed'?'Confirmed':'Tentative'}</span></div>
+    <div className="schedule-line"><strong>{dateLabel(visit.start_date)}{visit.end_date!==visit.start_date?' - '+dateLabel(visit.end_date):''}</strong><span>{slotLabel(visit)}</span>{visit.state!=='planned'&&<span className="badge">{visit.state==='completed'?'Completed':'Cancelled'}</span>}{showStaffingWarning&&<StaffingWarning visit={visit}/>}</div>
     <p className="crew-line">{visit.participants.map(p=>p.name+(p.duty==='leading'?' (lead)':' (helping)')).join(', ')||'No crew assigned'}</p>
-    {visit.state==='planned'&&vacant>0&&<p className="staffing-notice">{vacant} helper {vacant===1?'space':'spaces'} to fill</p>}
+    {!showStaffingWarning&&visit.state==='planned'&&vacant>0&&<p className="staffing-notice">{vacant} helper {vacant===1?'space':'spaces'} to fill</p>}
     {visit.state==='planned'&&visit.day_conflicts>0&&<p className="form-message">Other plans share this day. Check the workload.</p>}
     {editable&&visit.state==='planned'&&<div className="visit-actions">
       <details name={'visit-action-'+visit.id} className="inline-visit-editor" onToggle={e=>{if(e.currentTarget.open&&(!data||loadedSignature!==initialVisit.updated_at))void load();}}><summary className={compact?'icon-action edit-details-icon':'button'} title={compact?'Edit dates and crew':undefined} aria-label={compact?'Edit dates and crew: '+visit.description:undefined}>{compact?<DetailIcon kind="edit"/>:<>Edit plan &amp; crew</>}</summary>

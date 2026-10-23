@@ -41,3 +41,7 @@ No payroll, time clock, accounting, estimating, purchasing, CRM expansion, porta
 - R28: Calendar entries plan future days and staffing; do not require per-entry Finish actions or completion reporting. This supersedes earlier daily-finish UI requirements. Whole-job/portion close-out is a separate planning-lifecycle decision, not a daily carpenter check-off workflow.
 
 - R29: One user-facing notion of work per job. Work may be entered initially or added later through the same Add work flow. No separate return-work category or workflow. Scheduling saves say Save work; removing dates preserves the work item. Preserve existing notes, ownership, dates and staffing while unifying the UI.
+
+- R30: Named helping staff have no separate Plan selection. Compare requested helping count with distinct assigned helpers (excluding the coordinating lead); show a clear accessible warning icon/count on PM day/week calendar entries when short. Clear automatically when filled; zero need, cancelled and completed historical entries do not warn. Retain existing role, staffing and optional time rules.
+
+- R31: Common work setup (description, lead, optional date, helpers needed, material availability) belongs in one inline Add work form and one Save work. Help/material availability must be editable without reopening the saved work or first choosing a date. Undated help requirements persist without reserving people, and prefill later scheduling. Keep one-day/no-time setup compact; extra date/time options may expand. Save all supplied fields atomically and preserve safe retries.

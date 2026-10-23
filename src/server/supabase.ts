@@ -44,7 +44,7 @@ export class SupabaseSession implements JobsGateway {
       if (response.status === 403) throw new AppError('not_allowed', 403, 'You do not have access to this action.');
       const detail = await response.json().catch(() => null);
       const code = detail?.code;
-      if (code === 'PGRST205' || code === 'PGRST202' || code === '42P01') throw new AppError('schema_pending', 503, 'This feature is temporarily unavailable. Please try again later.');
+      if (code === 'PGRST205' || code === 'PGRST202' || code === '42P01' || code === '42703' || code === 'PGRST204') throw new AppError('schema_pending', 503, 'This feature is temporarily unavailable. Please try again later.');
       if (code === '55000') throw new AppError('upload_pending', 409, 'The upload is not complete. Keep this tab open and retry.');
       if (code === '42501') throw new AppError('not_allowed', 403, 'You do not have access to this action.');
       if (code === '22023' && ['Planned visits remain','Open returns remain','Return visit still planned','Return already scheduled','Planned visit required','Open return required','Completed work required','Reopen portion explicitly','Describe return work','Return limit reached','Open job required','Invalid progress command','Invalid progress field','Invalid progress relationship','Invalid remaining note','Invalid return flag','Invalid return date'].includes(detail?.message)) {

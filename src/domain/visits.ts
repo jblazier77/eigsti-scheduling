@@ -5,6 +5,11 @@ export type VisitSlot = 'day' | 'all_day' | 'morning' | 'afternoon' | 'timed';
 export type VisitValues = { start_date: string; end_date: string; slot: VisitSlot; start_time: string | null; end_time: string | null; coordinator_id: string; required_helpers: number; certainty: 'tentative' | 'confirmed' };
 export type Visit = VisitValues & { id: string; work_item_id: string; job_id: string; job_title: string; description: string; state: 'planned' | 'completed' | 'cancelled'; updated_at: string; day_conflicts: number; participants: { id: string; name: string; duty: 'leading' | 'helping' }[] };
 export type StaffOption = { id: string; name: string; busy: boolean };
+export function helperDeficit(visit:Pick<Visit,'state'|'required_helpers'|'participants'|'coordinator_id'>):number {
+  if(visit.state!=='planned')return 0;
+  const assigned=new Set(visit.participants.filter(p=>p.duty==='helping'&&p.id!==visit.coordinator_id).map(p=>p.id));
+  return Math.max(0,visit.required_helpers-assigned.size);
+}
 export function visitId(value: unknown): string {
   if (typeof value !== 'string' || !uuidPattern.test(value)) throw new AppError('invalid_input', 400, 'Check the visit or person selected.');
   return value.toLowerCase();

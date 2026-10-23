@@ -9,6 +9,8 @@ import { dateLabel } from '../../domain/visits.ts';
 import { InlineVisit } from './inline-visit';
 import { VisitEditor } from './visit-editor';
 import { WorkTools } from './work-tools';
+import { WorkMaterials } from './work-materials';
+import { materialLabels,type WorkStatus } from '../../domain/planning-updates.ts';
 
 export async function JobWorkspace({jobId,isOpen,children}:{jobId:string;isOpen:boolean;children?:React.ReactNode}) {
   const {actor,gateway}=await visitSession(),pm=actor.roles.includes('pm');
@@ -31,8 +33,7 @@ export async function JobWorkspace({jobId,isOpen,children}:{jobId:string;isOpen:
     </details>
   </>;
 }
-type Status={id:string;readiness:string;waiting_until:string|null};
-function WorkSection({work:w,visits,actor,leads,isOpen,status}:{work:WorkProgress;visits:Visit[];actor:Actor;leads:LeadOption[];isOpen:boolean;status?:Status}) {
+function WorkSection({work:w,visits,actor,leads,isOpen,status}:{work:WorkProgress;visits:Visit[];actor:Actor;leads:LeadOption[];isOpen:boolean;status?:WorkStatus}) {
   const pm=actor.roles.includes('pm'),manage=isOpen&&(pm||actor.roles.includes('lead')&&w.responsible_lead===actor.id);
   const planned=visits.filter(v=>v.state==='planned');
   // Earlier follow-up records remain readable as notes on their original work.
@@ -40,11 +41,13 @@ function WorkSection({work:w,visits,actor,leads,isOpen,status}:{work:WorkProgres
   const notes=w.returns.map(r=>({id:r.id,note:r.note,owner:r.owner_name,date:r.due_date}));
   if(w.remaining_note&&!notes.some(n=>n.note.trim()===w.remaining_note.trim()))notes.unshift({id:'remaining',note:w.remaining_note,owner:'',date:null});
   return <article className="card unified-work" id={'work-'+w.id}>
-    <div className="section-heading work-card-heading"><div><h3>{w.description}</h3><p className="muted work-owner">{w.lead_name??'No lead assigned'}</p></div><span className={'badge '+(status?.readiness!=='ready'&&status?'waiting-badge':'')}>{w.completion==='completed'?'Completed':status?.readiness==='ready'?'Ready':status?.waiting_until?'Waiting until '+dateLabel(status.waiting_until):status?'Waiting':'Open'}</span></div>
+    <div className="section-heading work-card-heading"><div><h3>{w.description}</h3><p className="muted work-owner">{w.lead_name??'No lead assigned'}</p></div><span className={'badge '+(status?.readiness!=='ready'&&status?'waiting-badge':'')}>{w.completion==='completed'?'Completed':status?.material_status&&['need_to_order','ordered','in_stock'].includes(status.material_status)?materialLabels[status.material_status]:status?.readiness==='ready'?'Ready':status?.waiting_until?'Expected '+dateLabel(status.waiting_until):status?'Waiting':'Open'}</span></div>
+    {status&&<WorkMaterials status={status} canEdit={manage&&w.completion==='open'}/>}
     {!!notes.length&&<div className="work-notes">{notes.map(note=><div key={note.id}><p className="preserve-lines work-remaining">{note.note}</p>{(note.owner||note.date)&&<p className="muted">{note.owner}{note.date?' / Target: '+dateLabel(note.date):''}</p>}</div>)}</div>}
     {planned.map(v=><section key={v.id} id={'visit-'+v.id} className="work-schedule"><InlineVisit visit={v} hideWorkTitle compact editable={isOpen&&(pm||actor.roles.includes('lead')&&v.coordinator_id===actor.id)}/></section>)}
-    {!planned.length&&w.completion==='open'&&<p className="muted work-unscheduled">No dates yet</p>}
-    {manage&&w.completion==='open'&&<details className="inline-action add-work-date"><summary>+ Add date</summary><VisitEditor work={[{id:w.id,description:w.description}]} leads={[...leads].sort((a,b)=>Number(b.id===w.responsible_lead)-Number(a.id===w.responsible_lead))} pm={pm} actorId={actor.id} requestId={randomUUID()}/></details>}
+    {!planned.length&&w.completion==='open'&&<p className="muted work-unscheduled">No dates yet{status?.default_helpers?' / '+status.default_helpers+(status.default_helpers===1?' helper requested':' helpers requested'):''}</p>}
+    {manage&&w.completion==='open'&&<details className="inline-action add-work-date"><summary>+ Add date</summary><VisitEditor work={[{id:w.id,description:w.description}]} leads={[...leads].sort((a,b)=>Number(b.id===w.responsible_lead)-Number(a.id===w.responsible_lead))} pm={pm} actorId={actor.id} initialHelpers={status?.default_helpers??0} requestId={randomUUID()}/></details>}
   </article>;
 }
+
 
