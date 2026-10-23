@@ -68,3 +68,7 @@ Combined acceptance: database/batches/0010_0011_combined.sql runs 60 completion/
 0014_subcontractor_commitments.test.sql contains 48 prepared rollback-only checks for optional promises, atomic contact creation, idempotency, scoped roles, calendar isolation and archived history. Prefer the one-time guarded 0014 bundle after 0013; no live 0014 results are claimed yet.
 
 0014 is APPLIED in isolated vglhojtrccygjgupxsrd: user confirmed 48 checks, 0 failed and synthetic fixtures removed after schema commit. Do not rerun the 0014 bundle or older updates. This supersedes earlier pending-0014 notes.
+
+0015_job_archive.test.sql: 35 prepared checks for archive guards, preservation, restore/additional work, stale retries, roles, calendar/queue behavior and private history. Live execution remains pending; use the guarded 0015 bundle after 0014.
+
+0015 is APPLIED: user confirmed expected guarded result (35 checks, 0 failed, synthetic fixtures removed). Do not rerun its bundle or previous updates; earlier prepared/pending statements are superseded.

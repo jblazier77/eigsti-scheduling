@@ -38,7 +38,7 @@ export function jobsHandler(config: SupabaseConfig, transport: typeof fetch = fe
         result = await createJob(actor, input, session);
       } else {
         const url = new URL(request.url);
-        result = await listJobs(actor, { scope: url.searchParams.get('scope') ?? undefined, offset: url.searchParams.get('offset') ?? undefined }, session);
+        result = await listJobs(actor, { scope: url.searchParams.get('scope') ?? undefined, offset: url.searchParams.get('offset') ?? undefined,state:url.searchParams.get('state')??undefined }, session);
       }
       return new Response(JSON.stringify(result), { status: 200, headers: responseHeaders });
     } catch (error) {

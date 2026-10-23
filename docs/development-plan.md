@@ -1,70 +1,39 @@
 # Development plan
 
-Calendar card refinement D59 is implemented locally: customer name (job link), address and phone lead each work/commitment card; work description then project scope follows. Scheduled crew editing uses one accessible pencil beside crew names, with in-place dates/staffing and retained drafts when collapsed. Removed calendar Open job links and Edit plan & crew text buttons; all four views share the card hierarchy. 154 Node checks and TypeScript pass. No SQL change: 0014 remains applied with 48 checks passing. New browser/phone review and normal-user final build for this refinement remain pending. Latest confirmed Git checkpoint remains cb3ba26; D58/D59 are still local awaiting backup.
+This is the current queue. Detailed historical decisions and verification records remain in decisions.md and status.md; older pending/application statements there are superseded by the checkpoints below.
 
-User browser acceptance for D58: calendar views worked; subcontractor commitment flag/note worked; changing the commitment date moved the flag successfully. These are the reported desktop checks only; phone, additional role/removal/concurrency/recovery checks remain separate. Applied 0014 passed 48 SQL checks; 151 Node checks and TypeScript previously passed. Next: user Git commit/push to back up this local batch. Latest confirmed pushed checkpoint remains cb3ba26 until successful push is reported.
+## Verified checkpoint
 
-0014 is APPLIED in the isolated Supabase project: user confirmed "48 checks, 0 failed, 0014 applied; synthetic fixtures removed." The guarded final row follows fixture validation, fixture rollback and schema commit. Do not rerun 0014 or earlier bundles. 151 Node checks and TypeScript passed locally. Next: restart normal-user dev and review optional subcontractor commitments with Day/Week/Two weeks/Month together. Explicit full-build output, authenticated/device acceptance and Git backup of this batch are not yet recorded; latest confirmed pushed checkpoint remains cb3ba26. This record supersedes earlier pending-SQL statements below. See subcontractor-commitments.md.
+- Latest confirmed GitHub backup: **f767b9f**, phase-0-foundation; user reported clean/up-to-date after push.
+- Applied database migrations: **0001–0015**. Never rerun applied migrations or their bundles.
+- 0014: user confirmed **48 checks, 0 failed, synthetic fixtures removed**. Calendar views, commitments, moving dates and simplified calendar cards passed the user's reported desktop review.
+- Core jobs, contacts/files, work/lead ownership, queues, optional-date scheduling/staffing, rain/filler tags, scopes/trades, material availability, one-save quick work and subcontractor commitments are implemented.
+- No production deployment or pilot release is claimed.
 
-Latest local batch D58: optional job-subcontractor commitments, inline contact setup/editing and distinct PM/lead calendar flags; Day/Week/Two weeks/Month views for all schedule users. 151 Node checks and TypeScript pass. New 0014 guarded bundle contains 48 SQL checks but is NOT applied; normal-user full build and grouped authenticated/device acceptance remain pending. Applied 0001–0013 are unchanged. Latest confirmed pushed checkpoint is cb3ba26 (user commit/push output); current batch is local/uncommitted. See subcontractor-commitments.md. This paragraph supersedes older checkpoint/application statements below.
+## Current development batch: reversible job archive
 
+D60: user removed dedicated handoff notes from the queue. Do not develop a new handoff-note form or workflow. Existing job/access/work notes and historical records remain; this does not remove those fields.
 
-Latest resume evidence supersedes older checkpoint descriptions below: a5f2bc5 is committed/pushed, and user reported a successful full production build of the unified-work/UI batch, including TypeScript and all routes. 120 automated checks previously passed; applied 0010/0011 already passed 111 database checks. Next is normal-user dev plus one grouped authenticated review; no SQL setup is needed. Remaining phone/concurrency/recovery/pilot and later feature work are still distinct, and do not reintroduce daily completion or separate return-work concepts.
+Implement PM Archive job and Restore for more work. Archive removes the job from active lists, operational calendars and lead queues without completing work, deleting files/contacts or wiping history. Archived jobs can return for ordinary additional work/punch lists on the same job. Today/future crew plans and dated subcontractor promises must be resolved before archive; no daily completion/check-off requirement. Existing open work ownership resumes when restored; review before scheduling again.
 
-Current local slice: approved job-details layout and matching initial-page theme are implemented without SQL changes. 107 Node tests/TypeScript pass; real browser review and a new user production build remain pending. Read ui-layout-refresh.md for consolidated acceptance. The combined 0010/0011 migrations are already applied with 111 checks/0 failed; do not rerun those updates. Preserve one final build/checkpoint after this visual review.
+Status: **0015 applied**, user confirmed expected guarded success (35 checks, 0 failed, synthetic fixtures removed). **164 Node checks and TypeScript pass**. Explicit new production-build output is not separately recorded; user reported the grouped archive/restore desktop review worked. Phone/concurrency/recovery checks remain separate. D60 changes are not yet backed up. See job-archive.md for one guarded update and consolidated acceptance. Applied 0014 is unchanged.
 
-Latest evidence: user production build passed and combined SQL returned 111 checks/0 failed with 0010 and 0011 applied and synthetic fixtures removed. Those migrations are applied; do not rerun their standalone or combined updates. Next is grouped browser acceptance, then one commit/push. Earlier descriptions of pending database/build checks below are superseded by this evidence.
+## Remaining initial pilot queue, in order
 
-Updated 2026-10-22. Architecture implementation phases remain distinct from the deferred post-pilot release list in post-pilot.md.
+1. Finish the archive/restore batch: Desktop review passed by user report; back up with one Git commit/push and retain the final build-evidence gap. Do not rerun applied 0015.
+2. Simple employee account/deactivation administration; manual pilot provisioning/reset remains supported. No unconfigured recovery-email feature.
+3. Consolidated phone/tablet usability, role/access, leads-helping-on-other-work, concurrent scheduling and uncertain-save/fault checks. Reconcile legacy scenarios with planning-only work rather than reintroducing completion reporting.
+4. Operational readiness: export and isolated database/auth/private-file restore drill, recovery instructions, realistic load/performance checks.
+5. Hosting and limited pilot rollout: access without this computer running, final environment/security/operating checks, release candidate and pilot acceptance.
 
-The combined batch is implemented locally: completion/returns (0010), rain-day and filler-job tags, project scopes/Whole house markers, and the subcontractor trade directory (0011). Use database/batches/0010_0011_combined.sql once after applied 0001-0009. Its preflight stops if 0010/0011 may already be present. Do not apply the old 0010-only bundle as an intermediate step. See combined-batch.md for setup and grouped acceptance.
+## Deferred or removed
 
-| Phase | Scope | Current state |
-| --- | --- | --- |
-| 0 | Foundation, permissions, synthetic scenarios, ownership/cost/sign-in | Foundation prepared; operational/phone exit gates pending |
-| 1 | Individual sign-in, jobs/details/contacts/files, phone actions | Core desktop checks passed; phone/account administration and production/recovery gates pending. Email invites/self-service recovery deferred |
-| 2 | Work ownership/queues, day/week calendar, visits/staffing, completion/returns | Uploaded a91da8c includes applied 0001-0009. Completion/return implementation remains local pending combined acceptance |
-| 3 | Readiness, subcontractor commitments, follow-ups/handoffs, filters/history | Local 0010/0011 adds returns, tags/scopes and trade directory. Readiness editing, commitments, handoffs and guarded job closure remain |
-| 4 | Pilot, phone admin, export/DB+file restore, release candidate | Not started; phone/concurrent/fault/recovery gates remain |
+- Dedicated handoff-note feature: **removed by user**, D60.
+- SMTP/DNS, automated email invitations and self-service forgotten-password emails: post-pilot (user's Phase 2 list), see post-pilot.md.
+- Google integration, notifications, daily completion/check-off screens and a separate return-work workflow are outside the authorized initial UI scope.
 
-Latest confirmed uploaded commit: a91da8c. New local changes are not confirmed pushed. Never edit or rerun applied migrations 0001-0009.
+## Operating rules
 
-The combined SQL update applies ordered DDL and runs 111 checks (60 completion/return, 51 tag/trade) under fixture savepoints; fixtures roll back before DDL commits. SQL execution, normal-user production build and grouped browser acceptance are pending. Automated Node/TypeScript results are recorded in combined-batch.md; they do not replace real database/browser checks.
+Keep the carpenter-facing UI concise: inline edits, minimal clicks, one Save/Cancel per context. Dates/times are optional; multiple date-only jobs per day are supported. Expected material dates never assert actual delivery. A Lead account can coordinate one work entry and be helping crew on another; responsibility stays with the assigned work/coordinating lead. PM defaults to My jobs and can select All jobs. Calendar views are Day/Week/Two weeks/Month.
 
-D40/D41: minimize clicks, inline editing and one Save/Cancel pair per editable card. Job tags/scopes share a single inline draft; new filler creation is one atomic normal-job/default-work/tag command. Trade directory edits are inline; project scopes are independent of subcontractor assignments. PM edits job tags; PM/admin manages the directory; leads read it; helpers remain limited to assigned job data.
-
-D45: finish the combined authorized development slice before user acceptance. Hand over one build/restart sequence, one database update and one grouped checklist. Automated checks run during development. If 0010 was applied meanwhile, stop and prepare the appropriate remaining update rather than replaying it.
-
-Confirmed defaults: America/Chicago, weekdays 07:00-15:30, noon split; times optional. Date-only plans allow several jobs per day with workload notices; explicit blocks reserve people. Filler work is a standalone normal job tag. Rain-day suitability is independent. Whole house is an explicit compact presentation, retaining selected scopes. No weather integration or automatic rescheduling.
-
-After combined acceptance: record results and one commit/push, then remaining readiness/commitments/handoffs/guarded job closure and phone/account/recovery gates. Email invitations, forgotten-password self-service and SMTP/DNS remain post-pilot; manual onboarding/reset is permitted. No production data, paid provisioning or notifications.
-
-Latest UI follow-up: compact alphabetized job contacts with inline editing and Subcontractor Type/directory snapshot selection; only three My Jobs discovery filters. 118 Node tests and TypeScript pass; final user production build and grouped authenticated acceptance remain pending. No new SQL. Project work simplification is still awaiting its separate review.
-
-Work UI simplification implemented after contact approval: compact work/lead/status and dates/crew summaries, heading-level inline Add/edit, small schedule edit/Finish actions, More for completion/returns. 119 automated checks and TypeScript pass; grouped authenticated desktop/phone review and final production build remain pending. No SQL update.
-
-Planning requirement correction (D51): no per-entry Finish/check-off workflow. Removed scheduled-entry Finish controls throughout job/calendar views; normal planning and staffing need no completion reporting. 119 automated checks and TypeScript pass. Before optional whole-portion/return/job closure acceptance, reconcile legacy planned-entry closure guards with this decision using a new migration if needed. No mandatory daily finish, cancellation of real historical plans as a workaround, or automatic inference of completed work. Applied SQL is unchanged.
-
-D52 clarification: Remove whole-portion Complete/Reopen and return-handled check-off controls in addition to scheduled-entry Finish. Implemented across current and legacy job components; 119 checks and TypeScript pass. Keep planning/add-return actions. Any future job archival/lifecycle workflow must be separate from daily completion reporting; no SQL/data rewrite in this slice.
-
-D53 unified-work correction implemented: all new additions use Add work, regardless of when entered; no separate return-work flow, type, section or special scheduling selector. Save visit is Save work; removal from schedule retains the work. Legacy follow-up notes/owners/dates and linked plans remain readable on original work; no records were migrated or deleted. Applied SQL unchanged. 120 automated checks/TypeScript pass; final build and grouped authenticated review pending. Any future backend cleanup must preserve that one user-facing notion of work and use a separate safe migration.
-
-## Next development push - optional date while adding work
-
-User request recorded during grouped review: when adding a new work item, offer an optional schedule date in the same inline form. A date is never required. If known, enter it during Add work and save without reopening Add date; if unknown, save undated work normally. Keep time optional and preserve the existing No time set/multiple-jobs-per-day behavior. Use one Save/Cancel pair and existing lead/staffing permission boundaries. Implement safe creation/retry behavior so a partial or interrupted save cannot silently duplicate work or falsely confirm its schedule. This is queued for the next development push, not implemented or accepted yet. No current SQL change.
-
-## Readiness scope note - material availability
-
-User approved keeping the existing readiness badge for now. Desired future use includes material availability such as cabinets: Need to order, Ordered, In stock, and an expected availability/arrival date when known. Record this as readiness/material planning scope, not work completion tracking. Preserve unknown availability; an expected date must not automatically assert delivery or In stock. Exact controls and how multiple materials combine into overall work readiness remain to be designed. Documentation only in this turn; no app or SQL change.
-
-## Current authorized batch - staffing warnings, optional Add-work date, material readiness
-
-D54/D55/D56 are implemented locally. PM day/week entries warn with an amber triangle and missing helper count; no staffing Plan choice remains. Add work accepts optional dates in the same atomic save. Material availability summaries/expected dates now provide the next initial-plan readiness slice, with PM/own-lead edits and authorized read-only access. See planning-and-materials.md for one build, one guarded 0012 SQL update (42 checks), and grouped acceptance. 133 Node checks and TypeScript pass. SQL 0012 is NOT applied yet and a new full build/browser acceptance are pending. Applied 0001-0011 unchanged. Subcontractor commitments/handoffs and pilot/device/recovery/lifecycle work remain; do not restore completion-reporting or separate return-work concepts. Latest confirmed push a5f2bc5.
-
-0012 live application succeeded: user screenshot confirms 42 checks and guarded '0012 applied; synthetic fixtures removed' result. Do not rerun. 134 Node checks and TypeScript pass; next is grouped authenticated planning/readiness review, then final batch checkpoint. Subsequent initial-plan commitments/handoffs and pilot/device/recovery/lifecycle gates remain distinct.
-
-Current follow-up D57: quick Add work includes visible Helpers needed and Material availability together with optional dates in one save. Undated helper need persists and prefills Add date. New 0013 is prepared with a guarded 33-check bundle; applied 0012 stays unchanged. 139 automated checks and TypeScript pass; full build/live SQL/browser checks are pending. See quick-work.md. Do not rerun earlier bundles.
-
-0013 application confirmed by user: guarded final success result '0013 applied; synthetic fixtures removed'. All 33 checks passed before the success row; migration is APPLIED. Do not rerun. Next: restart normal-user dev and review one-save window/date/help/in-stock setup and undated helper persistence, then checkpoint after acceptance. 139 Node checks/TypeScript pass; new full build output not separately supplied. Latest confirmed push a5f2bc5.
-
-User accepted the quick-work setup with 'worked great' after the 0013 one-save scenario. That interaction is verified; remaining unreported role/device/concurrency/recovery scenarios stay pending. Next: one user Git checkpoint for this batch, then subcontractor commitments/scheduling and handoff planning within the remaining initial plan. Preserve inline editing, one-save setup and planning-only semantics.
+Use the user's ordinary PowerShell for a reliable backend-connected dev server. Stop dev before production builds. Run automated checks during development; group user acceptance into useful batches. Keep applied SQL immutable and use guarded new migrations with synthetic fixtures removed before commit. Record only observed browser/database/build results. Do not claim outstanding phone, concurrency, restore or pilot checks from automated unit tests.

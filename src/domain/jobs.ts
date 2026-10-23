@@ -42,7 +42,7 @@ export type JobSummary = {
 } & Partial<JobClassification>;
 export type JobsGateway = {
   createJob(input: ValidJobInput): Promise<JobSummary>;
-  listJobs(query: { responsiblePm?: string; limit: number; offset: number; rainDay?:boolean; filler?:boolean }): Promise<JobSummary[]>;
+  listJobs(query: { responsiblePm?: string; limit: number; offset: number; rainDay?:boolean; filler?:boolean; archived?:boolean }): Promise<JobSummary[]>;
 };
 
 export async function createJob(actor: Actor | null, input: unknown, gateway: JobsGateway) {
@@ -51,7 +51,7 @@ export async function createJob(actor: Actor | null, input: unknown, gateway: Jo
   return gateway.createJob(validateCreateJob(input));
 }
 
-export async function listJobs(actor: Actor | null, query: { scope?: string; offset?: string; kind?:string }, gateway: JobsGateway) {
+export async function listJobs(actor: Actor | null, query: { scope?: string; offset?: string; kind?:string;state?:string }, gateway: JobsGateway) {
   if (!actor?.active) throw new AppError(actor ? 'access_disabled' : 'sign_in_required', actor ? 403 : 401, 'Please sign in with an active account.');
   const scope = query.scope ?? 'mine';
   if (scope !== 'mine' && scope !== 'all') throw new AppError('invalid_input', 400, 'Choose My Jobs or All Jobs.');
@@ -59,7 +59,10 @@ export async function listJobs(actor: Actor | null, query: { scope?: string; off
   const offset = Number(query.offset ?? '0');
   if (!Number.isSafeInteger(offset) || offset < 0 || offset > 100000) throw new AppError('invalid_input', 400, 'Invalid page.');
   const kind=query.kind??'all';
+  const state=query.state??'active';
+  if(!['active','archived'].includes(state))throw new AppError('invalid_input',400,'Choose active or archived jobs.');
+  if(state==='archived')requirePm(actor);
   if(!['all','rain','filler','both'].includes(kind))throw new AppError('invalid_input',400,'Choose a job filter.');
   return gateway.listJobs({ responsiblePm: scope === 'mine' && actor.roles.includes('pm') ? actor.id : undefined, limit: 50, offset,
-    ...(kind==='rain'||kind==='both'?{rainDay:true}:{}),...(kind==='filler'||kind==='both'?{filler:true}:{}) });
+    ...(kind==='rain'||kind==='both'?{rainDay:true}:{}),...(kind==='filler'||kind==='both'?{filler:true}:{}),...(state==='archived'?{archived:true}:{}) });
 }

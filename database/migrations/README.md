@@ -63,3 +63,7 @@ The earlier 0010-only bundle is superseded for this unapplied combined slice. Us
 0014_subcontractor_commitments is prepared, NOT applied. Requires applied 0013. Use database/batches/0014_subcontractor_commitments.sql once: 48 guarded fixture checks, fixture rollback before schema commit, duplicate-application guard. Do not rerun 0001–0013. See docs/subcontractor-commitments.md.
 
 0014 is APPLIED in isolated vglhojtrccygjgupxsrd: user confirmed 48 checks, 0 failed and synthetic fixtures removed after schema commit. Do not rerun the 0014 bundle or older updates. This supersedes earlier pending-0014 notes.
+
+0015_job_archive is prepared, NOT applied. Requires applied 0014; prefer database/batches/0015_job_archive.sql once, with 35 guarded rollback-only fixture checks. Never rerun applied 0001–0014. See docs/job-archive.md.
+
+0015 is APPLIED: user confirmed expected guarded result (35 checks, 0 failed, synthetic fixtures removed). Do not rerun its bundle or previous updates; earlier prepared/pending statements are superseded.

@@ -50,3 +50,6 @@ No payroll, time clock, accounting, estimating, purchasing, CRM expansion, porta
 - R33: Every user with schedule access has Day, Week, Two weeks and Month views. Retain existing role/personal-job scope, PM My jobs/All jobs, inline editing and staffing warnings; include weekend subcontractor markers and safe month/year navigation.
 
 - R34: Calendar cards put customer/address first, then work and project scope, followed by concise schedule/crew details. Customer name opens the job; a small accessible crew pencil edits dates/staffing in place, replacing redundant Open job and Edit plan & crew text actions in every calendar view. Retain unsaved drafts when the editor is collapsed and existing read/write scopes.
+
+- R35: PM may archive and restore the same job for additional work/punch-list items. Preserve work ownership, history, files and contacts; hide inactive jobs from active lists/queues/calendars. Resolve current/future crew dates or subcontractor commitments first. No daily completion prerequisite, duplicate job or automatic rescheduling.
+- R36: Dedicated handoff-note development is removed by the user (D60). Preserve the existing ordinary notes and recorded history.

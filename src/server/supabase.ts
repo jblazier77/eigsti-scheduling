@@ -49,6 +49,7 @@ export class SupabaseSession implements JobsGateway {
       if (code === 'PGRST205' || code === 'PGRST202' || code === '42P01' || code === '42703' || code === 'PGRST204') throw new AppError('schema_pending', 503, 'This feature is temporarily unavailable. Please try again later.');
       if (code === '55000') throw new AppError('upload_pending', 409, 'The upload is not complete. Keep this tab open and retry.');
       if (code === '42501') throw new AppError('not_allowed', 403, 'You do not have access to this action.');
+      if(code==='22023'&&['Resolve today or future crew dates before archiving this job.','Resolve today or future subcontractor commitments before archiving this job.','Job status changed. Refresh the job before trying again.'].includes(detail?.message))throw new AppError('invalid_input',409,detail.message);
       if (code === '22023' && ['Planned visits remain','Open returns remain','Return visit still planned','Return already scheduled','Planned visit required','Open return required','Completed work required','Reopen portion explicitly','Describe return work','Return limit reached','Open job required','Invalid progress command','Invalid progress field','Invalid progress relationship','Invalid remaining note','Invalid return flag','Invalid return date'].includes(detail?.message)) {
         const messages: Record<string,string>={
           'Planned visits remain':'Finish or cancel the scheduled entries for this portion before completing it.',
@@ -93,8 +94,8 @@ export class SupabaseSession implements JobsGateway {
     return this.request('/rest/v1/rpc/create_job', { method: 'POST', body: JSON.stringify({ p_request_id: input.requestId, p_customer: input.customer, p_phone: input.phone, p_address: input.address }) });
   }
 
-  async listJobs(query: { responsiblePm?: string; limit: number; offset: number; rainDay?: boolean; filler?: boolean }): Promise<JobSummary[]> {
-    const params = new URLSearchParams({ select: 'id,customer_name,phone,phone_action,address,title,responsible_pm,lifecycle,rain_day,filler,whole_house,trades', order: 'created_at.desc,id.desc', limit: String(query.limit), offset: String(query.offset), lifecycle: query.rainDay || query.filler ? 'eq.open' : 'neq.archived' });
+  async listJobs(query: { responsiblePm?: string; limit: number; offset: number; rainDay?: boolean; filler?: boolean; archived?:boolean }): Promise<JobSummary[]> {
+    const params = new URLSearchParams({ select: 'id,customer_name,phone,phone_action,address,title,responsible_pm,lifecycle,rain_day,filler,whole_house,trades', order: 'created_at.desc,id.desc', limit: String(query.limit), offset: String(query.offset), lifecycle: query.archived?'in.(archived,closed)':'eq.open' });
     if (query.rainDay) params.set('rain_day','eq.true');
     if (query.filler) params.set('filler','eq.true');
     if (query.responsiblePm) params.set('responsible_pm', 'eq.' + query.responsiblePm);
@@ -105,6 +106,9 @@ export class SupabaseSession implements JobsGateway {
     const params = new URLSearchParams({ select: 'id,customer_name,phone,phone_action,address,title,scope,access_notes,responsible_pm,lifecycle,rain_day,filler,whole_house,trades', id: 'eq.' + id, limit: '1' });
     const rows = await this.request('/rest/v1/jobs?' + params);
     return rows[0] ?? null;
+  }
+  async setJobArchive(jobId:string,requestId:string,action:'archive'|'restore',expected:string):Promise<{id:string;lifecycle:string;replayed:boolean}>{
+    return this.request('/rest/v1/rpc/set_job_archive',{method:'POST',body:JSON.stringify({p_job_id:jobId,p_request_id:requestId,p_action:action,p_expected:expected})});
   }
 
   async updateJob(id: string, patch: JobPatch): Promise<JobDetail> {
