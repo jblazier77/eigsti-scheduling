@@ -7,17 +7,21 @@ import { changedContactFields, contactFields, contactTypes, emptyContact, type C
 import type { Subcontractor } from '../../domain/job-classification.ts';
 import { archiveContactAction, archiveContactInlineAction, createContactAction, updateContactAction } from '../contact-actions';
 import type { FormState } from '../actions';
+import { createCommittedContactAction } from '../commitment-actions';
+import { isSubcontractor } from '../../domain/commitments.ts';
 
-export function ContactForm({ jobId, contactId, requestId, original = emptyContact, onDone, directory=[] }: { jobId: string; contactId?: string; requestId?: string; original?: ContactValues; onDone?:()=>void; directory?:Pick<Subcontractor,'id'|'name'|'phone'|'email'>[] }) {
+export function ContactForm({ jobId, contactId, requestId, original = emptyContact, onDone, directory=[], allowCommitment=false }: { jobId: string; contactId?: string; requestId?: string; original?: ContactValues; onDone?:()=>void; directory?:Pick<Subcontractor,'id'|'name'|'phone'|'email'>[]; allowCommitment?:boolean }) {
   const router = useRouter();
   const formId = useId();
   const [baseline] = useState(original);
   const [stableRequestId] = useState(requestId);
   const [values, setValues] = useState(baseline);
   const [remove, setRemove] = useState(false);
+  const [commitment,setCommitment]=useState({commitment_date:'',note:''});
+  const withCommitment=!contactId&&allowCommitment&&isSubcontractor(values.relationship)&&(!!commitment.commitment_date||!!commitment.note.trim());
   const [state, action, pending] = useActionState(async (previous: FormState, form: FormData): Promise<FormState> => {
     try {
-      return await (contactId ? updateContactAction : createContactAction)(previous, form);
+      return await (contactId ? updateContactAction : withCommitment ? createCommittedContactAction : createContactAction)(previous, form);
     } catch { return { message: 'The save was not confirmed. Your contact details are still here.', uncertain: true }; }
   }, { message: '' });
   // Pass the archive action directly so its framework redirect is not caught
@@ -28,7 +32,7 @@ export function ContactForm({ jobId, contactId, requestId, original = emptyConta
   } : archiveContactAction, { message: '' });
   const busy = pending || archiving;
   const patch = changedContactFields(baseline, values);
-  const dirty = Object.keys(patch).length > 0;
+  const dirty = Object.keys(patch).length > 0 || !!commitment.commitment_date || !!commitment.note;
   const detailPath = '/jobs/' + jobId;
   const savedJob = state.jobId || archiveState.jobId;
   const locked = busy || !!savedJob || (!contactId && !!state.uncertain);
@@ -47,6 +51,7 @@ export function ContactForm({ jobId, contactId, requestId, original = emptyConta
     <input type="hidden" name="contactId" value={contactId ?? ''} />
     <input type="hidden" name="requestId" value={stableRequestId ?? ''} />
     <input type="hidden" name="values" value={JSON.stringify(contactId ? patch : values)} />
+    <input type="hidden" name="commitment" value={JSON.stringify({...commitment,commitment_date:commitment.commitment_date||null})}/>
     <div className="contact-form-fields">{contactFields.map(field => <div key={field.name} className={field.name==='notes'?'contact-notes-field':undefined}>
       <label htmlFor={formId + field.name}>{field.label}{!field.required && <span className="muted"> (optional)</span>}</label>
       {field.name==='relationship' ? <><select id={formId+field.name} disabled={locked} value={values.relationship} onChange={event=>setValues({...values,relationship:event.target.value})}>
@@ -56,6 +61,7 @@ export function ContactForm({ jobId, contactId, requestId, original = emptyConta
         : field.name === 'notes' ? <textarea id={formId+field.name} rows={2} maxLength={field.max} value={values[field.name]} readOnly={locked} onChange={event => setValues({ ...values, [field.name]: event.target.value })} />
         : <input id={formId+field.name} type={field.name === 'phone' ? 'tel' : field.name === 'email' ? 'email' : 'text'} required={field.required} maxLength={field.max} value={values[field.name]} readOnly={locked} onChange={event => setValues({ ...values, [field.name]: event.target.value })} />}
     </div>)}</div>
+    {!contactId&&allowCommitment&&isSubcontractor(values.relationship)&&<fieldset disabled={locked} className="commitment-fields"><legend>Subcontractor commitment (optional)</legend><label>Date<input type="date" min="2000-01-01" max="2099-12-31" value={commitment.commitment_date} onChange={e=>setCommitment({...commitment,commitment_date:e.target.value})}/></label><label>What was promised or is needed<textarea rows={2} maxLength={2000} value={commitment.note} onChange={e=>setCommitment({...commitment,note:e.target.value})}/></label></fieldset>}
     {state.message && <p className="form-message" role="alert">{state.message}</p>}
     {archiveState.message && <p className="form-message" role="alert">{archiveState.message}</p>}
     {(state.uncertain || archiveState.uncertain) && <p className="muted">{!contactId ? 'Your details are retained. Retry this same save to avoid adding a duplicate.' : <><a href={detailPath} target="_blank" rel="noreferrer">Check the saved contacts in a new tab</a> before trying again. Saving again replaces the fields changed on this form.</>}</p>}

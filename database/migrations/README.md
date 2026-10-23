@@ -59,3 +59,7 @@ The earlier 0010-only bundle is superseded for this unapplied combined slice. Us
 0013_quick_work.sql is prepared, NOT applied. Requires applied 0012; prefer database/batches/0013_quick_work.sql with 33 rollback-only fixture checks. See docs/quick-work.md. Do not rerun applied 0012 or older updates.
 
 0013_quick_work is APPLIED in isolated vglhojtrccygjgupxsrd: user confirmed guarded '0013 applied; synthetic fixtures removed' result after the 33-check validation/fixture rollback/commit. Do not rerun 0013 or earlier bundles.
+
+0014_subcontractor_commitments is prepared, NOT applied. Requires applied 0013. Use database/batches/0014_subcontractor_commitments.sql once: 48 guarded fixture checks, fixture rollback before schema commit, duplicate-application guard. Do not rerun 0001–0013. See docs/subcontractor-commitments.md.
+
+0014 is APPLIED in isolated vglhojtrccygjgupxsrd: user confirmed 48 checks, 0 failed and synthetic fixtures removed after schema commit. Do not rerun the 0014 bundle or older updates. This supersedes earlier pending-0014 notes.

@@ -20,7 +20,7 @@ test('existing relationship/trade labels survive narrow edits; subcontractor typ
 });
 test('compact contact reader sorts primary with other names, exposes useful actions and hides edits from helpers',()=>{
  const source=swc.transformSync(readFileSync(new URL('../src/app/components/contact-list.tsx',import.meta.url),'utf8'),{filename:'contact-list.tsx',jsc:{parser:{syntax:'typescript',tsx:true},target:'es2022',transform:{react:{runtime:'automatic'}}},module:{type:'commonjs'}}).code;
- const exports={};runInNewContext(source,{exports,require:name=>name==='../../domain/contacts.ts'?{alphabeticalContacts}:name==='./contact-form'?{ContactForm:()=>null}:name==='./detail-icons'?{DetailIcon:()=>null}:require(name)});
+ const exports={};runInNewContext(source,{exports,require:name=>name==='../../domain/contacts.ts'?{alphabeticalContacts}:name==='./contact-form'?{ContactForm:()=>null}:name==='./contact-commitments'?{ContactCommitments:()=>null}:name==='../../domain/commitments.ts'?{isSubcontractor:value=>value.trim().toLowerCase()==='subcontractor'}:name==='./detail-icons'?{DetailIcon:()=>null}:require(name)});
  const props={jobId:'job',isPm:false,canAdd:false,directory:[],directoryUnavailable:false,primary:{name:'Zoe Customer',phone:'312-555-0101',phoneAction:'+13125550101'},contacts:[{...emptyContact,id:'a',job_id:'job',name:'Alpha Plumbing',relationship:'Subcontractor',phone_action:'+13125550100',email:'test@example.com',notes:'Use side door'}]};
  const html=renderToStaticMarkup(createElement(exports.ContactList,props));
  assert(html.indexOf('Alpha Plumbing')<html.indexOf('Zoe Customer'));

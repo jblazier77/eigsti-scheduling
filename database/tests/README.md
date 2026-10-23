@@ -64,3 +64,7 @@ Combined acceptance: database/batches/0010_0011_combined.sql runs 60 completion/
 0012 live-check correction: initial test run stopped on protected visits-table SELECT. Test assertions now use the authorized list_job_visits RPC through a temporary invoker-only reader; no table grants or app behavior changed. Regenerated guarded 42-check bundle. Still NOT applied/verified until the revised live run succeeds. Recopy the file, replace the SQL editor text and retry the guarded bundle; do not grant direct table access.
 
 0013_quick_work.test.sql prepares 33 isolated checks for one-save work/date/help/material creation, undated requirements, rollback/idempotency/conflicts, role boundaries and audit. Uses the authorized schedule RPC rather than direct visits reads. Live execution is pending; use only the guarded 0013 bundle after applied 0012.
+
+0014_subcontractor_commitments.test.sql contains 48 prepared rollback-only checks for optional promises, atomic contact creation, idempotency, scoped roles, calendar isolation and archived history. Prefer the one-time guarded 0014 bundle after 0013; no live 0014 results are claimed yet.
+
+0014 is APPLIED in isolated vglhojtrccygjgupxsrd: user confirmed 48 checks, 0 failed and synthetic fixtures removed after schema commit. Do not rerun the 0014 bundle or older updates. This supersedes earlier pending-0014 notes.

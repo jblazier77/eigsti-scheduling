@@ -9,5 +9,7 @@ export async function JobContacts({jobId,isPm,canAdd,gateway,primary}: {jobId:st
  let directory:Awaited<ReturnType<SupabaseSession['listSubcontractors']>>=[];
  let directoryUnavailable=false;
  if(canAdd){try{directory=await gateway.listSubcontractors();}catch(error){if(!(error instanceof AppError))throw error;directoryUnavailable=true;}}
- return <ContactList jobId={jobId} isPm={isPm} canAdd={canAdd} contacts={contacts} primary={primary} directory={directory.map(({id,name,phone,email})=>({id,name,phone,email}))} directoryUnavailable={directoryUnavailable}/>;
+ let commitments={can_manage:false,items:[]} as Awaited<ReturnType<SupabaseSession['jobCommitments']>>,commitmentsUnavailable=false;
+ try{commitments=await gateway.jobCommitments(jobId);}catch(error){if(!(error instanceof AppError)||error.code!=='schema_pending')throw error;commitmentsUnavailable=true;}
+ return <ContactList jobId={jobId} isPm={isPm} canAdd={canAdd} contacts={contacts} primary={primary} directory={directory.map(({id,name,phone,email})=>({id,name,phone,email}))} directoryUnavailable={directoryUnavailable} commitments={commitments.items} canManageCommitments={commitments.can_manage} commitmentsUnavailable={commitmentsUnavailable}/>;
 }

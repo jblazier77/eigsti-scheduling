@@ -2,10 +2,12 @@ import { AppError, type Actor, type AccountRole } from '../domain/access.ts';
 import type { JobsGateway, JobSummary, ValidJobInput } from '../domain/jobs.ts';
 import type { JobPatch } from '../domain/job-edits.ts';
 import type { ContactPatch, ContactValues, JobContact } from '../domain/contacts.ts';
+import type {CommitmentValues,JobCommitments,CalendarCommitment} from '../domain/commitments.ts';
 import type { JobClassification, Subcontractor, SubcontractorValues } from '../domain/job-classification.ts';
 
 export type SupabaseConfig = { url: string; publishableKey: string; environment: 'development' | 'test' | 'production' };
 export type JobDetail = JobSummary & { scope: string; access_notes: string };
+export type CalendarJob = JobClassification & {id:string;customer_name:string;address:string;phone:string;phone_action:string;title:string};
 type Transport = typeof fetch;
 
 export function validateConfig(config: SupabaseConfig) {
@@ -123,6 +125,14 @@ export class SupabaseSession implements JobsGateway {
     const groups=await Promise.all(chunks.map(ids=>this.request('/rest/v1/jobs?'+new URLSearchParams({select:'id,rain_day,filler,whole_house,trades',id:'in.('+ids.join(',')+')',limit:'100'}))));
     return Object.fromEntries(groups.flat().map((r:JobClassification&{id:string})=>[r.id,r]));
   }
+    async calendarJobs(ids:string[]):Promise<Record<string,CalendarJob>> {
+      const unique=[...new Set(ids)];
+      if(!unique.length)return {};
+      if(unique.length>1000||unique.some(id=>!/^[a-f0-9-]{36}$/i.test(id)))throw new AppError('invalid_input',400,'Invalid job list.');
+      const chunks=Array.from({length:Math.ceil(unique.length/100)},(_,i)=>unique.slice(i*100,i*100+100));
+      const groups=await Promise.all(chunks.map(ids=>this.request('/rest/v1/jobs?'+new URLSearchParams({select:'id,customer_name,address,phone,phone_action,title,rain_day,filler,whole_house,trades',id:'in.('+ids.join(',')+')',limit:'100'}))));
+      return Object.fromEntries(groups.flat().map((row:CalendarJob)=>[row.id,row]));
+    }
   async listSubcontractors(trade?:string):Promise<Subcontractor[]> {
     const params=new URLSearchParams({select:'id,name,phone,phone_action,email,trades,archived_at',archived_at:'is.null',order:'name.asc,id.asc',limit:'500'});
     if(trade)params.set('trades','cs.{'+trade+'}');
@@ -136,6 +146,10 @@ export class SupabaseSession implements JobsGateway {
     const params = new URLSearchParams({ select: 'id,job_id,name,relationship,phone,phone_action,email,notes', job_id: 'eq.' + jobId, archived_at: 'is.null', order: 'created_at.asc,id.asc', limit: '100' });
     return this.request('/rest/v1/job_contacts?' + params);
   }
+  async jobCommitments(jobId:string):Promise<JobCommitments>{return this.request('/rest/v1/rpc/job_contact_commitments',{method:'POST',body:JSON.stringify({p_job_id:jobId})});}
+  async calendarCommitments(start:string,end:string,all:boolean):Promise<CalendarCommitment[]>{return this.request('/rest/v1/rpc/list_contact_commitments',{method:'POST',body:JSON.stringify({p_start:start,p_end:end,p_all:all})});}
+  async saveCommitment(jobId:string,contactId:string,id:string|null,requestId:string,values:CommitmentValues|Record<string,never>,remove:boolean):Promise<{id:string;job_id:string}>{return this.request('/rest/v1/rpc/save_contact_commitment',{method:'POST',body:JSON.stringify({p_job_id:jobId,p_contact_id:contactId,p_id:id,p_request_id:requestId,p_values:values,p_remove:remove})});}
+  async createContactWithCommitment(jobId:string,requestId:string,values:ContactValues,commitment:CommitmentValues):Promise<{id:string;job_id:string}>{return this.request('/rest/v1/rpc/create_contact_with_commitment',{method:'POST',body:JSON.stringify({p_job_id:jobId,p_request_id:requestId,p_values:values,p_commitment:commitment})});}
 
   async getContact(jobId: string, contactId: string): Promise<JobContact | null> {
     const params = new URLSearchParams({ select: 'id,job_id,name,relationship,phone,phone_action,email,notes', job_id: 'eq.' + jobId, id: 'eq.' + contactId, archived_at: 'is.null', limit: '1' });

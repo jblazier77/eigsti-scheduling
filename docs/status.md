@@ -1,5 +1,14 @@
 # Current status
 
+Calendar card refinement D59 is implemented locally: customer name (job link), address and phone lead each work/commitment card; work description then project scope follows. Scheduled crew editing uses one accessible pencil beside crew names, with in-place dates/staffing and retained drafts when collapsed. Removed calendar Open job links and Edit plan & crew text buttons; all four views share the card hierarchy. 154 Node checks and TypeScript pass. No SQL change: 0014 remains applied with 48 checks passing. New browser/phone review and normal-user final build for this refinement remain pending. Latest confirmed Git checkpoint remains cb3ba26; D58/D59 are still local awaiting backup.
+
+User browser acceptance for D58: calendar views worked; subcontractor commitment flag/note worked; changing the commitment date moved the flag successfully. These are the reported desktop checks only; phone, additional role/removal/concurrency/recovery checks remain separate. Applied 0014 passed 48 SQL checks; 151 Node checks and TypeScript previously passed. Next: user Git commit/push to back up this local batch. Latest confirmed pushed checkpoint remains cb3ba26 until successful push is reported.
+
+0014 is APPLIED in the isolated Supabase project: user confirmed "48 checks, 0 failed, 0014 applied; synthetic fixtures removed." The guarded final row follows fixture validation, fixture rollback and schema commit. Do not rerun 0014 or earlier bundles. 151 Node checks and TypeScript passed locally. Next: restart normal-user dev and review optional subcontractor commitments with Day/Week/Two weeks/Month together. Explicit full-build output, authenticated/device acceptance and Git backup of this batch are not yet recorded; latest confirmed pushed checkpoint remains cb3ba26. This record supersedes earlier pending-SQL statements below. See subcontractor-commitments.md.
+
+Latest local batch D58: optional job-subcontractor commitments, inline contact setup/editing and distinct PM/lead calendar flags; Day/Week/Two weeks/Month views for all schedule users. 151 Node checks and TypeScript pass. New 0014 guarded bundle contains 48 SQL checks but is NOT applied; normal-user full build and grouped authenticated/device acceptance remain pending. Applied 0001–0013 are unchanged. Latest confirmed pushed checkpoint is cb3ba26 (user commit/push output); current batch is local/uncommitted. See subcontractor-commitments.md. This paragraph supersedes older checkpoint/application statements below.
+
+
 Quick-work browser acceptance: user reported 'worked great' after the one-save window/date/help/in-stock scenario. 0012 and 0013 are applied; 139 Node checks and TypeScript passed. This verifies that scenario only; unreported phone/role/concurrency/recovery and other grouped checks remain distinct. Next: save the current batch with a user Git commit/push, then remaining initial-plan subcontractor commitments and handoff work. Latest confirmed pushed checkpoint is still a5f2bc5 until a new push is reported.
 
 0013 is APPLIED: user confirmed guarded final result '0013 applied; synthetic fixtures removed', emitted after all 33 check results pass, fixture rollback and DDL commit. Do not rerun 0013 or earlier updates. 139 Node checks and TypeScript pass. Next: restart normal-user dev and grouped quick-work review (window/date/help/materials in one save, undated helper requirement retained), then checkpoint. New full build output/device/recovery evidence remains distinct; latest confirmed uploaded checkpoint is a5f2bc5 and current batch/notes are still local. See quick-work.md.
@@ -166,7 +175,3 @@ User requested always-visible scope at the top with a small edit icon, attachmen
 
 
 0012 live attempt: user reported 42501 permission denied for visits. This came from direct table reads in test assertions. Corrected all such test reads to the authorized list_job_visits RPC and regenerated the guarded 42-check bundle; no application/migration privilege expansion. The failed bundle did not reach commit; live rerun remains pending. A regression test prevents direct visits-table grants/read assumptions from returning. See planning-and-materials.md.
-
-
-
-
