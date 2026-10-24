@@ -25,7 +25,7 @@ export function ContactList({jobId,isPm,canAdd,contacts,primary,directory,direct
      {isPm&&contact.id!=='primary'&&!editor&&<button type="button" className="icon-action edit-details-icon" title={'Edit '+contact.name} aria-label={'Edit '+contact.name} onClick={()=>setEditor({id:contact.id})}><DetailIcon kind="edit"/></button>}
     </div>
    </div>
-   {contact.notes&&<details className="contact-row-notes"><summary>Notes</summary><p className="preserve-lines">{contact.notes}</p></details>}
+   {contact.notes&&<p className="contact-note preserve-lines">{contact.notes}</p>}
    {isSubcontractor(contact.relationship)&&<ContactCommitments jobId={jobId} contactId={contact.id} items={commitments.filter(c=>c.contact_id===contact.id)} canManage={canManageCommitments}/>}
    {editor?.id===contact.id&&<div className="contact-editor"><ContactForm key={contact.id} jobId={jobId} contactId={contact.id} original={contact} onDone={close}/></div>}
   </li>)}</ul>

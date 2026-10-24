@@ -1,8 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { appConfig, secureSessionCookies } from '../src/lib/config.ts';
+import { appConfig, secureSessionCookies, workspaceLabel } from '../src/lib/config.ts';
 
-const keys = ['SUPABASE_URL','SUPABASE_PUBLISHABLE_KEY','EIGSTI_ENVIRONMENT','EIGSTI_EXPECTED_PROJECT_REF','NODE_ENV'];
+const keys = ['SUPABASE_URL','SUPABASE_PUBLISHABLE_KEY','EIGSTI_ENVIRONMENT','EIGSTI_EXPECTED_PROJECT_REF','NODE_ENV','EIGSTI_DATA_MODE','VERCEL_ENV'];
 function withConfig(values, callback) {
   const previous=Object.fromEntries(keys.map(k=>[k,process.env[k]]));
   try { for(const key of keys) { if(values[key]===undefined) delete process.env[key]; else process.env[key]=values[key]; } return callback(); }
@@ -24,3 +24,13 @@ test('production sessions require secure cookies; local development test session
   withConfig({...config,NODE_ENV:'production'},()=>assert.equal(secureSessionCookies(),true));
   withConfig({...config,EIGSTI_ENVIRONMENT:'production'},()=>assert.equal(secureSessionCookies(),true));
 });
+
+test('real pilot mode cannot run in a test environment or a Vercel preview',()=>{
+ withConfig(config,()=>assert.equal(workspaceLabel(),'Test workspace / Fictional customer information only'));
+ withConfig({...config,EIGSTI_DATA_MODE:'pilot'},()=>assert.throws(appConfig,/production environment/));
+ withConfig({...config,EIGSTI_DATA_MODE:'pilot',EIGSTI_ENVIRONMENT:'production',VERCEL_ENV:'preview'},()=>assert.throws(appConfig,/never a preview/));
+ withConfig({...config,EIGSTI_DATA_MODE:'pilot',EIGSTI_ENVIRONMENT:'production',VERCEL_ENV:'production'},()=>assert.equal(workspaceLabel(),'Limited pilot / Company use'));
+ withConfig({...config,EIGSTI_DATA_MODE:'unknown'},()=>assert.throws(appConfig,/explicit/));
+});
+
+test('a production connection is rejected from preview even when the label says synthetic',()=>withConfig({...config,EIGSTI_ENVIRONMENT:'production',VERCEL_ENV:'preview',EIGSTI_DATA_MODE:'synthetic'},()=>assert.throws(appConfig,/separate test environment/)));

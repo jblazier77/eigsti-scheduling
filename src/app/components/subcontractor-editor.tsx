@@ -5,11 +5,11 @@ import { saveSubcontractorAction, type ClassificationState } from '../classifica
 import { TradeChoices } from './classification-editor';
 
 const blank:SubcontractorValues={name:'',phone:'',email:'',trades:[]};
-export function SubcontractorEditor({original,requestId}:{original?:Subcontractor;requestId:string}) {
+export function SubcontractorEditor({original,requestId,onDone}:{original?:Subcontractor;requestId:string;onDone?:()=>void}) {
   const [reset,setReset]=useState({version:0,requestId});
-  return <DirectoryForm key={reset.version} original={original} requestId={reset.requestId} onCancel={()=>setReset(n=>({version:n.version+1,requestId:crypto.randomUUID()}))}/>;
+  return <DirectoryForm key={reset.version} original={original} requestId={reset.requestId} onDone={onDone} onCancel={()=>onDone?onDone():setReset(n=>({version:n.version+1,requestId:crypto.randomUUID()}))}/>;
 }
-function DirectoryForm({original,requestId,onCancel}:{original?:Subcontractor;requestId:string;onCancel:()=>void}) {
+function DirectoryForm({original,requestId,onCancel,onDone}:{original?:Subcontractor;requestId:string;onCancel:()=>void;onDone?:()=>void}) {
   const initial=original?{name:original.name,phone:original.phone,email:original.email,trades:original.trades}:blank;
   const [baseline,setBaseline]=useState(initial),[value,setValue]=useState(initial),[request,setRequest]=useState(requestId);
   const changed=(Object.keys(blank) as (keyof SubcontractorValues)[]).filter(k=>JSON.stringify(value[k])!==JSON.stringify(baseline[k]));
@@ -20,6 +20,7 @@ function DirectoryForm({original,requestId,onCancel}:{original?:Subcontractor;re
     retry.current=submission;
     try{const result=await saveSubcontractorAction(previous,submission);if(result.saved){setBaseline(value);setRequest(crypto.randomUUID());retry.current=null;}return result;}catch{return{message:'Save not confirmed. Retry the same draft.',uncertain:true};}
   },{message:''});
+  useEffect(()=>{if(state.saved)onDone?.();},[state.saved,onDone]);
   const serverSignature=JSON.stringify(initial);
   useEffect(()=>{if(original&&!changed.length&&!pending&&!state.uncertain){const current=JSON.parse(serverSignature);setBaseline(current);setValue(current);}},[serverSignature,changed.length,pending,state.uncertain,original]);
   useEffect(()=>{if(!changed.length)return;const warn=(e:BeforeUnloadEvent)=>{e.preventDefault();e.returnValue='';};window.addEventListener('beforeunload',warn);return()=>window.removeEventListener('beforeunload',warn);},[changed.length]);

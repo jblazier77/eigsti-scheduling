@@ -9,7 +9,7 @@ import * as classification from '../src/domain/job-classification.ts';
 const require=createRequire(import.meta.url),swc=require('next/dist/build/swc');
 function components(){
  const exports={},source=swc.transformSync(readFileSync(new URL('../src/app/components/classification-editor.tsx',import.meta.url),'utf8'),{filename:'classification-editor.tsx',jsc:{parser:{syntax:'typescript',tsx:true},target:'es2022',transform:{react:{runtime:'automatic'}}},module:{type:'commonjs'}}).code;
- const deps={'../../domain/job-classification.ts':classification,'../classification-actions':{},'./job-markers':{WorkIcon:()=>createElement('span',{'aria-hidden':true},'icon')}};
+ const deps={'../../domain/job-classification.ts':classification,'../classification-actions':{},'./job-markers':{WorkIcon:()=>createElement('span',{'aria-hidden':true},'icon'),JobMarkers:({value})=>createElement('span',null,value.trades.join(','))}};
  runInNewContext(source,{exports,require:name=>deps[name]??require(name)});return exports;
 }
 test('every project scope remains visible as a pressed-state button, with no checkbox selector',()=>{
@@ -20,7 +20,7 @@ test('every project scope remains visible as a pressed-state button, with no che
  assert.ok(!html.includes('<input'));assert.ok(!html.includes('<details'));assert.ok(html.includes('Whole house'));
  for(const trade of classification.trades)assert.ok(html.includes(trade.label.replaceAll('&','&amp;')));
 });
-test('readers see the same selected scopes and all inactive choices without editable controls',()=>{
+test('readers see selected scopes without a grid of inactive buttons',()=>{
  const {ReadOnlyClassification}=components(),html=renderToStaticMarkup(createElement(ReadOnlyClassification,{value:{...classification.emptyClassification,trades:['painting']}}));
- assert.equal((html.match(/disabled=""/g)||[]).length,16);assert.equal((html.match(/aria-pressed="true"/g)||[]).length,1);assert.ok(!html.includes('<form'));assert.ok(!html.includes('Save'));
+ assert.ok(html.includes('painting'));assert.ok(!html.includes('<button'));assert.ok(!html.includes('<form'));assert.ok(!html.includes('Save'));
 });

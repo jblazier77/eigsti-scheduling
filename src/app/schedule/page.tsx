@@ -9,6 +9,7 @@ import {Shell} from '../components/shell';
 import {InlineVisit} from '../components/inline-visit';
 import {JobMarkers} from '../components/job-markers';
 import {CalendarJobHeader} from '../components/calendar-job-header';
+import {DetailIcon} from '../components/detail-icons';
 export const dynamic='force-dynamic';
 export default async function SchedulePage({searchParams}:{searchParams:Promise<{day?:string;view?:string;scope?:string}>}){
  const {actor,gateway:jobsGateway}=await requireSession(),pm=actor.roles.includes('pm'),lead=actor.roles.includes('lead');
@@ -24,8 +25,8 @@ export default async function SchedulePage({searchParams}:{searchParams:Promise<
  const url=(date:string,view:CalendarView=calendar.view)=>'/schedule?'+new URLSearchParams({day:date,view,scope});
  const month=calendar.view==='month';
  return <Shell title={pm?'Job schedule':'My schedule'}>
-  <form action="/schedule" className="queue-filter"><label>Day<input type="date" name="day" defaultValue={day} required/></label><input type="hidden" name="view" value={calendar.view}/>{pm&&<label>Jobs<select name="scope" defaultValue={scope}><option value="mine">My jobs</option><option value="all">All jobs</option></select></label>}<button className="button">Show schedule</button></form>
-  <nav className="schedule-nav" aria-label="Schedule views"><Link className="button" href={url(calendar.previous)}>Previous</Link><Link className="button" href={url(companyToday())}>Today</Link><Link className="button" href={url(calendar.next)}>Next</Link>{([['day','Day'],['week','Week'],['two-weeks','Two weeks'],['month','Month']] as const).map(([view,label])=><Link key={view} className="button" aria-current={view===calendar.view?'page':undefined} href={url(day,view)}>{label}</Link>)}</nav>
+  <form action="/schedule" className="queue-filter"><label>Day<input type="date" name="day" defaultValue={day} required/></label><input type="hidden" name="view" value={calendar.view}/>{pm&&<label>Jobs<select name="scope" defaultValue={scope}><option value="mine">My jobs</option><option value="all">All jobs</option></select></label>}<button className="button">Show</button></form>
+  <nav className="schedule-nav calendar-navigation" aria-label="Schedule views"><div className="calendar-paging"><Link className="icon-action" aria-label="Previous dates" title="Previous" href={url(calendar.previous)}><DetailIcon kind="left"/></Link><Link className="button" href={url(companyToday())}>Today</Link><Link className="icon-action" aria-label="Next dates" title="Next" href={url(calendar.next)}><DetailIcon kind="right"/></Link></div><div className="calendar-view-switch">{([['day','Day'],['week','Week'],['two-weeks','Two weeks'],['month','Month']] as const).map(([view,label])=><Link key={view} className="button" aria-current={view===calendar.view?'page':undefined} href={url(day,view)}>{label}</Link>)}</div></nav>
   <h2 className="calendar-range">{month?calendar.label:calendar.start===calendar.end?dateLabel(calendar.start):dateLabel(calendar.start)+' – '+dateLabel(calendar.end)}</h2>
   <details className="schedule-notes"><summary>Schedule notes</summary><p className="muted">Central time. Crew work is planned on weekdays. Dates alone allow several jobs per day; optional time blocks reserve named people. <span className="commitment-key">⚑ Subcontractor commitment</span> records a promise or need and does not book our crew.</p></details>
   {commitmentsUnavailable&&<p role="status">Subcontractor commitments are temporarily unavailable. Scheduled crew work is shown below.</p>}

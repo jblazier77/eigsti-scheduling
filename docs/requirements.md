@@ -55,3 +55,5 @@ No payroll, time clock, accounting, estimating, purchasing, CRM expansion, porta
 - R36: Dedicated handoff-note development is removed by the user (D60). Preserve the existing ordinary notes and recorded history.
 
 - R37: Active administrators manage existing employee display names, account roles and active state in a simple inline directory. PM alone cannot administer accounts. Protect self/last-admin access, reject stale changes, retain assignments/history on deactivation and require eligible roles or reassignment for active staff. Manual pilot Auth onboarding/reset remains separate; no email/credential exposure.
+
+- R38: Before pilot testing, simplify phone presentation: reduce nonessential whitespace, visible relevant facts without everyday expand arrows, understandable icons with accessible names, inline edits and one Save/Cancel pair. Keep usable touch targets and readable inputs, selected scopes for readers, all PM scope choices, permission boundaries, retained drafts and explicit uncertain-save feedback. Do not hide useful information or replace core Save/Cancel labels with unexplained icons.

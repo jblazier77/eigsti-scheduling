@@ -4,13 +4,13 @@ Phone-first work planning for Eigsti carpenters. Leads own their schedules, PMs 
 
 ## Current state
 
-Phase 0 foundation plus the first Phase 1 backend checkpoint. TypeScript job/access/Auth adapters exist. The initial schema is applied to an isolated Free Supabase test database, and 35 database checks passed according to user SQL Editor results. Code checkpoint dc95ab1 is hosted in the private GitHub repository; later database corrections/results await commit. No authenticated browser app or production deployment exists. The separate Phase 0 phone prototype still uses synthetic data/browser memory and has a review-only role selector. The real Next.js app now has password sign-in, job lists, job creation and job details; its test-project connection and actual sign-in checks are pending.
+The local app supports jobs, lead queues, optional-date scheduling/staffing, contacts/files, subcontractor commitments, materials, archive/restore and employee administration. Migrations 0001-0016 are applied in the isolated fictional-data project. Compact phone UI and pilot hosting/recovery preparation are local; the pilot is not released. Start with [the grouped pilot handoff](docs/pilot-handoff.md) and [current evidence](docs/status.md).
 
 Baseline: Architecture and Development Handoff v1.0, October 20, 2026. Agreed requirements remain authoritative; new technical proposals are explicitly labeled. See [current status](docs/status.md) before continuing work.
 
 ## Local setup
 
-Requires Node.js 24 or newer and Git. For a clean checkout, run `npm.cmd ci` to install the exact package-lock.json dependencies. Phase 0 prototype checks remain dependency-free. No paid account is needed for the current Free test project.
+Requires Node.js 24.x and Git. For a clean checkout, run `npm.cmd ci` to install the exact package-lock.json dependencies. Phase 0 prototype checks remain dependency-free. No paid account is needed for the current Free test project.
 
 ```powershell
 npm run seed
@@ -30,6 +30,9 @@ Open http://127.0.0.1:4310. The server binds to loopback only. Stop with Ctrl+C.
 - [Development phases](docs/development-plan.md)
 - [Hosting, costs, and ownership prerequisites](docs/hosting.md)
 - [Operations and recovery design](docs/operations.md)
+- [Grouped pilot handoff](docs/pilot-handoff.md)
+- [Encrypted recovery procedure](docs/pilot-recovery.md)
+- [Pilot release record](docs/pilot-release-record.md)
 - [Synthetic verification scenarios](docs/scenarios.md)
 - [Phone workflow review](docs/phone-review.md)
 - [Local application setup](docs/local-app.md)

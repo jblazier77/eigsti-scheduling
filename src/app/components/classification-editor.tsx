@@ -2,7 +2,7 @@
 import { useActionState, useEffect, useState } from 'react';
 import { classificationChanges, trades, type JobClassification, type Trade } from '../../domain/job-classification.ts';
 import { saveClassificationAction, type ClassificationState } from '../classification-actions';
-import { WorkIcon } from './job-markers';
+import { WorkIcon,JobMarkers } from './job-markers';
 
 function ScopeButton({selected,label,kind,onClick,disabled=false}:{selected:boolean;label:string;kind:string;onClick:()=>void;disabled?:boolean}) {
   return <button type="button" className="scope-toggle" aria-pressed={selected} disabled={disabled} onClick={onClick}><WorkIcon kind={kind}/><span>{label}</span><span className="selection-mark" aria-hidden="true">{selected?'✓':''}</span></button>;
@@ -19,7 +19,7 @@ export function ClassificationFields({value,onChange,disabled=false}:{value:JobC
   </div></fieldset><TradeChoices value={value.trades} onChange={v=>onChange({...value,trades:v})} disabled={disabled} wholeHouse={{value:value.whole_house,onChange:()=>onChange({...value,whole_house:!value.whole_house})}}/></div>;
 }
 export function ReadOnlyClassification({value}:{value:JobClassification}) {
-  return <div className="classification-readonly"><TradeChoices value={value.trades} onChange={()=>{}} disabled wholeHouse={{value:value.whole_house,onChange:()=>{}}}/></div>;
+  return <div className="classification-readonly"><JobMarkers value={value}/></div>;
 }
 export function ClassificationEditor({jobId,original,requestId}: {jobId:string;original:JobClassification;requestId:string}) {
   const [reset,setReset]=useState({version:0,requestId});

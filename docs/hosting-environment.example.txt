@@ -1,0 +1,10 @@
+# Hosting only. Set directly in Vercel Production, not Preview; do not commit real values.
+# Keep the pilot on synthetic data until the owner completes the release checklist.
+EIGSTI_ENVIRONMENT=production
+EIGSTI_EXPECTED_PROJECT_REF=
+SUPABASE_URL=
+SUPABASE_PUBLISHABLE_KEY=
+EIGSTI_DATA_MODE=synthetic
+# After verified backup/restore/access/device checks and release sign-off:
+# EIGSTI_DATA_MODE=pilot
+# No storage backup key, DB password, passphrase or service-role key belongs here.

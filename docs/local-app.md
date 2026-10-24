@@ -58,3 +58,5 @@ User browser confirmed add/refresh, clear notes, phone validation and cancel. A 
 Do not rerun applied migrations on the existing test project. Assigned-helper reads are covered by the passed SQL fixtures; no live staffing UI exists yet. See status.md for remaining checks and save the final verification documentation through normal user PowerShell.
 
 Latest calendar/contact batch: see subcontractor-commitments.md for the one-time unapplied 0014 update, 48 SQL checks and grouped review. Day/Week/Two weeks/Month views are available in code for every schedule user; applied 0001–0013 must not be rerun. User production build is pending; agent Node/TypeScript checks pass.
+
+D62 UI-only simplicity pass: see ui-simplicity.md. 177 automated checks and TypeScript pass, no SQL update; refresh dev for review. Real phone/tablet layout and new final production build remain pending. Applied 0016 must not be rerun.

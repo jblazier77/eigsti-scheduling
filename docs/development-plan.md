@@ -4,23 +4,27 @@ This is the current queue. Detailed historical decisions and verification record
 
 ## Verified checkpoint
 
-- Latest confirmed GitHub backup: **d585a13**, phase-0-foundation; archive commit/tracking branch confirmed clean/up-to-date at the employee-management turn start.
+- Latest confirmed GitHub backup: **0b5b259**, phase-0-foundation; employee-management commit/tracking branch confirmed clean/up-to-date before the simplicity pass.
 - Applied database migrations: **0001–0016**. Never rerun applied migrations or their bundles.
 - 0014: user confirmed **48 checks, 0 failed, synthetic fixtures removed**. Calendar views, commitments, moving dates and simplified calendar cards passed the user's reported desktop review.
 - Core jobs, contacts/files, work/lead ownership, queues, optional-date scheduling/staffing, rain/filler tags, scopes/trades, material availability, one-save quick work and subcontractor commitments are implemented.
 - No production deployment or pilot release is claimed.
 
-## Current development batch: employee management
+## Current development batch: UI simplicity before pilot testing
 
-D61: administrator-only existing app-profile directory, inline name/roles/active edits, no self-lockout/last-admin removal, assignment-aware role changes, retained work/history on deactivation, stale-edit protection and stable retries. No Auth account creation, email invitations or password-reset interface; manual pilot onboarding/reset remains.
+D62: independent phone-first simplification, less whitespace, understandable buttons/icons and fewer everyday expanders. Compact spacing/navigation; always-visible scope labels; PM keeps all scope choices while readers see selected scopes; inline crew/material pencils; compact subcontractor contact rows; direct contact notes; linked job/queue titles instead of redundant links; no empty history accordion. Existing permissions, field values, command/retry behavior and one Save/Cancel flows are preserved.
 
-Implemented locally: **173 Node checks and TypeScript pass**. **0016 application was reported successful** after the expected 33-check guarded update. Explicit full production-build output is not separately recorded; grouped employee-screen/browser/phone acceptance remains pending. Batch is uncommitted; see employee-management.md, including safe pause instructions.
+Implemented locally: final combined batch has **190 Node checks and TypeScript passing**. **No SQL update**. Actual phone/tablet review and a final successful release build remain pending; see current status for the successful earlier build and final Windows EPERM. Automated Chrome screenshot capture was unavailable, so no visual acceptance is claimed. Batch is uncommitted; see ui-simplicity.md.
 
-D60 archive/restore is implemented/applied (0015, expected 35/0 guarded result), user-reported desktop review passed, and backed up as d585a13. Dedicated handoff notes remain removed; existing notes/history stay intact. Explicit final build output and further device/concurrency/recovery checks remain distinct.
+D61 employee management is implemented/applied (0016, reported expected 33-check success), user-reported name editing and deactivate/reactivate controls worked, and code is backed up as 0b5b259. Existing-session access revocation, role forgery, actual concurrent/fault and device checks remain separate. D60 archive/restore remains applied and accepted; handoff notes remain removed.
+
+## Pilot preparation D63 implemented locally
+
+Prepared hosting/Node configuration, isolated build command, preview/data-mode safeguards, employee/subcontractor session refresh coverage, encrypted database/Auth/private-file packages and verification/extraction tools, read-only readiness SQL, anonymous hosted-access checks and secret-free CI. See pilot-handoff.md for the single grouped owner/operator checklist. No new schema migration. Actual provisioning, live backup, daily offsite execution, managed restore, device/concurrency checks and pilot approval remain pending.
 
 ## Remaining initial pilot queue, in order
 
-1. Complete employee management: one new build, 0016 applied; do not rerun, grouped review and one Git backup.
+1. Save/push D62/D63; complete final production build in ordinary PowerShell or prepared CI, then grouped UI review. No SQL rerun.
 2. Keep manual pilot provisioning/reset; verify admin access, deactivation and reactivation. Automated email workflows remain deferred.
 3. Consolidated phone/tablet usability, role/access, leads-helping-on-other-work, concurrent scheduling and uncertain-save/fault checks. Reconcile legacy scenarios with planning-only work rather than reintroducing completion reporting.
 4. Operational readiness: export and isolated database/auth/private-file restore drill, recovery instructions, realistic load/performance checks.

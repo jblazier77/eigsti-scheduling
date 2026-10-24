@@ -13,3 +13,13 @@ backups/
 .DS_Store
 *.tsbuildinfo
 next-env.d.ts
+
+!.env.ops.example
+.vercel/
+*.eigsti-backup
+*.partial
+
+.next-pilot-check/
+
+.next-check-*/
+.tsconfig-check.json

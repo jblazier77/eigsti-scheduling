@@ -26,11 +26,11 @@ export async function JobWorkspace({jobId,isOpen,children}:{jobId:string;isOpen:
     </section>
     {!!grouped.other.length&&<details className="support-section other-work"><summary>Other project work <span className="muted">{grouped.other.length}</span></summary>{grouped.other.map(w=><details className="other-work-entry" key={w.id}><summary>{w.description}<span className="muted">{w.lead_name??'Unassigned'}</span></summary>{card(w)}</details>)}</details>}
     {children}
-    <details className="support-section"><summary>Work history <span className="muted">{grouped.completed.length} items / {historicalVisits.length} scheduled entries</span></summary>
+    {(grouped.completed.length>0||historicalVisits.length>0)&&<details className="support-section"><summary>Work history <span className="muted">{grouped.completed.length} items / {historicalVisits.length} scheduled entries</span></summary>
       {grouped.completed.map(card)}
       {historicalVisits.map(v=><article id={'visit-'+v.id} key={v.id} className="visit-summary"><InlineVisit visit={v} editable={false}/></article>)}
       {!grouped.completed.length&&!historicalVisits.length&&<p className="muted">No work history yet.</p>}
-    </details>
+    </details>}
   </>;
 }
 function WorkSection({work:w,visits,actor,leads,isOpen,status}:{work:WorkProgress;visits:Visit[];actor:Actor;leads:LeadOption[];isOpen:boolean;status?:WorkStatus}) {

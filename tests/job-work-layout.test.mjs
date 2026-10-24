@@ -80,8 +80,8 @@ test('compact scheduled work keeps dates, crew and warnings visible, with no mut
  for(const compact of [true,false])for(const editable of [true,false]){
   const html=renderToStaticMarkup(createElement(exports.InlineVisit,{visit:v,editable,compact,hideWorkTitle:true}));
   assert(html.includes('Fri, Oct 23'));assert(html.includes('No time set'));assert(html.includes('Test helper'));assert(html.includes('1 helper space to fill'));assert(html.includes('Other plans share this day'));
-  assert.equal(html.includes('aria-label="Edit dates and crew: Cabinets"'),editable&&compact);
-  assert.equal(html.includes('Edit plan &amp; crew'),editable&&!compact);
+  assert.equal(html.includes('aria-label="Edit dates and crew: Cabinets"'),editable);
+  assert.equal(html.includes('Edit plan &amp; crew'),false);
   assert(!html.includes('Finish'));assert(!html.includes('finish_visit'));
   assert(!html.includes('<h3>Cabinets</h3>'));
  }

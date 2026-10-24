@@ -1,27 +1,25 @@
-# Operations design
+# Operations
 
-Not yet operational. Company domain eigsticonstruction.com is confirmed; Google is used for company email without planned app integration. Standalone app invitation/password sign-in is the baseline. No GitHub account exists. Company owner, recovery administrator, repository remote, hosting and DNS access remain pending; see hosting.md. No actual customer data is permitted before the release gates.
+Prepared for limited-pilot setup; not operationally released. Individual password accounts and migrations 0001-0016 are in the isolated fictional-data project. The private GitHub repository exists; last confirmed pushed checkpoint is 0b5b259. Hosting, offsite backups, an actual restore and grouped device/access review remain pending. See pilot-handoff.md and pilot-release-record.md.
 
-## Environments and ownership
+## Environments and accounts
 
-Local: this Phase 0 prototype, synthetic only. Test: proposed local Supabase with same versioned migrations; container runtime not yet available. Production: not provisioned. Preview builds must receive test credentials only, never fallback production values. Fail startup for missing/mismatched environment identity. Company controls domain, repository, vendors, billing and recovery MFA; developers receive named least-privilege access. No shared passwords or secrets in chat/git.
+Development/previews use fictional data. Use a separate approved pilot project, explicit project reference and Production configuration. Preview cannot fall back to production; operator credentials stay outside the app. The Test/Limited pilot label is not release approval. Leave pilot mode off until owner acceptance.
 
-## Releases and rollback
+Admins manage existing employee names/roles/active state. Auth provisioning and forgotten-password resets remain manual operator work; employees can change their own passwords. SMTP/email invitations and Google integration are deferred. Deactivation retains assignments/history while live app membership denies subsequent requests; hosted existing-session behavior still needs verification.
 
-Before deployment: pin dependencies, migration checksum/order, authorization/command checks, mobile smoke checks, environment verification and a known backup. Prepare release candidate for owner review at Phase 4. Record commit, migration level and deployment ID. Favor additive compatible migrations. A code rollback does not reverse schema/data changes; plan forward fixes or isolated restore/reconciliation before destructive schema changes. No deployment procedure has been run.
+## Releases
 
-## Backup and restore proposal
+Use pinned dependencies and Node 24. Validate the reviewed commit with tests and a production build. Prepared secret-free GitHub CI has not run. Record commit, migration level, project reference, deployment ID, readiness results and owner approval. Keep provider backups and independently verified recovery before real use. Code rollback does not reverse schema/data changes; prefer compatible forward fixes or an operator-reviewed isolated recovery/reconciliation.
 
-Supabase daily database backups retain seven days on Pro and exclude file bytes. Separately schedule a consistent database export plus versioned attachment-byte copies to a company private R2 backup bucket. Never put backups into source control or this prototype. Proposed daily recovery point target <=24 hours, 30-day retained manifests, monthly isolated restore exercise; no promised recovery time until measured. Implementation must account for auth identities, storage metadata, RLS/functions, sequences/extensions and roles; reset custom role passwords as needed, never expose them.
+## Recovery
 
-Use immutable file keys and delayed physical deletion so DB snapshot/manifests can reference stable bytes. Back up database and file manifest under a common run ID; mark successful only when every referenced object exists and checksum agrees. Incremental copies plus retention-aware reference counting avoid 30 full file copies. Retain every byte referenced by a retained DB snapshot; do not delete on primary bucket deletion. Backups use separate credentials and private ACLs. Monitor last complete snapshot and failed copies; owner-facing operational error handling is separate from excluded schedule notifications.
+pilot-recovery.md documents backup:check, backup:create, backup:verify and backup:prepare-restore. A held database snapshot ties the dump to file inventory; encrypted packages include actual job-file bytes. Missing/mismatched ready files fail the package. Authenticated encryption and content hashes are checked before publication. Auth records make the package sensitive operator material.
 
-Restore exercise: create isolated environment, restore DB and auth mappings, copy referenced file bytes, verify counts/relationships/checksums, sign in as synthetic PM/lead/helper, reconcile one complete job and a return visit, test direct API denials and signed URLs, document duration/missing objects. Never run restore drill against production. Nothing in Phase 0 claims this has passed.
+Actual live export, native publication on the operator computer, offsite round-trip verification, compatible database/Auth/file restore and recovery timing are pending. Provider settings/root keys, global roles/passwords and unrelated buckets require separate planning. Extraction is not restoration; the tools do not change a live target. Do not broaden client grants as a workaround.
 
-## Exports and user administration
+Target: daily complete offsite copies, <=24-hour recovery point, 30-day retention, monthly isolated recovery exercise and failure monitoring on an always-on company runner. None is configured yet. Current tooling makes full copies; budget retained bytes accordingly. Retention cleanup is not automated. Store passphrases separately from backups.
 
-Export jobs, work, visits, participants, commitments, contacts, follow-ups and audit references using stable IDs and date/time conventions. Include attachment metadata + checksums and a private byte archive/manifest. Never export credentials or auth tokens. Export/restore tooling is not implemented. Admin invite/deactivate/trade settings are planned phone operations; infrastructure recovery remains technical work. Deactivation removes access promptly but preserves attribution and assignment history.
+## Failure handling
 
-## Logging and failure handling
-
-Log command/request ID, actor ID, event type and safe error codes; avoid customer names/addresses, access notes, raw files and signed URLs. Server-confirmed state only: saving, saved, failed/unsent. Persist drafts only in memory initially; preserve form on failure and retries with same request ID, but clear sensitive content on logout. Enforce duplicate protection and atomic audit creation in DB, not UI alone.
+Operational logs contain safe codes, request/run IDs and hashes/counts as needed, without customer details, access notes, signed URLs or credentials. An uncertain save is not success; retain the draft and stable retry identity. Keep infrastructure administration away from carpenter screens. Prepared hosted-access checks cover anonymous page/API/file access and security/cache headers, not authenticated/device/concurrent behavior.

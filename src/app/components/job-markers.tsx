@@ -29,6 +29,6 @@ export function JobMarkers({value, expanded=false}: {value:Partial<JobClassifica
     {value.rain_day&&<span className="scope-chip rain"><WorkIcon kind="rain"/>Rain-day option</span>}
     {value.filler&&<span className="scope-chip"><WorkIcon kind="filler"/>Filler work</span>}
     {value.whole_house&&<span className="scope-chip"><WorkIcon kind="house"/>Whole house</span>}
-    {!!selected.length&&<details className="scope-details" open={expanded||undefined}><summary>{!value.whole_house&&selected.slice(0,4).map(t=><span key={t.id} title={t.label} aria-label={t.label}><WorkIcon kind={t.id}/></span>)}<span>{value.whole_house?'View scopes':`${selected.length} scope${selected.length===1?'':'s'}`}</span></summary><div className="scope-labels">{selected.map(t=><span className="scope-chip" key={t.id}><WorkIcon kind={t.id}/>{t.label}</span>)}</div></details>}
+    {!!selected.length&&<div className="scope-labels" aria-label="Job scopes">{value.whole_house&&!expanded?<span className="sr-only">{selected.map(t=>t.label).join(', ')}</span>:selected.map(t=><span className="scope-chip" key={t.id}><WorkIcon kind={t.id}/>{t.label}</span>)}</div>}
   </div>;
 }

@@ -1,0 +1,7 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {checkHost} from '../scripts/ops/host-core.mjs';
+const headers={'x-content-type-options':'nosniff','x-frame-options':'DENY','cache-control':'private, no-store'};
+function transport(change=()=>({})){return async(url,options)=>{assert.equal(options.redirect,'manual');assert(!options.headers);const path=url.pathname;const normal=path==='/login'?{status:200}:path==='/api/jobs'||path.includes('/files/')?{status:401}:{status:307,headers:{...headers,location:'/login'}};const response={...normal,...change(path)};return new Response(null,{...response,headers:response.headers??headers});};}
+test('host smoke accepts only HTTPS, private headers and login redirects or unauthorized APIs',async()=>{const report=await checkHost('https://synthetic.example.invalid',transport());assert.equal(report.passed,true);assert.equal(report.checks.length,10);assert.equal(report.authenticated_device_review_verified,false);await assert.rejects(checkHost('http://127.0.0.1:4310',transport()),/HTTPS/);});
+test('public data, missing no-store, off-origin login redirects and server errors fail hosting gate',async()=>{for(const change of [path=>path==='/jobs'?{status:200}:{},path=>path==='/login'?{headers:{}}:{},path=>path==='/employees'?{headers:{...headers,location:'https://other.invalid/login'}}:{},()=>({status:503})])assert.equal((await checkHost('https://synthetic.example.invalid',transport(change))).passed,false);});
