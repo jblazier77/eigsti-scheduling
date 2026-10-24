@@ -72,3 +72,7 @@ Combined acceptance: database/batches/0010_0011_combined.sql runs 60 completion/
 0015_job_archive.test.sql: 35 prepared checks for archive guards, preservation, restore/additional work, stale retries, roles, calendar/queue behavior and private history. Live execution remains pending; use the guarded 0015 bundle after 0014.
 
 0015 is APPLIED: user confirmed expected guarded result (35 checks, 0 failed, synthetic fixtures removed). Do not rerun its bundle or previous updates; earlier prepared/pending statements are superseded.
+
+0016_employee_management.test.sql: 33 prepared rollback-only checks for role boundaries, live deactivation, reactivation/retry safety, stale edits, self-protection, staffing-role eligibility, private snapshots and profile-data minimization. Live SQL results are pending. Prefer guarded 0016 after applied 0015.
+
+0016 application reported successful by user following the expected 33-check guarded update. Do not rerun 0016 or earlier bundles. Employee-screen/browser verification remains separate and pending.

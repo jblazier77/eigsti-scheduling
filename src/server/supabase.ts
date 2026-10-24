@@ -5,6 +5,7 @@ import type { ContactPatch, ContactValues, JobContact } from '../domain/contacts
 import type {CommitmentValues,JobCommitments,CalendarCommitment} from '../domain/commitments.ts';
 import type { JobClassification, Subcontractor, SubcontractorValues } from '../domain/job-classification.ts';
 
+import type {Employee,EmployeeValues} from '../domain/employees.ts';
 export type SupabaseConfig = { url: string; publishableKey: string; environment: 'development' | 'test' | 'production' };
 export type JobDetail = JobSummary & { scope: string; access_notes: string };
 export type CalendarJob = JobClassification & {id:string;customer_name:string;address:string;phone:string;phone_action:string;title:string};
@@ -47,6 +48,7 @@ export class SupabaseSession implements JobsGateway {
       const detail = await response.json().catch(() => null);
       const code = detail?.code;
       if (code === 'PGRST205' || code === 'PGRST202' || code === '42P01' || code === '42703' || code === 'PGRST204') throw new AppError('schema_pending', 503, 'This feature is temporarily unavailable. Please try again later.');
+      if(code==='22023'&&['You cannot deactivate yourself or remove your own Administrator role.','Employee changed. Refresh before saving again.','Reassign open lead work and future coordination before removing the Lead role.','Reassign future helping work or retain a Lead or Helper role.'].includes(detail?.message))throw new AppError('invalid_input',409,detail.message);
       if (code === '55000') throw new AppError('upload_pending', 409, 'The upload is not complete. Keep this tab open and retry.');
       if (code === '42501') throw new AppError('not_allowed', 403, 'You do not have access to this action.');
       if(code==='22023'&&['Resolve today or future crew dates before archiving this job.','Resolve today or future subcontractor commitments before archiving this job.','Job status changed. Refresh the job before trying again.'].includes(detail?.message))throw new AppError('invalid_input',409,detail.message);
@@ -79,6 +81,8 @@ export class SupabaseSession implements JobsGateway {
     return response.json();
   }
 
+  async listEmployees():Promise<Employee[]>{return this.request('/rest/v1/rpc/list_employees',{method:'POST',body:'{}'});}
+  async saveEmployee(id:string,requestId:string,expected:string,values:EmployeeValues):Promise<Employee>{return this.request('/rest/v1/rpc/save_employee',{method:'POST',body:JSON.stringify({p_id:id,p_request_id:requestId,p_expected:expected,p_values:values})});}
   async getActor(): Promise<Actor> {
     // Auth service verifies the token; never trust a client-supplied role or decoded JWT alone.
     const auth = await this.request('/auth/v1/user');

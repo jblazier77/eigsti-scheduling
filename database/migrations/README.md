@@ -67,3 +67,7 @@ The earlier 0010-only bundle is superseded for this unapplied combined slice. Us
 0015_job_archive is prepared, NOT applied. Requires applied 0014; prefer database/batches/0015_job_archive.sql once, with 35 guarded rollback-only fixture checks. Never rerun applied 0001–0014. See docs/job-archive.md.
 
 0015 is APPLIED: user confirmed expected guarded result (35 checks, 0 failed, synthetic fixtures removed). Do not rerun its bundle or previous updates; earlier prepared/pending statements are superseded.
+
+0016_employee_management is prepared, NOT applied. Requires applied 0015; prefer database/batches/0016_employee_management.sql once with 33 guarded synthetic checks. Prior 0001–0015 remain immutable. See docs/employee-management.md.
+
+0016 application reported successful by user following the expected 33-check guarded update. Do not rerun 0016 or earlier bundles. Employee-screen/browser verification remains separate and pending.

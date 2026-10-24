@@ -53,3 +53,5 @@ No payroll, time clock, accounting, estimating, purchasing, CRM expansion, porta
 
 - R35: PM may archive and restore the same job for additional work/punch-list items. Preserve work ownership, history, files and contacts; hide inactive jobs from active lists/queues/calendars. Resolve current/future crew dates or subcontractor commitments first. No daily completion prerequisite, duplicate job or automatic rescheduling.
 - R36: Dedicated handoff-note development is removed by the user (D60). Preserve the existing ordinary notes and recorded history.
+
+- R37: Active administrators manage existing employee display names, account roles and active state in a simple inline directory. PM alone cannot administer accounts. Protect self/last-admin access, reject stale changes, retain assignments/history on deactivation and require eligible roles or reassignment for active staff. Manual pilot Auth onboarding/reset remains separate; no email/credential exposure.

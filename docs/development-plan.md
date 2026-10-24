@@ -4,24 +4,24 @@ This is the current queue. Detailed historical decisions and verification record
 
 ## Verified checkpoint
 
-- Latest confirmed GitHub backup: **f767b9f**, phase-0-foundation; user reported clean/up-to-date after push.
-- Applied database migrations: **0001–0015**. Never rerun applied migrations or their bundles.
+- Latest confirmed GitHub backup: **d585a13**, phase-0-foundation; archive commit/tracking branch confirmed clean/up-to-date at the employee-management turn start.
+- Applied database migrations: **0001–0016**. Never rerun applied migrations or their bundles.
 - 0014: user confirmed **48 checks, 0 failed, synthetic fixtures removed**. Calendar views, commitments, moving dates and simplified calendar cards passed the user's reported desktop review.
 - Core jobs, contacts/files, work/lead ownership, queues, optional-date scheduling/staffing, rain/filler tags, scopes/trades, material availability, one-save quick work and subcontractor commitments are implemented.
 - No production deployment or pilot release is claimed.
 
-## Current development batch: reversible job archive
+## Current development batch: employee management
 
-D60: user removed dedicated handoff notes from the queue. Do not develop a new handoff-note form or workflow. Existing job/access/work notes and historical records remain; this does not remove those fields.
+D61: administrator-only existing app-profile directory, inline name/roles/active edits, no self-lockout/last-admin removal, assignment-aware role changes, retained work/history on deactivation, stale-edit protection and stable retries. No Auth account creation, email invitations or password-reset interface; manual pilot onboarding/reset remains.
 
-Implement PM Archive job and Restore for more work. Archive removes the job from active lists, operational calendars and lead queues without completing work, deleting files/contacts or wiping history. Archived jobs can return for ordinary additional work/punch lists on the same job. Today/future crew plans and dated subcontractor promises must be resolved before archive; no daily completion/check-off requirement. Existing open work ownership resumes when restored; review before scheduling again.
+Implemented locally: **173 Node checks and TypeScript pass**. **0016 application was reported successful** after the expected 33-check guarded update. Explicit full production-build output is not separately recorded; grouped employee-screen/browser/phone acceptance remains pending. Batch is uncommitted; see employee-management.md, including safe pause instructions.
 
-Status: **0015 applied**, user confirmed expected guarded success (35 checks, 0 failed, synthetic fixtures removed). **164 Node checks and TypeScript pass**. Explicit new production-build output is not separately recorded; user reported the grouped archive/restore desktop review worked. Phone/concurrency/recovery checks remain separate. D60 changes are not yet backed up. See job-archive.md for one guarded update and consolidated acceptance. Applied 0014 is unchanged.
+D60 archive/restore is implemented/applied (0015, expected 35/0 guarded result), user-reported desktop review passed, and backed up as d585a13. Dedicated handoff notes remain removed; existing notes/history stay intact. Explicit final build output and further device/concurrency/recovery checks remain distinct.
 
 ## Remaining initial pilot queue, in order
 
-1. Finish the archive/restore batch: Desktop review passed by user report; back up with one Git commit/push and retain the final build-evidence gap. Do not rerun applied 0015.
-2. Simple employee account/deactivation administration; manual pilot provisioning/reset remains supported. No unconfigured recovery-email feature.
+1. Complete employee management: one new build, 0016 applied; do not rerun, grouped review and one Git backup.
+2. Keep manual pilot provisioning/reset; verify admin access, deactivation and reactivation. Automated email workflows remain deferred.
 3. Consolidated phone/tablet usability, role/access, leads-helping-on-other-work, concurrent scheduling and uncertain-save/fault checks. Reconcile legacy scenarios with planning-only work rather than reintroducing completion reporting.
 4. Operational readiness: export and isolated database/auth/private-file restore drill, recovery instructions, realistic load/performance checks.
 5. Hosting and limited pilot rollout: access without this computer running, final environment/security/operating checks, release candidate and pilot acceptance.
