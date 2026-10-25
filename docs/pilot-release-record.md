@@ -4,15 +4,15 @@ Status: NOT RELEASED. Prepared 2026-10-24. Blank fields are not approvals.
 
 | Gate | Evidence / result | Owner / date |
 | --- | --- | --- |
-| Reviewed commit pushed; clean checkout | Pending; last confirmed checkpoint 0b5b259 | |
-| CI clean-install tests and production build | Workflow prepared; not run on GitHub | |
-| Final production build for release commit | Pending; earlier isolated build passed, final repeat hit Windows EPERM at prerender | |
+| Reviewed commit pushed; clean checkout | 078ef7d pushed; later operator fixes uncommitted | |
+| CI clean-install tests and production build | GitHub run 40139519707 succeeded for 078ef7d | |
+| Final production build for release commit | GitHub production build passed for 078ef7d; later operator fixes pending checkpoint | |
 | Pilot project identity / environment / hosting URL | Pending | |
 | Clean-project migration application 0001-0016 | Pending; existing isolated project is already applied | |
-| Read-only readiness SQL, ten PASS results | Prepared, not run | |
-| Actual database/Auth/private-file export | Pending | |
-| Actual native atomic archive publication | Pending operator-machine test | |
-| Separate offsite copy downloaded and verified | Pending | |
+| Read-only readiness SQL, ten PASS results | User reported all ten PASS on existing isolated project | |
+| Actual database/Auth/private-file export | User-reported live backup succeeded; 3 files, 1 storage object; integrity verified. Restore still pending. | 2026-10-24 |
+| Actual native atomic archive publication | User ordinary-PowerShell run published verified encrypted archive successfully | 2026-10-24 |
+| Separate offsite copy downloaded and verified | Owner downloaded from OneDrive web; verification passed and SHA-256 matches original. Same OneDrive account; independent account recovery not demonstrated. | User-reported |
 | Isolated database/Auth/file restore and sign-in | Pending; record run/hash/counts/duration | |
 | Daily offsite runner and failure monitoring | Pending; no schedule enabled | |
 | Manual accounts/reset and recovery administrator | Partial existing test evidence; pilot accounts pending | |

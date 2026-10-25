@@ -63,3 +63,13 @@ Provider references, checked 2026-10-24:
 - https://supabase.com/docs/guides/platform/backups
 - https://supabase.com/docs/guides/platform/migrating-within-supabase/backup-restore
 - https://supabase.com/docs/guides/platform/clone-project
+
+## Current pilot storage choice and troubleshooting
+
+Owner selected their existing private OneDrive for the pilot, with encrypted archives in C:/Users/jrbla/OneDrive/Eigsti Scheduling Backups outside the Git checkout. The private .env.ops.local is already under their OneDrive project folder; owner accepted retaining the generated passphrase there. Verify actual cloud presence/download and access controls. This choice supersedes the separate password-manager copy as a required step for this pilot; it does not establish resilience against losing that OneDrive account. Daily execution and managed restore remain pending.
+
+For connection/snapshot diagnosis, run node scripts/ops/diagnose-backup.mjs in ordinary PowerShell from the project folder. It reads the source and rolls back the snapshot; no export or restore occurs. Native diagnostic text is mapped to fixed codes/messages rather than printed, and backup:create now identifies the stage that failed. Do not paste the private settings or run native commands that expose connection strings in arguments.
+
+## Live operator evidence
+
+The first live full database/private-file backup and native publication succeeded in ordinary PowerShell. The owner then downloaded the encrypted archive from OneDrive web and successfully verified the downloaded copy, matching the original SHA-256, 3 archive files and 1 storage object. This supersedes earlier pending export/publication/cloud-copy statements. No isolated database restore or restored-user sign-in has been demonstrated.

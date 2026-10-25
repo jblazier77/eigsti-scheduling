@@ -1,3 +1,4 @@
+import {postgresFailure,operationError} from './failures.mjs';
 // Operator-only PostgreSQL/storage backup. No password is passed in command arguments.
 import {spawn} from 'node:child_process';
 import {promises as fs} from 'node:fs';
@@ -16,22 +17,22 @@ export function backupConfig(env,repository){
  if(!env.EIGSTI_BACKUP_ROOT||!isAbsolute(env.EIGSTI_BACKUP_ROOT))throw new Error('Set an absolute private backup directory outside the repository.');
  return {ref,origin:'https://'+ref+'.supabase.co',key,passphrase:requirePassphrase(env.EIGSTI_BACKUP_PASSPHRASE),root:outsideRepository(env.EIGSTI_BACKUP_ROOT,repository),repository:resolve(repository),psql:env.EIGSTI_PSQL||'psql',dump:env.EIGSTI_PG_DUMP||'pg_dump',restore:env.EIGSTI_PG_RESTORE||'pg_restore',pg:{...env,PGHOST:db.hostname,PGPORT:'5432',PGUSER:decodeURIComponent(db.username),PGPASSWORD:decodeURIComponent(db.password),PGDATABASE:'postgres',PGSSLMODE:'verify-full',PGCONNECT_TIMEOUT:'15',...(env.EIGSTI_DB_ROOT_CERT?{PGSSLROOTCERT:env.EIGSTI_DB_ROOT_CERT}:{})}};
 }
-export function runTool(binary,args,env){return new Promise((accept,reject)=>{const child=spawn(binary,args,{env,windowsHide:true,stdio:['ignore','pipe','pipe']});let out='';child.stdout.on('data',b=>{if(out.length<10*1024*1024)out+=b.toString();else child.kill();});child.stderr.resume();const timer=setTimeout(()=>{child.kill();reject(new Error('PostgreSQL operation timed out.'));},10*60*1000);child.on('error',()=>{clearTimeout(timer);reject(new Error('Required PostgreSQL tool is unavailable.'));});child.on('close',code=>{clearTimeout(timer);code===0?accept(out):reject(new Error('PostgreSQL operation failed. Check private connection/tool versions; output was suppressed to protect credentials.'));});});}
+export function runTool(binary,args,env){return new Promise((accept,reject)=>{const child=spawn(binary,args,{env,windowsHide:true,stdio:['ignore','pipe','pipe']});let out='',errors='';child.stderr.on('data',b=>{if(errors.length<16384)errors+=b.toString();});child.stdout.on('data',b=>{if(out.length<10*1024*1024)out+=b.toString();else child.kill();});const timer=setTimeout(()=>{child.kill();reject(operationError('OPERATION_TIMEOUT'));},10*60*1000);child.on('error',()=>{clearTimeout(timer);reject(operationError('TOOL_UNAVAILABLE'));});child.on('close',code=>{clearTimeout(timer);code===0?accept(out):reject(operationError(postgresFailure(errors)));});});}
 // Snapshot inventory is read inside the SAME transaction exported to pg_dump.
 const SNAPSHOT_SQL=`begin isolation level repeatable read read only;
-select 'EIGSTI_SNAPSHOT:'||jsonb_build_object(
+select 'EIGSTI_SNAPSHOT:'::text || jsonb_build_object(
  'snapshot',pg_export_snapshot(),'server_version',current_setting('server_version_num'),
  'counts',jsonb_build_object('jobs',(select count(*) from public.jobs),'work',(select count(*) from public.work_items),'profiles',(select count(*) from public.app_users),'auth_users',(select count(*) from auth.users)),
  'ready',coalesce((select jsonb_agg(jsonb_build_object('key',object_path,'size',byte_size)) from public.job_files where status='ready'),'[]'::jsonb),
- 'objects',coalesce((select jsonb_agg(jsonb_build_object('key',name,'size',(metadata->>'size')::bigint,'mime',metadata->>'mimetype') order by name) from storage.objects where bucket_id='eigsti-job-files'),'[]'::jsonb));
+ 'objects',coalesce((select jsonb_agg(jsonb_build_object('key',name,'size',(metadata->>'size')::bigint,'mime',metadata->>'mimetype') order by name) from storage.objects where bucket_id='eigsti-job-files'),'[]'::jsonb))::text;
 `;
 export function holdSnapshot(config){return new Promise((accept,reject)=>{
- const child=spawn(config.psql,['--no-psqlrc','--quiet','--tuples-only','--no-align','--no-password','--set','ON_ERROR_STOP=1'],{env:config.pg,windowsHide:true,stdio:['pipe','pipe','pipe']});let output='',resolved=false;
- const fail=()=>{if(!resolved){resolved=true;reject(new Error('Could not open a consistent read-only database snapshot.'));}};
- const timer=setTimeout(()=>{fail();child.kill();},30000);child.stderr.resume();child.on('error',()=>{clearTimeout(timer);fail();});
+ const child=spawn(config.psql,['--no-psqlrc','--quiet','--tuples-only','--no-align','--no-password','--set','ON_ERROR_STOP=1'],{env:config.pg,windowsHide:true,stdio:['pipe','pipe','pipe']});let output='',errors='',resolved=false;child.stderr.on('data',b=>{if(errors.length<16384)errors+=b.toString();});
+ const fail=code=>{if(!resolved){resolved=true;reject(operationError(typeof code==='string'?code:postgresFailure(errors)));}};
+ const timer=setTimeout(()=>{fail('SNAPSHOT_TIMEOUT');child.kill();},30000);child.on('error',()=>{clearTimeout(timer);fail('TOOL_UNAVAILABLE');});
  const closed=new Promise(done=>child.on('close',code=>{clearTimeout(timer);fail();done(code);}));
  const close=async()=>{const closing=setTimeout(()=>child.kill(),30000);try{child.stdin.end('rollback;\n\\q\n');if(await closed!==0)throw new Error('Snapshot connection did not close cleanly.');}finally{clearTimeout(closing);}};
- child.stdout.on('data',b=>{output+=b.toString();if(output.length>10*1024*1024){fail();child.kill();return;}const line=output.split(/\r?\n/).find(v=>v.startsWith('EIGSTI_SNAPSHOT:'));if(!line||!output.endsWith('\n')||resolved)return;try{const inventory=JSON.parse(line.slice(16));if(!/^[0-9A-F]+-[0-9A-F]+-[0-9]+$/i.test(inventory.snapshot))throw Error();resolved=true;clearTimeout(timer);accept({inventory,close});}catch{fail();child.kill();}});
+ child.stdout.on('data',b=>{output+=b.toString();if(output.length>10*1024*1024){fail();child.kill();return;}const line=output.split(/\r?\n/).find(v=>v.startsWith('EIGSTI_SNAPSHOT:'));if(!line||!output.endsWith('\n')||resolved)return;try{const inventory=JSON.parse(line.slice(16));if(!/^[0-9A-F]+-[0-9A-F]+-[0-9]+$/i.test(inventory.snapshot))throw Error();resolved=true;clearTimeout(timer);accept({inventory,close});}catch{fail('SNAPSHOT_FORMAT');child.kill();}});
  child.stdin.on('error',fail);child.stdin.write(SNAPSHOT_SQL);
 });}
 export function validateInventory(inventory){
@@ -48,25 +49,27 @@ export async function downloadObject(config,object,target,transport=fetch){
  if(size!==object.size)throw new Error('Downloaded private file is incomplete.');
  return {key:object.key,path:'storage/'+object.key,size,sha256:await hashFile(target),mime:object.mime||'application/octet-stream'};
 }
-export async function createBackup(config,{run=runTool,snapshot=holdSnapshot,download=downloadObject,publish=fs.rename}={}){
+export async function createBackup(config,{run=runTool,snapshot=holdSnapshot,download=downloadObject,publish=fs.rename,onStage=()=>{}}={}){
+ onStage('preparing backup folder');
  await fs.mkdir(config.root,{recursive:true,mode:0o700});outsideRepository(await fs.realpath(config.root),await fs.realpath(config.repository));
+ onStage('checking PostgreSQL tools');
  const tools=await Promise.all([run(config.dump,['--version'],config.pg),run(config.psql,['--version'],config.pg),run(config.restore,['--version'],config.pg)]);
  const temp=await fs.mkdtemp(join(tmpdir(),'eigsti-ops-backup-')),runId=new Date().toISOString().replace(/[:.]/g,'-')+'-'+randomUUID();let held;
  const partial=join(config.root,runId+'.partial'),output=join(config.root,runId+'.eigsti-backup');
  try{
-  held=await snapshot(config);const inventory=held.inventory,objects=validateInventory(inventory),serverMajor=Number(inventory.server_version)/10000|0;
+  onStage('opening secure database snapshot');held=await snapshot(config);const inventory=held.inventory,objects=validateInventory(inventory),serverMajor=Number(inventory.server_version)/10000|0;
   if(!tools.every(v=>Number(v.match(/PostgreSQL\)?\s+(\d+)/)?.[1])===serverMajor))throw new Error('Use PostgreSQL tools matching the server major version.');
   await fs.writeFile(join(temp,'source-inventory.json'),JSON.stringify(inventory),{flag:'wx',mode:0o600});
-  await run(config.dump,['--format=custom','--no-owner','--no-password','--snapshot='+inventory.snapshot,'--file='+join(temp,'database.dump')],config.pg);
-  await run(config.restore,['--list',join(temp,'database.dump')],config.pg);
-  const stored=[];for(const object of objects)stored.push(await download(config,object,join(temp,'storage',...object.key.split('/'))));
+  onStage('exporting database');await run(config.dump,['--format=custom','--no-owner','--no-password','--snapshot='+inventory.snapshot,'--file='+join(temp,'database.dump')],config.pg);
+  onStage('checking database archive');await run(config.restore,['--list',join(temp,'database.dump')],config.pg);
+  onStage('copying private file bytes');const stored=[];for(const object of objects)stored.push(await download(config,object,join(temp,'storage',...object.key.split('/'))));
   await held.close();held=null;
   const names=['database.dump','source-inventory.json',...stored.map(o=>o.path)],files=[];
   for(const path of names){const disk=join(temp,...path.split('/'));files.push({path,size:(await fs.stat(disk)).size,sha256:await hashFile(disk)});}
   const manifest={format:1,run_id:runId,project_ref:config.ref,created_at:new Date().toISOString(),counts:inventory.counts,postgres_major:serverMajor,storage_objects:stored,files,restore_verified:false,note:'Database archive includes Auth recovery data. Restore requires an isolated matching Supabase project and operator review; not an automatic live restore.'};
   await fs.writeFile(join(temp,'manifest.json'),JSON.stringify(manifest),{flag:'wx',mode:0o600});
-  await sealArchive(temp,[...names,'manifest.json'],partial,config.passphrase);
-  const report=await verifyArchive(partial,config.passphrase);await publish(partial,output);
+  onStage('encrypting recovery archive');await sealArchive(temp,[...names,'manifest.json'],partial,config.passphrase);
+  onStage('verifying recovery archive');const report=await verifyArchive(partial,config.passphrase);onStage('publishing verified archive');await publish(partial,output);
   return {archive:output,...report};
  }finally{if(held)await held.close().catch(()=>{});await removeTemporary(temp);await fs.unlink(partial).catch(()=>{});}
 }
