@@ -71,3 +71,29 @@ The earlier 0010-only bundle is superseded for this unapplied combined slice. Us
 0016_employee_management is prepared, NOT applied. Requires applied 0015; prefer database/batches/0016_employee_management.sql once with 33 guarded synthetic checks. Prior 0001–0015 remain immutable. See docs/employee-management.md.
 
 0016 application reported successful by user following the expected 33-check guarded update. Do not rerun 0016 or earlier bundles. Employee-screen/browser verification remains separate and pending.
+
+0017_planning_review is PREPARED, NOT APPLIED. Apply its guarded database/batches/0017_planning_review.sql once after 0016; it runs 56 checks and rolls fixtures back before committing. Adds priority, estimated days, atomic job setup and scoped help summary. Never rerun 0001–0016.
+
+0017 is now APPLIED: user confirmed 56 checks, 0 failed on October 26. Earlier pending statements are superseded. Do not rerun its bundle or older updates. Browser acceptance remains separate.
+
+0018_unified_work_editor is PREPARED, NOT APPLIED. Use the guarded database/batches/0018_unified_work_editor.sql once after applied 0017. It contains 27 synthetic rollback-only checks and an atomic whole-work-card save command. Never rerun applied 0001–0017.
+
+0018 APPLIED: user confirmed the expected guarded result (27 checks, 0 failed, synthetic fixtures removed). This supersedes earlier pending/application-failure notes. Do not rerun 0018 or earlier updates. Combined work-card browser acceptance, ordinary-PowerShell final build confirmation and commit/push remain pending.
+
+0019_first_save_helpers is PREPARED, NOT APPLIED. Use database/batches/0019_first_save_helpers.sql once after applied 0018. It contains 25 guarded rollback-only checks for scoped staff lookup, atomic first-save staffing, retry/rollback and role boundaries. Do not rerun 0001–0018.
+
+0020_employee_accounts: prepared, not applied. Service-only enrollment for administrator-created Auth accounts. Use guarded database/batches/0020_employee_accounts.sql once after applied 0019; 12 checks and fixture cleanup. Do not rerun 0001-0019.
+
+0020 APPLIED: user confirmed the expected guarded result (12 checks, 0 failed, 0020 applied; synthetic fixtures removed) on October 26. Do not rerun 0020 or earlier migrations. Administrator Add employee is ready for grouped browser acceptance: create a fictional helper, confirm Employees and staffing visibility, and verify sign-in with the temporary password. Local tests/build passed; browser acceptance and commit/push remain pending.
+
+0021_new_job_helpers prepared, not applied: 15 guarded checks, fixtures rolled back before commit. Apply once after applied 0020. Full new-job crew selection, same authenticated PM command and existing receipts.
+
+0021 APPLIED: user confirmed the expected guarded result (15 checks, 0 failed, 0021 applied; synthetic fixtures removed) on October 26. Do not rerun 0021 or earlier migrations. Full new-job helper multi-select is ready for browser review. 223 Node tests, TypeScript and final isolated production build passed; browser acceptance and commit/push remain pending.
+
+0022_unassigned_scheduled_work is prepared, not applied. Apply guarded batch once after applied 0021; 28 checks and synthetic cleanup. PM may retain scheduled date/helper crew without a lead.
+
+0022 APPLIED: user confirmed 28 checks, 0 failed on October 26 after reviewing the Supabase destructive-operation warning. Guarded batch enforces synthetic fixture rollback before commit. Do not rerun 0022 or earlier migrations. PM can retain scheduled dates and named helpers without an assigned lead; Lead needed warning and later assignment are ready for grouped browser acceptance. 228 Node tests, TypeScript and isolated production build passed. Browser acceptance and commit/push remain pending.
+
+0023_saturday_work prepared, not applied: 16 guarded checks. Apply once after applied 0022. Saturday scheduling and multi-day reservations, with Sunday excluded.
+
+0023 APPLIED: user reported the Saturday update worked as expected after the guarded instructions (16 checks, 0 failed, synthetic fixtures removed). Do not rerun 0023 or earlier migrations. Saturday scheduling is enabled; multi-day work includes Saturdays and skips Sundays. No separate Saturday browser save/calendar confirmation or commit/push is inferred from the SQL acknowledgment. 230 Node tests, TypeScript and isolated production build passed.

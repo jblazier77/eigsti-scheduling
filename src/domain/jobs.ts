@@ -38,7 +38,7 @@ export function validateCreateJob(input: unknown): ValidJobInput {
 
 export type JobSummary = {
   id: string; customer_name: string; phone: string; phone_action: string;
-  address: string; title: string; responsible_pm: string | null; lifecycle: string;
+  address: string; title: string; responsible_pm: string | null; lifecycle: string; priority?:number|null;
 } & Partial<JobClassification>;
 export type JobsGateway = {
   createJob(input: ValidJobInput): Promise<JobSummary>;

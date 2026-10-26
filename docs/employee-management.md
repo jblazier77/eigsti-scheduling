@@ -43,3 +43,15 @@ Use fictional test employees, keep one known working administrator signed in, an
 ## Safe pause
 
 It is safe to pause before applying 0016: existing app/data remain at applied 0015, and the employee page clearly reports missing schema to an admin. Stop dev and commit/push the prepared code/docs using ordinary Git commands to back it up. Resume from this document. Apply the new update only once; if it succeeds, record the exact result before any pause. Never treat 173 local tests as proof that SQL was applied.
+
+
+## D70: Add employee from the app (October 26)
+Administrator-only Add employee is implemented locally with name/email/temporary password/roles (Helper default). It creates a confirmed Auth account without email delivery, then enrolls the app profile through a service-role-only RPC. Existing employee edits and role/deactivation protections remain. A dedicated server-only SUPABASE_ADMIN_KEY was configured privately from the matching-project operator credential; no operator database URL or backup passphrase is used by the app. No key or password is returned, logged, placed in client bundles or profile/audit tables.
+
+Auth and profile writes are separate transactions: an interrupted enrollment may leave an Auth-only account with no app access. The unchanged request can recover that account using deterministic ID and server-signed metadata, without resetting its password, adopting an existing email account, overwriting a profile or deleting accounts. Active administrator authority is checked before provisioning, again before enrollment, and under the database enrollment lock. Password changes remain self-service in My account; forgotten-password resets stay manual and SMTP/invitations stay deferred. Temporary passwords are retained only in the form until success/close; no forced first-login password change is claimed.
+
+0020 is PREPARED, NOT APPLIED: guarded bundle with 12 fictional checks, fixture rollback before commit. Local verification and live browser acceptance tracked in status.md. Restart dev after private environment configuration. No new live account was created during implementation.
+
+0020 APPLIED: user confirmed the expected guarded result (12 checks, 0 failed, 0020 applied; synthetic fixtures removed) on October 26. Do not rerun 0020 or earlier migrations. Administrator Add employee is ready for grouped browser acceptance: create a fictional helper, confirm Employees and staffing visibility, and verify sign-in with the temporary password. Local tests/build passed; browser acceptance and commit/push remain pending.
+
+D70 browser review: user added a test employee through Employees and reported it is working on October 26. In-app account creation acceptance passed as reported; independent sign-in with the new account and staffing assignment were not separately confirmed. 0020 remains applied. Current local implementation still needs commit/push before claiming a GitHub checkpoint.

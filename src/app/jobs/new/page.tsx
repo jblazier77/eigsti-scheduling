@@ -3,10 +3,12 @@ import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { requireSession } from '../../../lib/session';
 import { Shell } from '../../components/shell';
-import { NewJobForm } from '../../components/forms';
+import {NewJobWorkspace} from '../../components/new-job-workspace';
+import {workSession} from '../../../lib/work-session';
 export const dynamic='force-dynamic';
 export default async function NewJob({searchParams}:{searchParams:Promise<{filler?:string}>}) {
   const {actor}=await requireSession();if(!actor.roles.includes('pm'))redirect('/jobs');
   const filler=(await searchParams).filler==='1';
-  return <Shell title={filler?'New filler job':'New job'}><Link className="back-link" href="/jobs">Back to jobs</Link><div className="form-intro"><h2>Start with the basics</h2><p>Add the customer, phone and location. Dates are optional and can be planned later.</p></div><div className="card form-card"><NewJobForm requestId={randomUUID()} filler={filler}/></div></Shell>;
+  const {gateway}=await workSession();const [leads,staff]=await Promise.all([gateway.listLeads(),gateway.planningStaff(null)]);
+  return <Shell title={filler?'New filler job':'New job'}><Link className="back-link" href="/jobs">Back to jobs</Link><NewJobWorkspace requestId={randomUUID()} leads={leads} staff={staff} filler={filler}/></Shell>;
 }

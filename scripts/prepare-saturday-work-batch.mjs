@@ -1,0 +1,6 @@
+import {readFileSync,writeFileSync} from 'node:fs';
+const name='0023_saturday_work',ddl=readFileSync('database/migrations/'+name+'.sql','utf8'),checks=readFileSync('database/tests/'+name+'.test.sql','utf8');
+const count=(checks.match(/insert into pg_temp.eigsti_saturday_results\(result\)/g)||[]).length;
+const preflight="begin;\ndo \$preflight\$ begin if not exists(select 1 from information_schema.columns where table_schema='public' and table_name='visits' and column_name='coordinator_id' and is_nullable='YES') then raise exception 'Requires 0022'; end if; if exists(select 1 from pg_constraint where conrelid='public.visits'::regclass and conname='visits_monday_saturday_check') then raise exception '0023 already present; do not rerun'; end if; end; \$preflight\$;\n";
+writeFileSync('database/batches/'+name+'.sql',preflight+ddl.replace(/^begin;\r?\n/m,'').replace(/commit;\s*$/,'')+'\nsavepoint saturday_checks;\n'+checks.replace(/^begin;\r?\n/m,'').replace(/rollback;\s*$/,'')+"\nrollback to savepoint saturday_checks;\nrelease savepoint saturday_checks;\ncommit;\nselect "+count+"::integer as checks,0::integer as failed,'0023 applied; synthetic fixtures removed'::text as result;\n");
+console.log('Prepared 0023: '+count+' checks.');

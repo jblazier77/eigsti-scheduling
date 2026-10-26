@@ -2,7 +2,7 @@ import { AppError, requireActive, type Actor } from './access.ts';
 import { uuidPattern } from './jobs.ts';
 
 export type VisitSlot = 'day' | 'all_day' | 'morning' | 'afternoon' | 'timed';
-export type VisitValues = { start_date: string; end_date: string; slot: VisitSlot; start_time: string | null; end_time: string | null; coordinator_id: string; required_helpers: number; certainty: 'tentative' | 'confirmed' };
+export type VisitValues = { start_date: string; end_date: string; slot: VisitSlot; start_time: string | null; end_time: string | null; coordinator_id: string | null; required_helpers: number; certainty: 'tentative' | 'confirmed' };
 export type Visit = VisitValues & { id: string; work_item_id: string; job_id: string; job_title: string; description: string; state: 'planned' | 'completed' | 'cancelled'; updated_at: string; day_conflicts: number; participants: { id: string; name: string; duty: 'leading' | 'helping' }[] };
 export type StaffOption = { id: string; name: string; busy: boolean };
 export function helperDeficit(visit:Pick<Visit,'state'|'required_helpers'|'participants'|'coordinator_id'>):number {
@@ -35,16 +35,16 @@ export function monday(date: string): string { return addDays(date, -((new Date(
 export function dateLabel(date: string): string { return new Intl.DateTimeFormat('en-US', { timeZone: 'UTC', weekday: 'short', month: 'short', day: 'numeric' }).format(new Date(date + 'T12:00:00Z')); }
 export function visitOnDay(visit: Visit, date: string): boolean {
   const day = new Date(date + 'T12:00:00Z').getUTCDay();
-  return day !== 0 && day !== 6 && date >= visit.start_date && date <= visit.end_date;
+  return day !== 0 && date >= visit.start_date && date <= visit.end_date;
 }
 export function slotLabel(visit: Pick<VisitValues, 'slot' | 'start_time' | 'end_time'>): string {
   return visit.slot === 'timed' ? `${visit.start_time?.slice(0, 5)}–${visit.end_time?.slice(0, 5)}` : { day: 'No time set', all_day: 'All day · 7:00–3:30', morning: 'Morning · 7:00–noon', afternoon: 'Afternoon · noon–3:30' }[visit.slot];
 }
 export function validateVisit(raw: Record<string, unknown>): VisitValues {
-  const fail = () => { throw new AppError('invalid_input', 400, 'Use weekday dates up to 31 calendar days apart and times within 7:00 AM–3:30 PM.'); };
+  const fail = () => { throw new AppError('invalid_input', 400, 'Use Monday-Saturday dates spanning at most 31 calendar days and times within 7:00 AM–3:30 PM.'); };
   if (!validDate(raw.start_date) || !validDate(raw.end_date)) return fail();
   const start = raw.start_date, end = raw.end_date;
-  const weekdays = [start, end].every(d => { const day = new Date(d + 'T12:00:00Z').getUTCDay(); return day > 0 && day < 6; });
+  const weekdays = [start, end].every(d => { const day = new Date(d + 'T12:00:00Z').getUTCDay(); return day > 0 && day <= 6; });
   if (!weekdays || end < start || end > addDays(start, 30) || !['day', 'all_day', 'morning', 'afternoon', 'timed'].includes(String(raw.slot))) return fail();
   const slot = raw.slot as VisitSlot;
   let startTime: string | null = null, endTime: string | null = null;
@@ -55,7 +55,7 @@ export function validateVisit(raw: Record<string, unknown>): VisitValues {
   }
   const count = raw.required_helpers;
   if (typeof count !== 'string' || !/^\d{1,2}$/.test(count) || Number(count) > 20 || !['tentative', 'confirmed'].includes(String(raw.certainty))) return fail();
-  return { start_date: start, end_date: end, slot, start_time: startTime, end_time: endTime, coordinator_id: visitId(raw.coordinator_id), required_helpers: Number(count), certainty: raw.certainty as VisitValues['certainty'] };
+  return { start_date: start, end_date: end, slot, start_time: startTime, end_time: endTime, coordinator_id: raw.coordinator_id===null||raw.coordinator_id===''?null:visitId(raw.coordinator_id), required_helpers: Number(count), certainty: raw.certainty as VisitValues['certainty'] };
 }
 export function visitPatch(before: VisitValues, after: VisitValues): Partial<VisitValues> {
   return Object.fromEntries(Object.entries(after).filter(([key, value]) => before[key as keyof VisitValues] !== value && !(key.endsWith('_time') && before[key as keyof VisitValues]?.toString().slice(0, 5) === value)));

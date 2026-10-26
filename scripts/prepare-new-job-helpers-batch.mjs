@@ -1,0 +1,6 @@
+import {readFileSync,writeFileSync} from 'node:fs';
+const name='0021_new_job_helpers',ddl=readFileSync('database/migrations/'+name+'.sql','utf8'),checks=readFileSync('database/tests/'+name+'.test.sql','utf8');
+const count=(checks.match(/insert into pg_temp.eigsti_new_helpers_results\(result\)/g)||[]).length;
+const preflight="begin;\ndo \$preflight\$ begin if to_regprocedure('public.employee_onboarding_ready(uuid)') is null then raise exception 'Requires 0020'; end if; if position('create_staffed_work' in pg_get_functiondef('public.create_job_workspace(uuid,text,text,text,jsonb,jsonb,jsonb,jsonb,jsonb)'::regprocedure))>0 then raise exception '0021 already present; do not rerun'; end if; end; \$preflight\$;\n";
+writeFileSync('database/batches/'+name+'.sql',preflight+ddl.replace(/^begin;\r?\n/m,'').replace(/commit;\s*$/,'')+'\nsavepoint new_job_helpers_checks;\n'+checks.replace(/^begin;\r?\n/m,'').replace(/rollback;\s*$/,'')+"\nrollback to savepoint new_job_helpers_checks;\nrelease savepoint new_job_helpers_checks;\ncommit;\nselect "+count+"::integer as checks,0::integer as failed,'0021 applied; synthetic fixtures removed'::text as result;\n");
+console.log('Prepared 0021: '+count+' checks.');

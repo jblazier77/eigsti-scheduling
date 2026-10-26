@@ -11,6 +11,7 @@ import {ClassificationEditor,ReadOnlyClassification} from '../../components/clas
 import {JobMarkers} from '../../components/job-markers';
 import {JobScopeDetails} from '../../components/job-scope-details';
 import {AttachmentControls} from '../../components/attachment-controls';
+import {JobPriority} from '../../components/planning-review';
 import {JobArchiveControl} from '../../components/job-archive-control';
 export const dynamic='force-dynamic';
 export default async function JobDetail({params}:{params:Promise<{id:string}>}) {
@@ -23,6 +24,7 @@ export default async function JobDetail({params}:{params:Promise<{id:string}>}) 
     <Link className="back-link" href="/jobs">Back to jobs</Link>
     <section className="job-overview"><div className="section-heading"><h1>{job.title}</h1><span className="badge">{isOpen?'Open job':job.lifecycle==='archived'?'Archived':'Closed job'}</span></div>
       {job.customer_name!==job.title&&<p className="muted">{job.customer_name}</p>}<p className="address">{job.address}</p>
+      <JobPriority jobId={id} priority={job.priority??null} editable={pm&&isOpen}/>
       <JobMarkers value={{rain_day:job.rain_day,filler:job.filler}}/>
       <JobScopeDetails jobId={id} original={original} canEdit={pm&&isOpen}/>
       <div className="job-actions-row"><div className="job-quick-actions"><a className="button" href={'https://www.google.com/maps/dir/?api=1&destination='+encodeURIComponent(job.address)} target="_blank" rel="noreferrer">Directions</a><a className="button" href={'tel:'+job.phone_action} aria-label={'Call '+job.customer_name}>Call</a><a className="button" href={'sms:'+job.phone_action} aria-label={'Text '+job.customer_name}>Text</a></div>{isOpen&&(pm||actor.roles.includes('lead'))&&<AttachmentControls jobId={id}/>}</div>

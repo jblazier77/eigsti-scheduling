@@ -57,3 +57,25 @@ No payroll, time clock, accounting, estimating, purchasing, CRM expansion, porta
 - R37: Active administrators manage existing employee display names, account roles and active state in a simple inline directory. PM alone cannot administer accounts. Protect self/last-admin access, reject stale changes, retain assignments/history on deactivation and require eligible roles or reassignment for active staff. Manual pilot Auth onboarding/reset remains separate; no email/credential exposure.
 
 - R38: Before pilot testing, simplify phone presentation: reduce nonessential whitespace, visible relevant facts without everyday expand arrows, understandable icons with accessible names, inline edits and one Save/Cancel pair. Keep usable touch targets and readable inputs, selected scopes for readers, all PM scope choices, permission boundaries, retained drafts and explicit uncertain-save feedback. Do not hide useful information or replace core Save/Cancel labels with unexplained icons.
+
+- R39 (queued after October 25 local review): Reuse the full job-details layout for creation. Minimum required fields and Save job appear first; optional details can be supplied below in the same flow, with a minimal save allowed. Preserve safe creation, drafts and permissions.
+- R40 (queued after October 25 local review): PM sets a simple optional numeric job priority on the job card. Lower numbers come first in PM and lead job lists; unnumbered jobs follow, with stable ties. Retain access scope and existing work-queue/calendar semantics; no complex priority system.
+
+- R40 clarification (October 26): Display the PM-set job priority near the top of job details as well as using it to sort PM/lead job lists. Leads see the saved value; PM controls editing.
+- R41 (queued): PM landing view includes a compact summary of their jobs/tasks with unfilled or partially filled help requests, including undated requests, requested/assigned counts and direct staffing access. Reuse existing visibility and shortfall rules; no notifications.
+- R42 (queued): PM and authorized lead may enter/edit optional approximate days per work task, including fractional days. Show the estimate on saved work cards; do not require it, track actual time or automatically reserve days/staff from it.
+- R43 (queued): Saved work uses compact cards with bold task titles and visible relevant details, directly editable in place with minimal clicks and one Save/Cancel per context. Preserve drafts, permissions, scheduling semantics and planning-only purpose.
+
+- R43 clarification (October 26): All editable work fields must be visible together in the work card, without an edit pencil or expander to reveal ordinary inputs. One Save/Cancel covers work name, lead, estimated days, help, materials and dates/crew. Keep existing role restrictions and read-only views.
+
+- R40 clarification: PM priority input is directly visible/editable in the job card; no edit button. Save on blur or Enter, then re-sort by the confirmed persisted value. Preserve filters, visibility scope, pagination correctness and safe uncertain retries.
+
+- R44: PM may multi-select eligible helping staff directly in the work card without first entering Helpers needed. Automatically allow at least the selected number of people while retaining larger unfilled requests. Dates and named helpers save in one transaction, including the first dated save. Undated helper requests remain valid; reserving named people requires dates. Preserve lead/coordinator restrictions and availability validation.
+
+R45: Administrators can create employees directly from Employees using name, email, temporary password and roles (Helper default), with no Supabase copy/paste for each account. Preserve scoped access, secret isolation, retry recovery and existing role/deactivation safeguards. No email delivery dependency.
+
+R46: Full new-job setup must support the same helper multi-select as existing-job Add work, with optional count, automatic minimum spaces and one atomic Save job for work/date/crew. No second visit to job details is required to assign crew.
+
+R47: PM may save scheduled work and named helpers while lead is Not assigned yet. Show Lead needed on work and calendar; preserve date/crew when a lead is assigned later. Never reserve a fake lead or let null ownership grant lead editing rights.
+
+R48: Allow Saturday work in creation/editing, calendar display and named staffing reservations. Workweek is Monday-Saturday; multi-day ranges include Saturdays and skip Sundays. Preserve optional dates/times, no-lead planning and existing conflict/permission checks.

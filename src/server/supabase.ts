@@ -5,6 +5,7 @@ import type { ContactPatch, ContactValues, JobContact } from '../domain/contacts
 import type {CommitmentValues,JobCommitments,CalendarCommitment} from '../domain/commitments.ts';
 import type { JobClassification, Subcontractor, SubcontractorValues } from '../domain/job-classification.ts';
 
+import type {HelpRequest} from '../domain/planning-review.ts';
 import type {Employee,EmployeeValues} from '../domain/employees.ts';
 export type SupabaseConfig = { url: string; publishableKey: string; environment: 'development' | 'test' | 'production' };
 export type JobDetail = JobSummary & { scope: string; access_notes: string };
@@ -81,6 +82,9 @@ export class SupabaseSession implements JobsGateway {
     return response.json();
   }
 
+  async helpRequests():Promise<HelpRequest[]>{return this.request('/rest/v1/rpc/pm_help_requests',{method:'POST',body:'{}'});}
+  async savePriority(jobId:string,requestId:string,priority:number|null){return this.request('/rest/v1/rpc/save_job_priority',{method:'POST',body:JSON.stringify({p_job_id:jobId,p_request_id:requestId,p_priority:priority})});}
+  async createWorkspace(input:ValidJobInput,classification:unknown,details:unknown,priority:number|null,work:unknown[],contacts:unknown[]):Promise<{id:string}>{return this.request('/rest/v1/rpc/create_job_workspace',{method:'POST',body:JSON.stringify({p_request_id:input.requestId,p_customer:input.customer,p_phone:input.phone,p_address:input.address,p_classification:classification,p_details:details,p_priority:priority,p_work:work,p_contacts:contacts})});}
   async listEmployees():Promise<Employee[]>{return this.request('/rest/v1/rpc/list_employees',{method:'POST',body:'{}'});}
   async saveEmployee(id:string,requestId:string,expected:string,values:EmployeeValues):Promise<Employee>{return this.request('/rest/v1/rpc/save_employee',{method:'POST',body:JSON.stringify({p_id:id,p_request_id:requestId,p_expected:expected,p_values:values})});}
   async getActor(): Promise<Actor> {
@@ -99,7 +103,7 @@ export class SupabaseSession implements JobsGateway {
   }
 
   async listJobs(query: { responsiblePm?: string; limit: number; offset: number; rainDay?: boolean; filler?: boolean; archived?:boolean }): Promise<JobSummary[]> {
-    const params = new URLSearchParams({ select: 'id,customer_name,phone,phone_action,address,title,responsible_pm,lifecycle,rain_day,filler,whole_house,trades', order: 'created_at.desc,id.desc', limit: String(query.limit), offset: String(query.offset), lifecycle: query.archived?'in.(archived,closed)':'eq.open' });
+    const params = new URLSearchParams({ select: 'id,customer_name,phone,phone_action,address,title,responsible_pm,lifecycle,priority,rain_day,filler,whole_house,trades', order: 'priority.asc.nullslast,created_at.desc,id.desc', limit: String(query.limit), offset: String(query.offset), lifecycle: query.archived?'in.(archived,closed)':'eq.open' });
     if (query.rainDay) params.set('rain_day','eq.true');
     if (query.filler) params.set('filler','eq.true');
     if (query.responsiblePm) params.set('responsible_pm', 'eq.' + query.responsiblePm);
@@ -107,7 +111,7 @@ export class SupabaseSession implements JobsGateway {
   }
 
   async getJob(id: string): Promise<JobDetail | null> {
-    const params = new URLSearchParams({ select: 'id,customer_name,phone,phone_action,address,title,scope,access_notes,responsible_pm,lifecycle,rain_day,filler,whole_house,trades', id: 'eq.' + id, limit: '1' });
+    const params = new URLSearchParams({ select: 'id,customer_name,phone,phone_action,address,title,scope,access_notes,responsible_pm,lifecycle,priority,rain_day,filler,whole_house,trades', id: 'eq.' + id, limit: '1' });
     const rows = await this.request('/rest/v1/jobs?' + params);
     return rows[0] ?? null;
   }

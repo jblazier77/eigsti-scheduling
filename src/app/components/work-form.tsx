@@ -7,10 +7,10 @@ import { changedWorkFields, type WorkValues, type LeadOption } from '../../domai
 import { createWorkAction, updateWorkAction } from '../work-actions';
 import { createQuickWorkAction } from '../planning-update-actions';
 import {materialLabels,type MaterialValues} from '../../domain/planning-updates.ts';
-import type {VisitSlot} from '../../domain/visits.ts';
+import type {VisitSlot,StaffOption} from '../../domain/visits.ts';
 import type { FormState } from '../actions';
 
-type WorkFormProps = { jobId: string; workId?: string; requestId?: string; original: WorkValues; leads: LeadOption[]; originalLeadName?: string | null };
+type WorkFormProps = { jobId: string; workId?: string; requestId?: string; original: WorkValues; leads: LeadOption[]; staff?:StaffOption[]; originalLeadName?: string | null };
 
 export function InlineWorkEditor(props: WorkFormProps & { workId: string }) {
   const [reset, setReset] = useState(0);
@@ -22,22 +22,24 @@ export function InlineNewWork(props:WorkFormProps & {onDone?:()=>void}){
   return <WorkForm {...props} key={reset.version} requestId={reset.requestId} inlineCreate onCancel={()=>{if(props.onDone)props.onDone();else setReset(v=>({version:v.version+1,requestId:crypto.randomUUID()}));}}/>;
 }
 
-export function WorkForm({ jobId, workId, requestId, original, leads, originalLeadName, inline = false, inlineCreate=false, onCancel,onDone }: WorkFormProps & { inline?: boolean; inlineCreate?:boolean; onCancel?: () => void;onDone?:()=>void }) {
+export function WorkForm({ jobId, workId, requestId, original, leads, staff=[], originalLeadName, inline = false, inlineCreate=false, onCancel,onDone }: WorkFormProps & { inline?: boolean; inlineCreate?:boolean; onCancel?: () => void;onDone?:()=>void }) {
   const router = useRouter();
   const fieldId = useId();
   const [baseline, setBaseline] = useState(original);
   const lastServerValues = useRef(JSON.stringify(original));
   const [stableRequest] = useState(requestId);
   const [values, setValues] = useState(baseline);
+  const [namedHelpers,setNamedHelpers]=useState<string[]>([]);
+  const [estimatedDays,setEstimatedDays]=useState('');
   const [scheduleDate,setScheduleDate]=useState(''),[lastDate,setLastDate]=useState('');
   const [slot,setSlot]=useState<VisitSlot>('day'),[startTime,setStartTime]=useState(''),[endTime,setEndTime]=useState(''),[helpersNeeded,setHelpersNeeded]=useState(0);
   const [materialStatus,setMaterialStatus]=useState<MaterialValues['material_status']>('not_set'),[materialName,setMaterialName]=useState(''),[materialDate,setMaterialDate]=useState('');
   const materials:MaterialValues|null=materialStatus==='not_set'?null:{material_name:materialName.trim()||values.description.trim().slice(0,300),material_status:materialStatus,material_expected_on:materialDate||null};
   const patch = changedWorkFields(baseline, values);
-  const dirty = Object.keys(patch).length > 0 || (!workId&&(!!scheduleDate||helpersNeeded>0||!!materials));
+  const dirty = Object.keys(patch).length > 0 || (!workId&&(!!scheduleDate||helpersNeeded>0||!!materials||!!estimatedDays||namedHelpers.length>0));
   const [state, action, pending] = useActionState(async (previous: FormState, form: FormData): Promise<FormState> => {
     try {
-      const result = await (workId ? updateWorkAction : scheduleDate||helpersNeeded>0||materials ? createQuickWorkAction : createWorkAction)(previous, form);
+      const result = await (workId ? updateWorkAction : createQuickWorkAction)(previous, form);
       if (inline && result.jobId) {
         const saved = { ...baseline, ...patch };
         setBaseline(saved); setValues(saved);
@@ -67,23 +69,27 @@ export function WorkForm({ jobId, workId, requestId, original, leads, originalLe
   if(inlineCreate&&state.jobId)return <div role="status"><p>Work added.</p><button type="button" className="button" onClick={onCancel}>Add another</button></div>;
   return <form action={action} className="stack">
     <input type="hidden" name="jobId" value={jobId} /><input type="hidden" name="workId" value={workId ?? ''} /><input type="hidden" name="requestId" value={stableRequest ?? ''} /><input type="hidden" name="values" value={JSON.stringify(workId ? patch : values)} />
+    {!workId&&<input type="hidden" name="estimatedDays" value={estimatedDays}/>}
     {!workId&&<input type="hidden" name="schedule" value={JSON.stringify(scheduleDate?{start_date:scheduleDate,end_date:lastDate||scheduleDate,slot,start_time:slot==='timed'?startTime:null,end_time:slot==='timed'?endTime:null,required_helpers:helpersNeeded}:null)}/>}
-    {!workId&&<><input type="hidden" name="helpersNeeded" value={helpersNeeded}/><input type="hidden" name="materials" value={JSON.stringify(materials)}/></>}
+    {!workId&&<><input type="hidden" name="helpersNeeded" value={helpersNeeded}/><input type="hidden" name="namedHelpers" value={JSON.stringify(namedHelpers)}/><input type="hidden" name="materials" value={JSON.stringify(materials)}/></>}
     <div className={inline ? 'work-inline-fields' : 'stack'}>
-      <div><label htmlFor={fieldId + '-description'}>Work</label><input id={fieldId + '-description'} value={values.description} onChange={e => setValues({ ...values, description: e.target.value })} required maxLength={1000} readOnly={locked} />{!inline && <p className="muted field-hint">Keep Whole job for simple projects, or describe work such as framing or finish carpentry.</p>}</div>
-      <div><label htmlFor={fieldId + '-lead'}>Responsible lead</label><select id={fieldId + '-lead'} required={!workId&&!!scheduleDate} value={values.responsible_lead ?? ''} onChange={e => setValues({ ...values, responsible_lead: e.target.value || null })} disabled={locked}>
+      <div><label htmlFor={fieldId + '-description'}>Work name</label><input id={fieldId + '-description'} className="work-task-title" placeholder="e.g. Install windows" value={values.description} onChange={e => setValues({ ...values, description: e.target.value })} required maxLength={1000} readOnly={locked} />{!inline && <p className="muted field-hint">Name the task, such as Install windows or Finish carpentry.</p>}</div>
+      <div><label htmlFor={fieldId + '-lead'}>Responsible lead</label><select id={fieldId + '-lead'} value={values.responsible_lead ?? ''} onChange={e => {setValues({ ...values, responsible_lead: e.target.value || null });setNamedHelpers(ids=>ids.filter(id=>id!==e.target.value));}} disabled={locked}>
         <option value="">Not assigned yet</option>
         {baseline.responsible_lead && !leads.some(lead => lead.id === baseline.responsible_lead) && <option value={baseline.responsible_lead}>{originalLeadName || 'Previously assigned lead'} - unavailable for new assignments</option>}
         {leads.map(lead => <option key={lead.id} value={lead.id}>{lead.display_name}</option>)}
       </select>{!leads.length && <p className="muted field-hint">No active lead accounts are available. You can save unassigned and assign a lead later.</p>}</div>
     </div>
-    {!workId&&<fieldset disabled={locked} className="visit-fields optional-work-date"><div className="two-actions"><label>Date (optional)<input type="date" value={scheduleDate} onChange={e=>{setScheduleDate(e.target.value);setLastDate(e.target.value);}}/></label><label>Helpers needed<input type="number" min="0" max="20" required value={helpersNeeded} onChange={e=>setHelpersNeeded(Number(e.target.value))}/></label></div>
+    {!workId&&<label>Estimated days (optional)<input type="number" min="0.01" max="999" step="0.01" value={estimatedDays} readOnly={locked} onChange={e=>setEstimatedDays(e.target.value)}/></label>}
+    {!workId&&<fieldset disabled={locked} className="visit-fields optional-work-date"><div className="two-actions"><label>Date (optional)<input type="date" value={scheduleDate} onChange={e=>{setScheduleDate(e.target.value);setLastDate(e.target.value);if(!e.target.value)setNamedHelpers([]);}}/></label><label>Helpers needed (optional)<input type="number" min="0" max="20" value={helpersNeeded===0?'':helpersNeeded} onChange={e=>setHelpersNeeded(Math.max(Number(e.target.value),namedHelpers.length))}/></label></div>
+      <fieldset className="helper-multiselect"><legend>Helpers</legend>{staff.filter(p=>p.id!==values.responsible_lead).map(p=><label className="staff-choice" key={p.id}><input type="checkbox" checked={namedHelpers.includes(p.id)} disabled={locked||!namedHelpers.includes(p.id)&&namedHelpers.length>=20} onChange={e=>{const ids=(e.target.checked?[...namedHelpers,p.id]:namedHelpers.filter(id=>id!==p.id)).sort();setNamedHelpers(ids);setHelpersNeeded(n=>Math.max(n,ids.length));}}/>{p.name}</label>)}{!staff.filter(p=>p.id!==values.responsible_lead).length&&<p className="muted">No other active helpers or leads.</p>}</fieldset>
+      {!!namedHelpers.length&&<div className="named-help">{namedHelpers.map(id=><span className="assigned-helper" key={id}>{staff.find(p=>p.id===id)?.name??'Selected helper'}<button type="button" className="icon-action" onClick={()=>setNamedHelpers(ids=>ids.filter(p=>p!==id))} aria-label={'Remove '+(staff.find(p=>p.id===id)?.name??'helper')}>×</button></span>)}</div>}
       <label>Material availability<select value={materialStatus} onChange={e=>{const next=e.target.value as MaterialValues['material_status'];setMaterialStatus(next);if(!['need_to_order','ordered'].includes(next))setMaterialDate('');}}>{Object.entries(materialLabels).map(([key,label])=><option key={key} value={key}>{label}</option>)}</select></label>
       {['need_to_order','ordered','in_stock'].includes(materialStatus)&&<label>Material / item (optional)<input maxLength={300} placeholder="Uses the work description if blank" value={materialName} onChange={e=>setMaterialName(e.target.value)}/></label>}
       {['need_to_order','ordered'].includes(materialStatus)&&<label>Expected arrival (optional)<input type="date" value={materialDate} onChange={e=>setMaterialDate(e.target.value)}/></label>}
-      {scheduleDate&&<details className="quick-work-options"><summary>More date / time options</summary><label>Through<input type="date" required value={lastDate||scheduleDate} onChange={e=>setLastDate(e.target.value)}/></label>
+      {scheduleDate&&<div className="quick-work-options"><label>Through<input type="date" required value={lastDate||scheduleDate} onChange={e=>setLastDate(e.target.value)}/></label>
       <label>Time (optional)<select value={slot} onChange={e=>setSlot(e.target.value as VisitSlot)}><option value="day">No time set</option><option value="all_day">Reserve all day</option><option value="morning">Morning</option><option value="afternoon">Afternoon</option><option value="timed">Specific hours</option></select></label>
-      {slot==='timed'&&<div className="two-actions"><label>Start<input type="time" min="07:00" max="15:30" required value={startTime} onChange={e=>setStartTime(e.target.value)}/></label><label>End<input type="time" min="07:00" max="15:30" required value={endTime} onChange={e=>setEndTime(e.target.value)}/></label></div>}</details>}
+      {slot==='timed'&&<div className="two-actions"><label>Start<input type="time" min="07:00" max="15:30" required value={startTime} onChange={e=>setStartTime(e.target.value)}/></label><label>End<input type="time" min="07:00" max="15:30" required value={endTime} onChange={e=>setEndTime(e.target.value)}/></label></div>}</div>}
       <p className="muted field-hint">Leave blank to schedule later. Dates need a lead; times are optional.</p>
     </fieldset>}
     {state.message && <p className="form-message" role="alert">{state.message}</p>}

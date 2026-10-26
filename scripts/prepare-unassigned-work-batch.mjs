@@ -1,0 +1,6 @@
+import {readFileSync,writeFileSync} from 'node:fs';
+const name='0022_unassigned_scheduled_work',ddl=readFileSync('database/migrations/'+name+'.sql','utf8'),checks=readFileSync('database/tests/'+name+'.test.sql','utf8');
+const count=(checks.match(/insert into pg_temp.eigsti_unassigned_results\(result\)/g)||[]).length;
+const preflight="begin;\ndo \$preflight\$ begin if position('create_staffed_work' in pg_get_functiondef('public.create_job_workspace(uuid,text,text,text,jsonb,jsonb,jsonb,jsonb,jsonb)'::regprocedure))=0 then raise exception 'Requires 0021'; end if; if exists(select 1 from information_schema.columns where table_schema='public' and table_name='visits' and column_name='coordinator_id' and is_nullable='YES') then raise exception '0022 already present; do not rerun'; end if; end; \$preflight\$;\n";
+writeFileSync('database/batches/'+name+'.sql',preflight+ddl.replace(/^begin;\r?\n/m,'').replace(/commit;\s*$/,'')+'\nsavepoint unassigned_checks;\n'+checks.replace(/^begin;\r?\n/m,'').replace(/rollback;\s*$/,'')+"\nrollback to savepoint unassigned_checks;\nrelease savepoint unassigned_checks;\ncommit;\nselect "+count+"::integer as checks,0::integer as failed,'0022 applied; synthetic fixtures removed'::text as result;\n");
+console.log('Prepared 0022: '+count+' checks.');

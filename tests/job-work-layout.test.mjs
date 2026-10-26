@@ -38,12 +38,13 @@ async function rendered(role,isOpen=true){
  const actor={id:role==='helper'?helper:role==='lead'?lead:'pm',active:true,roles:[role]};
  const work=[portion('Cabinets',lead,{remaining_note:'Fit return trim',planned_count:1,returns:[{id:'return',note:'Fit return trim',state:'open',owner_name:lead,due_date:'2026-10-26',planned_count:0}]}),portion('Other trade','other')];
  const visits=[visit('appointment','Cabinets',{coordinator_id:lead,participants:[{id:helper,duty:'helping'}]}),visit('history','Cabinets',{state:'completed'})];
- const reads=[];const gateway={jobProgress:async()=>work,jobVisits:async()=>visits,listWork:async()=>work,workStatus:async()=>[{id:'Cabinets',readiness:'waiting_unknown',waiting_until:null}],listLeads:async()=>{reads.push('leads');return[];}};
+ const reads=[];const gateway={jobProgress:async()=>work,jobVisits:async()=>visits,listWork:async()=>work,planningStaff:async()=>[],staffOptions:async()=>[],workStatus:async()=>[{id:'Cabinets',readiness:'waiting_unknown',waiting_until:null}],listLeads:async()=>{reads.push('leads');return[];}};
  const stub=(name)=>(props)=>createElement('div',{'data-component':name,'data-editable':props.editable,'data-command':props.command,'data-disabled':props.disabled,'data-visit':props.visit?.id},name);
  const dependencies={
   'node:crypto':{randomUUID:()=> 'request'},'../../lib/visit-session':{visitSession:async()=>({actor,gateway})},
   '../../domain/job-work-layout.ts':{groupJobWork},'../../domain/visits.ts':{dateLabel},
   '../../domain/planning-updates.ts':{materialLabels},'./work-materials':{WorkMaterials:()=>null},
+  './planning-review':{WorkDetails:({description,leadName,visits=[],editable})=>createElement('div',{'data-editable':editable},createElement('h3',null,description),leadName,...visits.map(v=>createElement('div',{key:v.id,'data-visit':v.id})))},
   './inline-visit':{InlineVisit:stub('InlineVisit')},'./visit-editor':{VisitEditor:stub('VisitEditor')},
   './work-card-editor':{WorkCardEditor:stub('WorkCardEditor')},'./work-form':{InlineNewWork:stub('InlineNewWork')}
  };
@@ -61,7 +62,7 @@ test('combined helper view is read-only, retains its assignment, and does not lo
  assert.ok(html.indexOf('Support details')<html.indexOf('Work history'));
 });
 test('PM planning controls have no completion or return check-offs and show history only once',async()=>{
- const {html,reads}=await rendered('pm');assert.ok(html.includes('Project work'));assert.ok(html.includes('aria-label="Edit work and leads"'));assert.ok(html.includes('Add work'));assert.ok(!html.includes('WorkCardEditor'));assert.ok(!html.includes('InlineNewWork'));assert.equal(reads.length,1);
+ const {html,reads}=await rendered('pm');assert.ok(html.includes('Project work'));assert.ok(!html.includes('aria-label="Edit work and leads"'));assert.ok(html.includes('Add work'));assert.ok(!html.includes('WorkCardEditor'));assert.ok(!html.includes('InlineNewWork'));assert.equal(reads.length,1);
  for(const command of ['finish_visit','complete_work','resolve_return','reopen_work'])assert.ok(!html.includes('data-command="'+command+'"'));
  assert.ok(!html.includes('Complete this work'));assert.ok(!html.includes('Mark return handled'));assert.ok(!html.includes('data-command='));assert.ok(!html.includes('Add return work'));assert.ok(!html.includes('Plan return'));assert.ok(!html.includes('Handled returns'));assert.ok(html.includes('Waiting'));assert.ok(!html.includes('>Ready<'));
  assert.equal((html.match(/data-visit="appointment"/g)||[]).length,1);assert.equal((html.match(/data-visit="history"/g)||[]).length,1);

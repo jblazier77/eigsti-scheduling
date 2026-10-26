@@ -8,6 +8,7 @@ import {renderToStaticMarkup} from 'react-dom/server';
 import * as access from '../src/domain/access.ts';
 import * as work from '../src/domain/work.ts';
 import * as visits from '../src/domain/visits.ts';
+import * as review from '../src/domain/planning-review.ts';
 import * as planning from '../src/domain/planning-updates.ts';
 import {WorkSession} from '../src/server/work.ts';
 const require=createRequire(import.meta.url),swc=require('next/dist/build/swc');
@@ -21,8 +22,8 @@ test('optional dates stay optional; date-only work uses its chosen lead and no e
  assert.equal(planning.validateOptionalPlan(null,{...values,responsible_lead:null}),null);
  const plan=planning.validateOptionalPlan(date,values);assert.equal(plan.slot,'day');assert.equal(plan.start_time,null);assert.equal(plan.end_time,null);assert.equal(plan.coordinator_id,leadId);assert.equal(plan.required_helpers,2);
 });
-test('invalid dated-work drafts fail before writes: no lead, weekends, reversed ranges and injected ownership',()=>{
- for(const [p,w] of [[date,{...values,responsible_lead:null}],[{...date,start_date:'2026-10-24',end_date:'2026-10-24'},values],[{...date,end_date:'2026-10-22'},values],[{...date,coordinator_id:jobId},values],[{...date,required_helpers:21},values]])assert.throws(()=>planning.validateOptionalPlan(p,w));
+test('invalid dated-work drafts fail before writes: Sundays, reversed ranges and injected ownership',()=>{
+ for(const [p,w] of [[{...date,start_date:'2026-10-25',end_date:'2026-10-25'},values],[{...date,end_date:'2026-10-22'},values],[{...date,coordinator_id:jobId},values],[{...date,required_helpers:21},values]])assert.throws(()=>planning.validateOptionalPlan(p,w));
 });
 test('materials validate explicit availability and calendar dates without inferring stock from elapsed estimates',()=>{
  assert.deepEqual(planning.validateMaterial(material),material);
@@ -35,8 +36,8 @@ test('help warning counts only distinct helpers, not the coordinator; it clears 
 });
 function actions({roles=['pm'],active=true,fail=false}={}){
  const calls=[],exports={};
- const gateway={createQuickWork:async(...args)=>{calls.push(['quick',...args]);if(fail)throw new access.AppError('connection_failed',503,'Unconfirmed.');return{id:workId};},createWorkWithPlan:async(...args)=>{calls.push(['create',...args]);if(fail)throw new access.AppError('connection_failed',503,'Unconfirmed.');return{id:workId};},saveMaterials:async(...args)=>{calls.push(['material',...args]);if(fail)throw new access.AppError('not_allowed',403,'Lead access changed.');return{id:workId,job_id:jobId};}};
- const dependencies={'next/cache':{revalidatePath:path=>calls.push(['refresh',path])},'../lib/work-session':{workSession:async()=>({actor:{id:leadId,roles,active},gateway})},'../domain/access.ts':access,'../domain/work.ts':work,'../domain/planning-updates.ts':planning};
+ const gateway={createStaffedWork:async(...args)=>{calls.push(['staffed',...args]);if(fail)throw new access.AppError('connection_failed',503,'Unconfirmed.');return{id:workId};},createPlanningWork:async(...args)=>{calls.push(['quick',...args]);if(fail)throw new access.AppError('connection_failed',503,'Unconfirmed.');return{id:workId};},createWorkWithPlan:async(...args)=>{calls.push(['create',...args]);if(fail)throw new access.AppError('connection_failed',503,'Unconfirmed.');return{id:workId};},saveMaterials:async(...args)=>{calls.push(['material',...args]);if(fail)throw new access.AppError('not_allowed',403,'Lead access changed.');return{id:workId,job_id:jobId};}};
+ const dependencies={'next/cache':{revalidatePath:path=>calls.push(['refresh',path])},'../lib/work-session':{workSession:async()=>({actor:{id:leadId,roles,active},gateway})},'../domain/access.ts':access,'../domain/work.ts':work,'../domain/planning-updates.ts':planning,'../domain/planning-review.ts':review};
  const compiled=stripTypeScriptTypes(readFileSync(new URL('../src/app/planning-update-actions.ts',import.meta.url),'utf8')).replace(/^import \{([^}]+)\} from '([^']+)';$/gm,'const {$1} = require(\'$2\');').replace(/export async function (\w+)/g,'exports.$1 = async function $1');
  runInNewContext(compiled,{exports,require:name=>{assert(name in dependencies,name);return dependencies[name];}});
  const form=new FormData();form.set('jobId',jobId);form.set('workId',workId);form.set('requestId',requestId);form.set('values',JSON.stringify(values));form.set('schedule',JSON.stringify(date));
@@ -94,7 +95,7 @@ test('one-window setup sends work, Tuesday, needed help and in-stock materials t
  const f=actions(),stock={material_name:'Windows',material_status:'in_stock',material_expected_on:null};
  const tuesday={...date,start_date:'2026-10-27',end_date:'2026-10-27',required_helpers:1};
  f.form.set('values',JSON.stringify({...values,description:'Install one window'}));f.form.set('schedule',JSON.stringify(tuesday));f.form.set('helpersNeeded','1');f.form.set('materials',JSON.stringify(stock));
- const result=await f.createQuickWorkAction({},f.form);assert.equal(result.jobId,jobId);assert.deepEqual(f.calls[0],['quick',jobId,requestId,{...values,description:'Install one window'},planning.validateOptionalPlan(tuesday,values),1,stock]);assert.equal(f.calls.filter(c=>c[0]==='quick').length,1);
+ const result=await f.createQuickWorkAction({},f.form);assert.equal(result.jobId,jobId);assert.deepEqual(f.calls[0],['quick',jobId,requestId,{...values,description:'Install one window'},planning.validateOptionalPlan(tuesday,values),1,stock,null]);assert.equal(f.calls.filter(c=>c[0]==='quick').length,1);
 });
 test('quick-work retries retain the entire payload; unknown saves never report success or invalidate data',async()=>{
  const f=actions({fail:true});f.form.set('helpersNeeded','2');f.form.set('materials',JSON.stringify(material));const first=await f.createQuickWorkAction({},f.form);assert.equal(first.uncertain,true);assert.equal(first.jobId,undefined);await f.createQuickWorkAction(first,f.form);assert.deepEqual(f.calls[0],f.calls[1]);assert.equal(f.calls.length,2);
@@ -113,3 +114,7 @@ test('quick-work guarded bundle preserves the applied 0012 and verifies transact
  const ddl=readFileSync(new URL('../database/migrations/0013_quick_work.sql',import.meta.url),'utf8'),checks=readFileSync(new URL('../database/tests/0013_quick_work.test.sql',import.meta.url),'utf8'),batch=readFileSync(new URL('../database/batches/0013_quick_work.sql',import.meta.url),'utf8');
  assert(batch.includes(ddl.replace(/^begin;\r?\n/m,'').replace(/commit;\s*$/,'')));assert(batch.includes(checks.replace(/^begin;\r?\n/m,'').replace(/rollback;\s*$/,'')));assert.equal((checks.match(/insert into pg_temp.eigsti_quick_results\(result\)/g)||[]).length,33);assert(!/\bfrom\s+public\.visits\b/i.test(checks));assert.equal((batch.match(/^commit;$/gm)||[]).length,1);assert(batch.indexOf('rollback to savepoint quick_work_fixture_checks')<batch.indexOf('\ncommit;'));assert(batch.includes('0013 may already be applied'));
 });
+
+test('Add work with selected helping staff creates task, date and roster through one atomic command',async()=>{const f=actions();f.form.set('helpersNeeded','2');f.form.set('namedHelpers',JSON.stringify([workId,requestId]));f.form.set('materials','null');assert.equal((await f.createQuickWorkAction({},f.form)).jobId,jobId);assert.equal(f.calls[0][0],'staffed');assert.deepEqual(JSON.parse(JSON.stringify(f.calls[0].at(-1))),[workId,requestId]);assert.equal(f.calls.filter(c=>c[0]==='staffed').length,1);});
+
+test('dated work may keep its helper spaces before a lead is chosen',()=>{const plan=planning.validateOptionalPlan(date,{...values,responsible_lead:null});assert.equal(plan.coordinator_id,null);assert.equal(plan.start_date,date.start_date);assert.equal(plan.required_helpers,2);});

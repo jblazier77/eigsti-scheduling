@@ -3,7 +3,7 @@ import {validDate,validateVisit,type VisitValues} from './visits.ts';
 import type {WorkValues} from './work.ts';
 export const materialLabels={not_set:'Not set',not_needed:'No material hold',need_to_order:'Need to order',ordered:'Ordered',in_stock:'In stock'} as const;
 export type MaterialValues={material_name:string;material_status:keyof typeof materialLabels;material_expected_on:string|null};
-export type WorkStatus={id:string;readiness:string;waiting_until:string|null;default_helpers?:number}&Partial<MaterialValues>;
+export type WorkStatus={id:string;readiness:string;waiting_until:string|null;default_helpers?:number;estimated_days?:number|null}&Partial<MaterialValues>;
 export function helperCount(input:unknown):number{
  if(typeof input!=='string'||!/^\d{1,2}$/.test(input)||Number(input)>20)throw new AppError('invalid_input',400,'Choose between 0 and 20 helpers.');
  return Number(input);
@@ -25,6 +25,5 @@ export function validateOptionalPlan(raw:unknown,work:WorkValues):VisitValues|nu
  if(!raw||typeof raw!=='object'||Array.isArray(raw))throw new AppError('invalid_input',400,'Check the optional work dates.');
  const plan=raw as Record<string,unknown>;
  if(Object.keys(plan).some(k=>!['start_date','end_date','slot','start_time','end_time','required_helpers'].includes(k)))throw new AppError('invalid_input',400,'Check the optional work dates.');
- if(!work.responsible_lead)throw new AppError('invalid_input',400,'Choose a lead to schedule this work, or leave the date empty.');
  return validateVisit({...plan,coordinator_id:work.responsible_lead,certainty:'tentative',required_helpers:String(plan.required_helpers??0)});
 }
