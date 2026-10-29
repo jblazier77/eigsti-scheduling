@@ -21,14 +21,21 @@
     "backup:verify": "node scripts/ops/verify-backup.mjs",
     "backup:prepare-restore": "node scripts/ops/prepare-restore.mjs",
     "pilot:check-host": "node scripts/ops/check-host.mjs",
-    "check:production": "node scripts/check-production.mjs"
+    "check:production": "node scripts/prepare-pricing-assets.mjs && node scripts/check-production.mjs",
+    "predev": "node scripts/prepare-pricing-assets.mjs",
+    "prebuild": "node scripts/prepare-pricing-assets.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "0.12.7",
     "@supabase/supabase-js": "2.118.0",
+    "@tesseract.js-data/eng": "1.0.0",
+    "fflate": "0.8.3",
     "next": "16.4.2",
+    "pdfjs-dist": "6.4.299",
     "react": "19.3.1",
-    "react-dom": "19.3.1"
+    "react-dom": "19.3.1",
+    "read-excel-file": "9.3.14",
+    "tesseract.js": "7.0.0"
   },
   "devDependencies": {
     "@types/node": "26.6.5",

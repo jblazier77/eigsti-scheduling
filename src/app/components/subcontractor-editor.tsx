@@ -4,13 +4,13 @@ import type { Subcontractor, SubcontractorValues } from '../../domain/job-classi
 import { saveSubcontractorAction, type ClassificationState } from '../classification-actions';
 import { TradeChoices } from './classification-editor';
 
-const blank:SubcontractorValues={name:'',phone:'',email:'',trades:[]};
-export function SubcontractorEditor({original,requestId,onDone}:{original?:Subcontractor;requestId:string;onDone?:()=>void}) {
+const blank:SubcontractorValues={name:'',phone:'',email:'',trades:[],contact_types:['subcontractor'],notes:''};
+export function SubcontractorEditor({original,requestId,onDone,defaultTypes=['subcontractor']}:{defaultTypes?:('vendor'|'subcontractor')[];original?:Subcontractor;requestId:string;onDone?:()=>void}) {
   const [reset,setReset]=useState({version:0,requestId});
-  return <DirectoryForm key={reset.version} original={original} requestId={reset.requestId} onDone={onDone} onCancel={()=>onDone?onDone():setReset(n=>({version:n.version+1,requestId:crypto.randomUUID()}))}/>;
+  return <DirectoryForm key={reset.version} original={original} requestId={reset.requestId} onDone={onDone} defaultTypes={defaultTypes} onCancel={()=>onDone?onDone():setReset(n=>({version:n.version+1,requestId:crypto.randomUUID()}))}/>;
 }
-function DirectoryForm({original,requestId,onCancel,onDone}:{original?:Subcontractor;requestId:string;onCancel:()=>void;onDone?:()=>void}) {
-  const initial=original?{name:original.name,phone:original.phone,email:original.email,trades:original.trades}:blank;
+function DirectoryForm({original,requestId,onCancel,onDone,defaultTypes}:{defaultTypes:('vendor'|'subcontractor')[];original?:Subcontractor;requestId:string;onCancel:()=>void;onDone?:()=>void}) {
+  const initial=original?{name:original.name,phone:original.phone,email:original.email,trades:original.trades,contact_types:original.contact_types??['subcontractor'],notes:original.notes??''}:{...blank,contact_types:defaultTypes};
   const [baseline,setBaseline]=useState(initial),[value,setValue]=useState(initial),[request,setRequest]=useState(requestId);
   const changed=(Object.keys(blank) as (keyof SubcontractorValues)[]).filter(k=>JSON.stringify(value[k])!==JSON.stringify(baseline[k]));
   const retry=useRef<FormData|null>(null);
@@ -28,9 +28,10 @@ function DirectoryForm({original,requestId,onCancel,onDone}:{original?:Subcontra
   return <form action={action} className="stack">
     <input type="hidden" name="id" value={original?.id??''}/><input type="hidden" name="requestId" value={request}/><input type="hidden" name="patch" value={JSON.stringify(value)}/>{changed.map(k=><input key={k} type="hidden" name="changed" value={k}/>)}
     {(['name','phone','email'] as const).map(k=><label key={k}>{k==='name'?'Company / contact name':k==='phone'?'Phone (optional)':'Email (optional)'}<input name={k} type={k==='email'?'email':k==='phone'?'tel':'text'} required={k==='name'} maxLength={k==='name'?100:k==='phone'?40:254} value={value[k]} readOnly={lock} onChange={e=>setValue({...value,[k]:e.target.value})}/></label>)}
+    <fieldset disabled={lock}><legend>Contact types</legend>{(['vendor','subcontractor'] as const).map(t=><label className="staff-choice" key={t}><input type="checkbox" checked={value.contact_types?.includes(t)??false} onChange={e=>setValue({...value,contact_types:e.target.checked?[...value.contact_types??[],t]:(value.contact_types??[]).filter(v=>v!==t)})}/>{t==='vendor'?'Vendor':'Subcontractor'}</label>)}</fieldset><label>Contact notes<textarea maxLength={2000} value={value.notes??''} readOnly={lock} onChange={e=>setValue({...value,notes:e.target.value})}/></label>
     <TradeChoices value={value.trades} onChange={v=>setValue({...value,trades:v})} disabled={lock}/>
     {state.message&&<p role="status">{state.message}</p>}{state.uncertain&&<p>The last save may have completed. Retry this same draft to confirm.</p>}
     <div className="two-actions"><button className="button primary" disabled={pending||!!original&&!changed.length&&!state.uncertain||!original&&!!state.saved} aria-busy={pending}>{pending?'Saving…':state.uncertain?'Retry save':state.saved&&!changed.length?'Saved':'Save'}</button><button className="button" type="button" disabled={pending} onClick={()=>{if(!state.uncertain||window.confirm('The last save may have completed. Discard this draft?'))onCancel();}}>{!original&&state.saved?'Add another':'Cancel'}</button></div>
-    {original&&<button type="submit" name="archive" value="true" className="button" disabled={pending||state.uncertain} formNoValidate onClick={e=>{if(!window.confirm('Archive this subcontractor? Existing history is retained.'))e.preventDefault();}}>Archive subcontractor</button>}
+    {original&&<button type="submit" name="archive" value="true" className="button" disabled={pending||state.uncertain} formNoValidate onClick={e=>{if(!window.confirm('Archive this contact? Existing history is retained.'))e.preventDefault();}}>Archive contact</button>}
   </form>;
 }

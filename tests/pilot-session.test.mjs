@@ -11,6 +11,6 @@ test('employee and trade routes refresh session cookies and retain private cache
  const request={cookies:{getAll:()=>[],set:()=>{}}};
  const next=()=>({headers:new Map(),cookies:{set:(...args)=>options.push(args)}});
  runInNewContext(code,{exports,require:name=>name==='@supabase/ssr'?{createServerClient:(url,key,config)=>({auth:{getClaims:async()=>{requests++;assert.equal(config.cookieOptions.httpOnly,true);assert.equal(config.cookieOptions.secure,true);config.cookies.setAll([{name:'synthetic',value:'renewed',options:{httpOnly:true}}]);}}})}:name==='next/server'?{NextResponse:{next}}:{appConfig:()=>({url:'https://synthetic.invalid',publishableKey:'synthetic'}),secureSessionCookies:()=>true}});
- for(const route of ['/employees/:path*','/subcontractors/:path*'])assert(exports.config.matcher.includes(route));
+ for(const route of ['/employees/:path*','/subcontractors/:path*','/pricing/:path*','/api/pricing/:path*'])assert(exports.config.matcher.includes(route));
  const response=await exports.proxy(request);assert.equal(response.headers.get('Cache-Control'),'private, no-store');assert.equal(requests,1);assert.equal(options[0][0],'synthetic');
 });

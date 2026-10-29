@@ -13,7 +13,7 @@ export type ContactValues = Record<ContactField, string>;
 export type ContactPatch = Partial<ContactValues>;
 export type JobContact = ContactValues & { id: string; job_id: string; phone_action: string | null };
 export const emptyContact: ContactValues = { name: '', relationship: '', phone: '', email: '', notes: '' };
-export const contactTypes = ['Customer', 'Subcontractor', 'Site contact', 'Other'] as const;
+export const contactTypes = ['Customer', 'Subcontractor', 'Vendor', 'Site contact', 'Other'] as const;
 export function alphabeticalContacts<T extends {id:string;name:string}>(contacts: readonly T[]): T[] {
   return [...contacts].sort((a,b) => a.name.localeCompare(b.name, 'en', {sensitivity:'base',numeric:true}) || a.id.localeCompare(b.id));
 }

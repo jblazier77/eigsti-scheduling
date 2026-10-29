@@ -7,6 +7,9 @@ import {tmpdir} from 'node:os';
 import {randomUUID} from 'node:crypto';
 import {outsideRepository,requirePassphrase,hashFile,sealArchive,verifyArchive,removeTemporary} from './archive.mjs';
 export const BUCKET='eigsti-job-files';
+export const PRICE_BUCKET='vendor-price-sheets';
+export function storageBucket(object){const bucket=object.bucket??BUCKET;if(![BUCKET,PRICE_BUCKET].includes(bucket))throw new Error('Unexpected storage bucket.');return bucket;}
+export function storageArchivePath(object){return 'storage/'+(storageBucket(object)===PRICE_BUCKET?PRICE_BUCKET+'/':'')+object.key;}
 const KEY=/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}\/[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 export function backupConfig(env,repository){
  const ref=env.EIGSTI_BACKUP_EXPECTED_REF;if(!/^[a-z]{20}$/.test(ref??''))throw new Error('Set the source project reference.');
@@ -19,35 +22,35 @@ export function backupConfig(env,repository){
 }
 export function runTool(binary,args,env){return new Promise((accept,reject)=>{const child=spawn(binary,args,{env,windowsHide:true,stdio:['ignore','pipe','pipe']});let out='',errors='';child.stderr.on('data',b=>{if(errors.length<16384)errors+=b.toString();});child.stdout.on('data',b=>{if(out.length<10*1024*1024)out+=b.toString();else child.kill();});const timer=setTimeout(()=>{child.kill();reject(operationError('OPERATION_TIMEOUT'));},10*60*1000);child.on('error',()=>{clearTimeout(timer);reject(operationError('TOOL_UNAVAILABLE'));});child.on('close',code=>{clearTimeout(timer);code===0?accept(out):reject(operationError(postgresFailure(errors)));});});}
 // Snapshot inventory is read inside the SAME transaction exported to pg_dump.
-const SNAPSHOT_SQL=`begin isolation level repeatable read read only;
-select 'EIGSTI_SNAPSHOT:'::text || jsonb_build_object(
+const SNAPSHOT_SQL=`select 'EIGSTI_SNAPSHOT:'::text || jsonb_build_object(
  'snapshot',pg_export_snapshot(),'server_version',current_setting('server_version_num'),
  'counts',jsonb_build_object('jobs',(select count(*) from public.jobs),'work',(select count(*) from public.work_items),'profiles',(select count(*) from public.app_users),'auth_users',(select count(*) from auth.users)),
- 'ready',coalesce((select jsonb_agg(jsonb_build_object('key',object_path,'size',byte_size)) from public.job_files where status='ready'),'[]'::jsonb),
- 'objects',coalesce((select jsonb_agg(jsonb_build_object('key',name,'size',(metadata->>'size')::bigint,'mime',metadata->>'mimetype') order by name) from storage.objects where bucket_id='eigsti-job-files'),'[]'::jsonb))::text;
+ 'ready',coalesce((select jsonb_agg(jsonb_build_object('key',object_path,'size',byte_size,'bucket','eigsti-job-files')) from public.job_files where status='ready'),'[]'::jsonb),
+ 'objects',coalesce((select jsonb_agg(jsonb_build_object('key',name,'bucket',bucket_id,'size',(metadata->>'size')::bigint,'mime',metadata->>'mimetype') order by name) from storage.objects where bucket_id in ('eigsti-job-files','vendor-price-sheets')),'[]'::jsonb))::text;
 `;
+export function snapshotInventorySql(pricing){return pricing?SNAPSHOT_SQL.replace("'[]'::jsonb),\n 'objects'","'[]'::jsonb)||coalesce((select jsonb_agg(jsonb_build_object('key',object_path,'size',byte_size,'bucket','vendor-price-sheets')) from public.vendor_price_lists where uploaded_at is not null),'[]'::jsonb),\n 'objects'"):SNAPSHOT_SQL;}
 export function holdSnapshot(config){return new Promise((accept,reject)=>{
- const child=spawn(config.psql,['--no-psqlrc','--quiet','--tuples-only','--no-align','--no-password','--set','ON_ERROR_STOP=1'],{env:config.pg,windowsHide:true,stdio:['pipe','pipe','pipe']});let output='',errors='',resolved=false;child.stderr.on('data',b=>{if(errors.length<16384)errors+=b.toString();});
+ const child=spawn(config.psql,['--no-psqlrc','--quiet','--tuples-only','--no-align','--no-password','--set','ON_ERROR_STOP=1'],{env:config.pg,windowsHide:true,stdio:['pipe','pipe','pipe']});let output='',errors='',resolved=false,querySent=false;child.stderr.on('data',b=>{if(errors.length<16384)errors+=b.toString();});
  const fail=code=>{if(!resolved){resolved=true;reject(operationError(typeof code==='string'?code:postgresFailure(errors)));}};
  const timer=setTimeout(()=>{fail('SNAPSHOT_TIMEOUT');child.kill();},30000);child.on('error',()=>{clearTimeout(timer);fail('TOOL_UNAVAILABLE');});
  const closed=new Promise(done=>child.on('close',code=>{clearTimeout(timer);fail();done(code);}));
  const close=async()=>{const closing=setTimeout(()=>child.kill(),30000);try{child.stdin.end('rollback;\n\\q\n');if(await closed!==0)throw new Error('Snapshot connection did not close cleanly.');}finally{clearTimeout(closing);}};
- child.stdout.on('data',b=>{output+=b.toString();if(output.length>10*1024*1024){fail();child.kill();return;}const line=output.split(/\r?\n/).find(v=>v.startsWith('EIGSTI_SNAPSHOT:'));if(!line||!output.endsWith('\n')||resolved)return;try{const inventory=JSON.parse(line.slice(16));if(!/^[0-9A-F]+-[0-9A-F]+-[0-9]+$/i.test(inventory.snapshot))throw Error();resolved=true;clearTimeout(timer);accept({inventory,close});}catch{fail('SNAPSHOT_FORMAT');child.kill();}});
- child.stdin.on('error',fail);child.stdin.write(SNAPSHOT_SQL);
+ child.stdout.on('data',b=>{output+=b.toString();if(output.length>10*1024*1024){fail();child.kill();return;}if(!querySent){const schema=output.split(/\r?\n/).find(v=>/^EIGSTI_PRICING:(true|false)$/.test(v));if(schema){querySent=true;child.stdin.write(snapshotInventorySql(schema.endsWith(':true')));}}const line=output.split(/\r?\n/).find(v=>v.startsWith('EIGSTI_SNAPSHOT:'));if(!line||!output.endsWith('\n')||resolved)return;try{const inventory=JSON.parse(line.slice(16));if(!/^[0-9A-F]+-[0-9A-F]+-[0-9]+$/i.test(inventory.snapshot))throw Error();resolved=true;clearTimeout(timer);accept({inventory,close});}catch{fail('SNAPSHOT_FORMAT');child.kill();}});
+ child.stdin.on('error',fail);child.stdin.write("begin isolation level repeatable read read only;\nselect 'EIGSTI_PRICING:'::text || (to_regclass('public.vendor_price_lists') is not null)::text;\n");
 });}
 export function validateInventory(inventory){
  if(!Array.isArray(inventory.objects)||!Array.isArray(inventory.ready)||inventory.objects.length>10000)throw new Error('Invalid/oversized storage inventory.');
- const objects=new Map();for(const object of inventory.objects){if(!KEY.test(object.key)||objects.has(object.key)||!Number.isSafeInteger(object.size)||object.size<1||object.size>10485760)throw new Error('Storage inventory has an unexpected key/size.');objects.set(object.key,object);}
- for(const file of inventory.ready){if(!KEY.test(file.key)||!objects.has(file.key)||objects.get(file.key).size!==file.size)throw new Error('A ready file is missing or does not match its storage metadata.');}
+ const objects=new Map();for(const object of inventory.objects){if(!KEY.test(object.key)||objects.has(storageBucket(object)+'/'+object.key)||!Number.isSafeInteger(object.size)||object.size<1||object.size>(storageBucket(object)===PRICE_BUCKET?20971520:10485760))throw new Error('Storage inventory has an unexpected key/size.');objects.set(storageBucket(object)+'/'+object.key,object);}
+ for(const file of inventory.ready){if(!KEY.test(file.key)||!objects.has(storageBucket(file)+'/'+file.key)||objects.get(storageBucket(file)+'/'+file.key).size!==file.size)throw new Error('A ready file is missing or does not match its storage metadata.');}
  return [...objects.values()];
 }
 export async function downloadObject(config,object,target,transport=fetch){
- const response=await transport(config.origin+'/storage/v1/object/authenticated/'+BUCKET+'/'+object.key,{headers:{apikey:config.key,Authorization:'Bearer '+config.key},redirect:'error',cache:'no-store',signal:AbortSignal.timeout(60000)});
+ const response=await transport(config.origin+'/storage/v1/object/authenticated/'+storageBucket(object)+'/'+object.key,{headers:{apikey:config.key,Authorization:'Bearer '+config.key},redirect:'error',cache:'no-store',signal:AbortSignal.timeout(60000)});
  if(!response.ok||!response.body)throw new Error('A private file could not be backed up. No complete recovery archive will be published.');
  await fs.mkdir(resolve(target,'..'),{recursive:true,mode:0o700});const fd=await fs.open(target,'wx',0o600);let size=0;
- try{for await(const chunk of response.body){size+=chunk.length;if(size>object.size||size>10485760)throw new Error('Downloaded private file size mismatch.');await fd.writeFile(chunk);}}finally{await fd.close();}
+ try{for await(const chunk of response.body){size+=chunk.length;if(size>object.size||size>(storageBucket(object)===PRICE_BUCKET?20971520:10485760))throw new Error('Downloaded private file size mismatch.');await fd.writeFile(chunk);}}finally{await fd.close();}
  if(size!==object.size)throw new Error('Downloaded private file is incomplete.');
- return {key:object.key,path:'storage/'+object.key,size,sha256:await hashFile(target),mime:object.mime||'application/octet-stream'};
+ return {key:object.key,...(object.bucket?{bucket:storageBucket(object)}:{}),path:storageArchivePath(object),size,sha256:await hashFile(target),mime:object.mime||'application/octet-stream'};
 }
 export async function createBackup(config,{run=runTool,snapshot=holdSnapshot,download=downloadObject,publish=fs.rename,onStage=()=>{}}={}){
  onStage('preparing backup folder');
@@ -62,7 +65,7 @@ export async function createBackup(config,{run=runTool,snapshot=holdSnapshot,dow
   await fs.writeFile(join(temp,'source-inventory.json'),JSON.stringify(inventory),{flag:'wx',mode:0o600});
   onStage('exporting database');await run(config.dump,['--format=custom','--no-owner','--no-password','--snapshot='+inventory.snapshot,'--file='+join(temp,'database.dump')],config.pg);
   onStage('checking database archive');await run(config.restore,['--list',join(temp,'database.dump')],config.pg);
-  onStage('copying private file bytes');const stored=[];for(const object of objects)stored.push(await download(config,object,join(temp,'storage',...object.key.split('/'))));
+  onStage('copying private file bytes');const stored=[];for(const object of objects)stored.push(await download(config,object,join(temp,...storageArchivePath(object).split('/'))));
   await held.close();held=null;
   const names=['database.dump','source-inventory.json',...stored.map(o=>o.path)],files=[];
   for(const path of names){const disk=join(temp,...path.split('/'));files.push({path,size:(await fs.stat(disk)).size,sha256:await hashFile(disk)});}

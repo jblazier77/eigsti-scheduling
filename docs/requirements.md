@@ -79,3 +79,5 @@ R46: Full new-job setup must support the same helper multi-select as existing-jo
 R47: PM may save scheduled work and named helpers while lead is Not assigned yet. Show Lead needed on work and calendar; preserve date/crew when a lead is assigned later. Never reserve a fake lead or let null ownership grant lead editing rights.
 
 R48: Allow Saturday work in creation/editing, calendar display and named staffing reservations. Workweek is Monday-Saturday; multi-day ranges include Saturdays and skip Sundays. Preserve optional dates/times, no-lead planning and existing conflict/permission checks.
+
+R49: Company-wide Vendor Pricing available to PMs and leads. PM/admin directly uploads monthly PDF/XLSX/CSV files under canonical Vendor contacts (contacts may also be Subcontractors). Review extracted products before publication; search comparable material specifications, show equivalent vendor prices cheapest first with original source and dates. Preserve file/history privacy, current-list replacement, units/pack distinctions and encrypted recovery of source bytes. See vendor-pricing.md.

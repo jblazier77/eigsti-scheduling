@@ -1,0 +1,6 @@
+import {readFileSync,writeFileSync} from 'node:fs';
+const name='0024_vendor_pricing',ddl=readFileSync('database/migrations/'+name+'.sql','utf8'),checks=readFileSync('database/tests/'+name+'.test.sql','utf8');
+const count=(checks.match(/insert into pg_temp.eigsti_pricing_results\(result\)/g)||[]).length;
+const preflight="begin;\ndo \$preflight\$ begin if not exists(select 1 from pg_constraint where conrelid='public.visits'::regclass and conname='visits_monday_saturday_check') then raise exception 'Requires 0023';end if; if to_regclass('public.vendor_price_lists') is not null or exists(select 1 from storage.buckets where id='vendor-price-sheets') then raise exception '0024 already present; do not rerun';end if;end; \$preflight\$;\n";
+writeFileSync('database/batches/'+name+'.sql',preflight+ddl.replace(/^begin;\r?\n/m,'').replace(/commit;\s*$/,'')+'\nsavepoint pricing_checks;\n'+checks.replace(/^begin;\r?\n/m,'').replace(/rollback;\s*$/,'')+"\nrollback to savepoint pricing_checks;\nrelease savepoint pricing_checks;\ncommit;\nselect "+count+"::integer as checks,0::integer as failed,'0024 applied; synthetic fixtures removed'::text as result;\n");
+console.log('Prepared 0024: '+count+' checks.');

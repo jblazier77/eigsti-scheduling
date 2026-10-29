@@ -102,3 +102,5 @@ Combined acceptance: database/batches/0010_0011_combined.sql runs 60 completion/
 0023_saturday_work prepared, not applied: 16 guarded checks. Apply once after applied 0022. Saturday scheduling and multi-day reservations, with Sunday excluded.
 
 0023 APPLIED: user reported the Saturday update worked as expected after the guarded instructions (16 checks, 0 failed, synthetic fixtures removed). Do not rerun 0023 or earlier migrations. Saturday scheduling is enabled; multi-day work includes Saturdays and skips Sundays. No separate Saturday browser save/calendar confirmation or commit/push is inferred from the SQL acknowledgment. 230 Node tests, TypeScript and isolated production build passed.
+
+0024_vendor_pricing.test.sql has 40 prepared checks for dual-type contacts, publication/replacement/retries, comparable units/pack/grade, role isolation and private sources. Run through its guarded batch in the fictional test project, not against a production database.

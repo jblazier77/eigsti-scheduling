@@ -23,3 +23,5 @@ next-env.d.ts
 
 .next-check-*/
 .tsconfig-check.json
+
+public/pricing-engine/

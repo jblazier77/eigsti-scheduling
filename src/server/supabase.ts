@@ -50,6 +50,7 @@ export class SupabaseSession implements JobsGateway {
       const code = detail?.code;
       if (code === 'PGRST205' || code === 'PGRST202' || code === '42P01' || code === '42703' || code === 'PGRST204') throw new AppError('schema_pending', 503, 'This feature is temporarily unavailable. Please try again later.');
       if(code==='22023'&&['You cannot deactivate yourself or remove your own Administrator role.','Employee changed. Refresh before saving again.','Reassign open lead work and future coordination before removing the Lead role.','Reassign future helping work or retain a Lead or Helper role.'].includes(detail?.message))throw new AppError('invalid_input',409,detail.message);
+      if(code==='22023'&&['Only currently effective pricing may be published','A newer price list is already current','Price sheet changed. Reopen it before saving.','Vendor is no longer active','Confirm every product price and selling unit','Choose an active Vendor contact','Too many unfinished price sheets','Invalid price row','Invalid price rows','Invalid price sheet'].includes(detail?.message))throw new AppError('invalid_input',409,detail.message);
       if (code === '55000') throw new AppError('upload_pending', 409, 'The upload is not complete. Keep this tab open and retry.');
       if (code === '42501') throw new AppError('not_allowed', 403, 'You do not have access to this action.');
       if(code==='22023'&&['Resolve today or future crew dates before archiving this job.','Resolve today or future subcontractor commitments before archiving this job.','Job status changed. Refresh the job before trying again.'].includes(detail?.message))throw new AppError('invalid_input',409,detail.message);
@@ -146,7 +147,7 @@ export class SupabaseSession implements JobsGateway {
       return Object.fromEntries(groups.flat().map((row:CalendarJob)=>[row.id,row]));
     }
   async listSubcontractors(trade?:string):Promise<Subcontractor[]> {
-    const params=new URLSearchParams({select:'id,name,phone,phone_action,email,trades,archived_at',archived_at:'is.null',order:'name.asc,id.asc',limit:'500'});
+    const params=new URLSearchParams({select:'*',archived_at:'is.null',order:'name.asc,id.asc',limit:'500'});
     if(trade)params.set('trades','cs.{'+trade+'}');
     return this.request('/rest/v1/subcontractors?'+params);
   }

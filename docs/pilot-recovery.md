@@ -73,3 +73,6 @@ For connection/snapshot diagnosis, run node scripts/ops/diagnose-backup.mjs in o
 ## Live operator evidence
 
 The first live full database/private-file backup and native publication succeeded in ordinary PowerShell. The owner then downloaded the encrypted archive from OneDrive web and successfully verified the downloaded copy, matching the original SHA-256, 3 archive files and 1 storage object. This supersedes earlier pending export/publication/cloud-copy statements. No isolated database restore or restored-user sign-in has been demonstrated.
+
+## Vendor pricing originals (prepared October 29)
+Backups now inventory both eigsti-job-files and vendor-price-sheets, using the same held database snapshot. Ready pricing sources are included after their upload has been confirmed; discarded unfinished reservations do not require nonexistent bytes. Manifests distinguish bucket/key. On recovery, pricing originals come from storage/vendor-price-sheets/vendor-id/list-id and must be uploaded to vendor-price-sheets at vendor-id/list-id; job attachments retain their existing layout. Old job-only archives are compatible. New two-bucket encrypted archives passed synthetic verification; no new live export or restore is claimed. See vendor-pricing.md.

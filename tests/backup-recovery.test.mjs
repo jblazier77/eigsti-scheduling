@@ -22,3 +22,14 @@ test('synthetic export verifies all contents before handing the archive to the a
  const result=await createBackup(config,{publish:async(from,to)=>{assert.equal((await verifyArchive(from,passphrase)).integrity_verified,true);await fs.copyFile(from,to,fs.constants.COPYFILE_EXCL);await fs.unlink(from);},snapshot:async()=>({inventory,close:async()=>{closed=true;}}),run:async(binary,args)=>{if(args[0]==='--version')return 'PostgreSQL 17.0';if(binary==='dump'){assert(args.includes('--snapshot='+inventory.snapshot));await fs.writeFile(args.find(a=>a.startsWith('--file=')).slice(7),'synthetic DB');}return '';},download:(config,object,path)=>downloadObject(config,object,path,async()=>new Response(new Uint8Array([0,1,2,255])))});
  assert(closed);assert.equal(result.integrity_verified,true);assert.equal(result.database_restore_verified,false);assert.equal(result.storage_objects,1);assert.deepEqual(await fs.readdir(config.root),[result.archive.split(/[\\/]/).at(-1)]);
 }));
+
+test('job attachments and pricing originals share verified archives without bucket collisions',()=>temporary(async temp=>{
+ const {storageArchivePath,snapshotInventorySql}=await import('../scripts/ops/backup-core.mjs');
+ const objects=[{key,size:4,bucket:'eigsti-job-files'},{key,size:4,bucket:'vendor-price-sheets'}];
+ assert.equal(validateInventory({objects,ready:objects}).length,2);assert.throws(()=>validateInventory({objects:[{key,size:4,bucket:'untrusted'}],ready:[]}));
+ assert(!snapshotInventorySql(false).includes('from public.vendor_price_lists'));assert(snapshotInventorySql(true).includes('where uploaded_at is not null'));
+ const {source,names}=await fixture(temp),path=storageArchivePath(objects[1]);await fs.mkdir(join(source,...path.split('/').slice(0,-1)),{recursive:true});await fs.writeFile(join(source,path),'PDF!');
+ const manifest=JSON.parse(await fs.readFile(join(source,'manifest.json'),'utf8')),entry={path,size:4,sha256:await hashFile(join(source,path))};manifest.files.push(entry);manifest.storage_objects.push({...objects[1],...entry});await fs.writeFile(join(source,'manifest.json'),JSON.stringify(manifest));
+ const archive=join(temp,'both-buckets');await sealArchive(source,[...names,path],archive,passphrase);assert.equal((await verifyArchive(archive,passphrase)).storage_objects,2);
+ await downloadObject({origin:'https://'+ref+'.supabase.co',key:'synthetic'},objects[1],join(temp,'download'),async url=>{assert(url.includes('/vendor-price-sheets/'));return new Response('PDF!');});
+}));

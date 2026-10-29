@@ -39,10 +39,10 @@ export async function saveSubcontractorAction(_previous:ClassificationState,form
       if(values.phone)normalizePhone(values.phone);
       // Editors submit a full validated draft, then send only changed fields.
       const changed=form.getAll('changed');
-      if(contractorId&&(!changed.length||changed.some(k=>typeof k!=='string'||!['name','phone','email','trades'].includes(k))))throw new AppError('invalid_input',400,'No valid changes to save.');
+      if(contractorId&&(!changed.length||changed.some(k=>typeof k!=='string'||!['name','phone','email','trades','contact_types','notes'].includes(k))))throw new AppError('invalid_input',400,'No valid changes to save.');
       patch=contractorId?Object.fromEntries(changed.map(k=>[String(k),values[k as keyof typeof values]])):values;
     }
     await gateway.saveSubcontractor(contractorId,requestId,patch);
-    revalidatePath('/subcontractors');return{message:archive?'Subcontractor archived.':'Saved.',saved:true};
+    revalidatePath('/subcontractors');revalidatePath('/pricing');return{message:archive?'Subcontractor archived.':'Saved.',saved:true};
   }catch(error){return{message:error instanceof AppError?error.message:'The save was not confirmed. Your draft is retained.',uncertain:!(error instanceof AppError)||['connection_failed','save_failed'].includes(error.code)};}
 }

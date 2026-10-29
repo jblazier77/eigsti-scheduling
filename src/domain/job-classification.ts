@@ -30,13 +30,15 @@ export function classificationPatch(value: unknown): Partial<JobClassification> 
 export function classificationChanges(original: JobClassification, draft: JobClassification): Partial<JobClassification> {
   return Object.fromEntries(Object.keys(emptyClassification).filter(k => JSON.stringify(original[k as keyof JobClassification]) !== JSON.stringify(draft[k as keyof JobClassification])).map(k => [k, draft[k as keyof JobClassification]]));
 }
-export type Subcontractor = { id: string; name: string; phone: string; phone_action: string | null; email: string; trades: Trade[]; archived_at: string | null };
-export type SubcontractorValues = Pick<Subcontractor, 'name' | 'phone' | 'email' | 'trades'>;
+export type Subcontractor = { id: string; name: string; phone: string; phone_action: string | null; email: string; trades: Trade[]; archived_at: string | null; contact_types?: ('vendor'|'subcontractor')[]; notes?:string };
+export type SubcontractorValues = Pick<Subcontractor, 'name' | 'phone' | 'email' | 'trades' | 'contact_types' | 'notes'>;
 export function subcontractorValues(value: unknown): SubcontractorValues {
-  if (!value || typeof value !== 'object' || Array.isArray(value) || Object.keys(value).some(k => !['name','phone','email','trades'].includes(k))) throw new AppError('invalid_input',400,'Check the subcontractor details.');
+  if (!value || typeof value !== 'object' || Array.isArray(value) || Object.keys(value).some(k => !['name','phone','email','trades','contact_types','notes'].includes(k))) throw new AppError('invalid_input',400,'Check the subcontractor details.');
   const v = value as Record<string, unknown>;
   for (const [key,max] of [['name',100],['phone',40],['email',254]] as const) if (typeof v[key] !== 'string' || (v[key] as string).length > max || /[\u0000-\u001f\u007f]/.test(v[key] as string)) throw new AppError('invalid_input',400,'Check the subcontractor details.');
   const name=(v.name as string).trim(), phone=(v.phone as string).trim(), email=(v.email as string).trim();
   if (!name || email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) throw new AppError('invalid_input',400,'Enter a name and valid optional email.');
-  return {name,phone,email,trades:validTrades(v.trades)};
+  if(v.contact_types!==undefined&&(!Array.isArray(v.contact_types)||!v.contact_types.length||v.contact_types.length>2||new Set(v.contact_types).size!==v.contact_types.length||v.contact_types.some(t=>!['vendor','subcontractor'].includes(t))))throw new AppError('invalid_input',400,'Choose Vendor and/or Subcontractor.');
+  if(v.notes!==undefined&&(typeof v.notes!=='string'||v.notes.length>2000))throw new AppError('invalid_input',400,'Contact notes must be at most 2,000 characters.');
+  return {name,phone,email,trades:validTrades(v.trades),...(v.contact_types!==undefined?{contact_types:v.contact_types as ('vendor'|'subcontractor')[]}:{}),...(v.notes!==undefined?{notes:v.notes as string}:{})};
 }

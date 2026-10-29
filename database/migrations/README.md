@@ -97,3 +97,5 @@ The earlier 0010-only bundle is superseded for this unapplied combined slice. Us
 0023_saturday_work prepared, not applied: 16 guarded checks. Apply once after applied 0022. Saturday scheduling and multi-day reservations, with Sunday excluded.
 
 0023 APPLIED: user reported the Saturday update worked as expected after the guarded instructions (16 checks, 0 failed, synthetic fixtures removed). Do not rerun 0023 or earlier migrations. Saturday scheduling is enabled; multi-day work includes Saturdays and skips Sundays. No separate Saturday browser save/calendar confirmation or commit/push is inferred from the SQL acknowledgment. 230 Node tests, TypeScript and isolated production build passed.
+
+0024_vendor_pricing PREPARED, NOT APPLIED: company contact types and private reviewed vendor pricing. Apply only its guarded database/batches/0024_vendor_pricing.sql after applied 0023. 40 synthetic checks; fixtures roll back before commit. No prior migration is rerun. See docs/vendor-pricing.md.

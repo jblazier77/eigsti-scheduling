@@ -1,0 +1,5 @@
+import {pricingSession} from '../../../../lib/pricing-session';
+import {contactUuid} from '../../../../domain/contacts.ts';
+import {AppError} from '../../../../domain/access.ts';
+export const dynamic='force-dynamic';
+export async function GET(request:Request,{params}:{params:Promise<{id:string}>}){const headers={'Cache-Control':'private, no-store','Referrer-Policy':'no-referrer','X-Content-Type-Options':'nosniff'};try{const {gateway}=await pricingSession(),{id}=await params,list=await gateway.list(contactUuid(id));if(!list)return new Response('Price sheet unavailable.',{status:404,headers});const query=new URL(request.url).searchParams,inline=query.get('inline')==='1'&&list.mime_type==='application/pdf',page=query.get('page'),fragment=inline&&page&&/^\d{1,4}$/.test(page)?'#page='+page:'';return new Response(null,{status:303,headers:{...headers,Location:await gateway.signRead(list,!inline)+fragment}});}catch(e){return new Response('Please sign in or check access to this price sheet.',{status:e instanceof AppError?e.status:503,headers});}}
